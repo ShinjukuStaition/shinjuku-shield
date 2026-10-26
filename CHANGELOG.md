@@ -4,6 +4,30 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-26: wallet release `f8173150`, npm `shinjuku@0.3.106` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.105 and these:
+
+- Install the terminal command with `npm install -g --no-audit --no-fund shinjuku@0.3.106`.
+- Cancel: a payment that the payment service proves it never received is
+  cancelled, nothing is paid, and the balance no longer counts it. A payment
+  still on its way says that it is not finished and that the same request id
+  is safe; it never promises a refund.
+- A payment that no one payment can cover now asks the payment service for
+  nothing, so nothing is held for it.
+- The wallet gets the balance ready to send (it puts its notes together) with
+  fewer stops: an attempt that sent nothing does not count, and the last
+  check runs once instead of waiting inside the step.
+- Texts give only times that the wallet or the payment service measures. A
+  balance that no payment can use yet says so in one plain line.
+- Over Tor, each money step other than a payment (add funds, a send, each
+  part of a private send, getting the balance ready) runs on a Tor circuit of
+  its own, so one circuit never links two of them. The local AI address keeps
+  the payment service's onion ready, as the MCP server does.
+
 ## 2026-10-26: wallet release `2408266a`, npm `shinjuku@0.3.105` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
