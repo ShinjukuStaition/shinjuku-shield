@@ -41,12 +41,10 @@ set.
   it. We never run it, and we never hold your money.
 - **Shielded payments.** Your agent pays from a shielded balance. Add `--tor`
   and no server sees your IP.
-- **One command to set up.** `npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup` makes the
-  wallet, a private passphrase file, and the checked proof tools, and writes
-  `config.json`. Then your agent host starts `npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp`.
-  `--no-audit --no-fund` stop npx from asking npm's audit and funding
-  services when it installs a new version. Once, that request held the start for
-  5 minutes.
+- **Two commands to set up.** `npm install -g shinjuku@0.3.86`, then
+  `shinjuku setup`. Setup makes the wallet, a private passphrase file, and
+  the checked proof tools, and prints the line that adds the wallet to your
+  agent host.
 - **Add funds from 0.01 USDC.** Ask your agent to add funds.
   `wallet_add_funds` gives a one-time address. Send USDC to it from any
   wallet or exchange, and it becomes private by itself.
@@ -90,7 +88,7 @@ This repository holds the setup guide, the [examples](examples/), the [docs](#do
 
 Stable version, pinned 2026-10-23. A self-custody wallet for AI agents. It
 pays any x402 endpoint from a shielded balance, so the chain does not show
-which wallet paid. One command sets it up. Your agent does the rest from
+which wallet paid. Two commands set it up. Your agent does the rest from
 plain requests.
 
 | | |
@@ -105,22 +103,21 @@ plain requests.
 You need Node.js 22.21 or newer, or Node.js 24. Tor is optional: run it if
 you also want to hide your IP address.
 
-1. **Set up the wallet.** One command makes the wallet on your machine, a
-   private passphrase file, and downloads every proof file it needs (about
-   191 MB, checked by hash). Add `--tor` to do the download and every later
-   request over Tor.
+1. **Set up the wallet.** In a terminal:
 
    ```sh
-   npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup
+   npm install -g shinjuku@0.3.86
+   shinjuku setup
    ```
 
-2. **Add it to your agent host.** Setup prints the exact lines for Claude
-   Code, Claude Desktop, Cursor and other MCP hosts. The host then starts the
-   wallet with:
+   Setup asks two questions, Tor and private AI (Enter keeps the default).
+   It makes the wallet on your machine and a private passphrase file, and
+   downloads every proof file it needs (about 191 MB, checked by hash).
 
-   ```sh
-   npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp
-   ```
+2. **Add it to your agent host.** At the end, setup prints the exact line
+   for Claude Code and the config for Claude Desktop, Cursor and other MCP
+   hosts. Run the line, or paste the config, once. Your agent host then
+   starts the wallet by itself.
 
 3. **Add money.** Ask your agent "Add 1 USDC to my private balance." It gives
    you a one-time address. Send USDC on Solana to it from any wallet or
@@ -130,9 +127,7 @@ you also want to hide your IP address.
 4. **Use it.** Ask your agent to pay a URL, find a paid API, send money out,
    or ask an AI model. Every feature below works from a plain request.
 
-For a terminal, install the wallet once:
-`npm install -g --no-audit --no-fund shinjuku-shield@0.3.86`, then
-`shinjuku-shield help` lists every command.
+In a terminal, `shinjuku help` lists every command.
 
 ### Features
 
@@ -141,11 +136,11 @@ production, with real USDC, on 2026-10-23.
 
 **Add money**
 
-- **Add funds** (`wallet_add_funds`, `shinjuku-shield add-funds`). A new one-time
+- **Add funds** (`wallet_add_funds`, `shinjuku add-funds`). A new one-time
   address for each deposit, from 0.01 USDC. Send from any wallet or exchange;
   no SOL needed. The wallet makes it private by itself after it lands, even
   if your agent app closed. Ask: "Add 1 USDC to my private balance."
-  Terminal: `shinjuku-shield add-funds --route exchange --amount 1`
+  Terminal: `shinjuku add-funds --route exchange --amount 1`
 - **Make public USDC private** (`wallet_shield`). USDC that sits on the
   wallet's own public address moves into the shielded balance. The
   facilitator pays the network fee. Ask: "Make the USDC on my address
@@ -158,7 +153,7 @@ production, with real USDC, on 2026-10-23.
 
 **Pay**
 
-- **Pay any x402 endpoint** (`x402_pay`, `shinjuku-shield pay`, `shinjuku-shield curl`).
+- **Pay any x402 endpoint** (`x402_pay`, `shinjuku pay`, `shinjuku curl`).
   Pays an x402 URL from the shielded balance and returns the answer. The
   seller gets paid as usual; the chain does not show which wallet paid. The
   price and the fee show in the answer. Ask: "Pay for this endpoint and show
@@ -180,22 +175,22 @@ production, with real USDC, on 2026-10-23.
 - **Images and files** (`x402_pay`). A paid answer that is an image or a file
   is saved in the wallet folder, with its path and hash. Ask: "Buy a QR code
   for this text from <url>."
-- **Cancel** (`wallet_cancel`, `shinjuku-shield cancel`). Closes a payment that can
+- **Cancel** (`wallet_cancel`, `shinjuku cancel`). Closes a payment that can
   no longer settle, so its reserved money comes back. A finished payment
   cannot be taken back, and the wallet says so. Ask: "Cancel that payment."
 
 **Send money out**
 
-- **Send to an address** (`wallet_unshield`, `shinjuku-shield unshield`). Sends some
+- **Send to an address** (`wallet_unshield`, `shinjuku unshield`). Sends some
   or all of the private balance to any Solana wallet as plain USDC. The
   facilitator pays the network fee. Ask: "Send my whole private balance to my
-  main wallet." Terminal: `shinjuku-shield unshield --amount all --to <address>`
+  main wallet." Terminal: `shinjuku unshield --amount all --to <address>`
 - **Send in pieces at random times** (`wallet_unshield` with a time
   window). Splits a send into pieces that leave at random times, so the
   amount and the time do not match one payment. The pieces go out in the
   background, even after your agent app closes. Ask: "Send 0.02 USDC to
   my main wallet in 2 pieces within the next 10 minutes."
-- **Send all of it** (`wallet_unshield`, `shinjuku-shield unshield --amount all`). A
+- **Send all of it** (`wallet_unshield`, `shinjuku unshield --amount all`). A
   balance from several deposits is readied by itself when you send all of it.
   You do nothing extra. Ask: "Send all of it."
 - **Spend a received payment** (`wallet_unshield`). A wallet that only
@@ -204,14 +199,14 @@ production, with real USDC, on 2026-10-23.
 
 **Your wallet**
 
-- **Balance** (`wallet_balance`, `shinjuku-shield balance`). One number: what you can
+- **Balance** (`wallet_balance`, `shinjuku balance`). One number: what you can
   spend. It also shows any public USDC on the wallet's own address and any
   money still on its way. Ask: "What is my private balance?"
 - **Receipts** (`wallet_receipts`). Every payment, refund, deposit and send,
   newest first, with the seller, the price, the fee and the transactions.
   Ask: "Show my receipts from today. Did I get my money back on failed
   payments?"
-- **Spending limits** (`--max-payment`, `--max-session`, `shinjuku-shield limits`).
+- **Spending limits** (`--max-payment`, `--max-session`, `shinjuku limits`).
   Optional limits per payment and per 24 hours. A payment over a limit is
   refused before anything is paid, and the answer says how to change the
   limit. Set them in setup or in your host's MCP entry, for example
@@ -225,20 +220,20 @@ production, with real USDC, on 2026-10-23.
 - **Ask an AI model** (`inference_chat`). Your agent asks an AI model and pays
   for the answer from the shielded balance. The chain does not show which
   wallet paid. Ask: "Ask a private AI model: what is the capital of France?"
-- **Terminal chat** (`shinjuku-shield chat`). A private AI chat in your terminal. The
+- **Terminal chat** (`shinjuku chat`). A private AI chat in your terminal. The
   conversation stays in memory only and is gone when you exit. Terminal:
-  `shinjuku-shield chat`, then `/cost` and `/exit`
-- **One question** (`shinjuku-shield infer`). One question, one paid answer, no setup
-  flags. Terminal: `shinjuku-shield infer "Say hello"` or
-  `echo "Say hello" | shinjuku-shield infer -`
-- **Private AI address for your apps** (`shinjuku-shield infer start`,
+  `shinjuku chat`, then `/cost` and `/exit`
+- **One question** (`shinjuku infer`). One question, one paid answer, no setup
+  flags. Terminal: `shinjuku infer "Say hello"` or
+  `echo "Say hello" | shinjuku infer -`
+- **Private AI address for your apps** (`shinjuku infer start`,
   `inference_server`). A local OpenAI-compatible address
   (`http://127.0.0.1:11402/v1`) with an API key. Any app that speaks the
   OpenAI chat API, streaming included, gets private paid answers. It runs in
   the background after the terminal closes, but not after the computer
-  restarts: then run `shinjuku-shield infer start` again (the API key
-  stays the same). Ask: "Start my local private AI address." Terminal: `shinjuku-shield infer start`, `shinjuku-shield infer status`,
-  `shinjuku-shield infer stop`
+  restarts: then run `shinjuku infer start` again (the API key
+  stays the same). Ask: "Start my local private AI address." Terminal: `shinjuku infer start`, `shinjuku infer status`,
+  `shinjuku infer stop`
 
 **Privacy and setup**
 
@@ -246,14 +241,14 @@ production, with real USDC, on 2026-10-23.
   through Tor and reaches the facilitator through its onion service, so no
   server sees your IP address. After a Tor setup, every command uses Tor by
   itself. Run Tor with `HTTPTunnelPort 127.0.0.1:9080`, then `setup --tor`.
-- **Self-custody** (`shinjuku-shield setup`, `backup-export`). The keys are made and
+- **Self-custody** (`shinjuku setup`, `backup-export`). The keys are made and
   kept on your machine. Only your keys move your balance. The facilitator
   settles and pays network fees; it never holds your money. Back up after
-  setup: `shinjuku-shield help backup-export`
+  setup: `shinjuku help backup-export`
 - **The terminal command**
-  (`npm install -g --no-audit --no-fund shinjuku-shield@0.3.86`). Every
+  (`npm install -g shinjuku@0.3.86`). Every
   wallet action from a terminal: setup, add-funds, balance, pay, unshield,
-  chat, infer and more. Terminal: `shinjuku-shield help`
+  chat, infer and more. Terminal: `shinjuku help`
 
 ### Speed
 
@@ -275,15 +270,15 @@ before the next.
    "Paid". The money is not taken and comes back by itself.
 2. The terminal send prints one internal line that starts with
    `SELLER_STORE`.
-3. `shinjuku-shield chat` can print raw Tor lines while Tor is slow.
+3. `shinjuku chat` can print raw Tor lines while Tor is slow.
 4. When the spending limit comes from the host's MCP entry, the refusal names
    setup as the place to change it.
 5. Before a send that needs the balance readied first, the agent may not
    tell you it takes about 2 minutes.
 6. In a terminal, balance, infer and unshield print internal Tor, RPC and
    history lines.
-7. A plain `shinjuku-shield balance` right after a deposit can show no number.
-   `shinjuku-shield balance --refresh` shows it.
+7. A plain `shinjuku balance` right after a deposit can show no number.
+   `shinjuku balance --refresh` shows it.
 
 Payments to outside sellers show the price and the seller on chain as any
 x402 payment does; what the chain does not show is which wallet paid. Every
@@ -315,7 +310,7 @@ On a machine with no wallet, the server starts in setup mode.
 
 | Tool | What it does |
 |---|---|
-| `shinjuku_setup` | Asks you to confirm in your MCP client that it may create a Shinjuku Shielded wallet on this machine, and shows the caps. Then it runs the setup and switches the same server to the wallet tools. It never asks for a secret. A client that cannot ask is told to run `npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup` in a terminal. |
+| `shinjuku_setup` | Asks you to confirm in your MCP client that it may create a Shinjuku Shielded wallet on this machine, and shows the caps. Then it runs the setup and switches the same server to the wallet tools. It never asks for a secret. A client that cannot ask is told to run the setup in a terminal. |
 | `wallet_status` | Says whether the wallet is set up, and what to do next. |
 
 In setup mode, every money tool answers `wallet_not_set_up` and does
@@ -391,7 +386,7 @@ program was closed on chain on 2026-10-11.
 Value that an older version put in pockets still counts in the one balance.
 When the server has `--proof-tools`, `--exit-proof-tools`, and `--profile`,
 it returns that value to the shielded balance by itself while it is idle.
-`shinjuku-wallet pocket reshield` does the same by hand.
+`shinjuku pocket reshield` does the same by hand.
 
 A balance from several deposits: one payment can spend only a few of them
 at once. The server gathers them into one by itself (a private payment to
@@ -416,21 +411,10 @@ to pay again.
 You need Node.js 22.21 or later (or Node.js 24 or later), on Windows or Linux. macOS is not supported
 yet.
 
-The stable version is `shinjuku-shield@0.3.86` (pinned 2026-10-23; the same files are on npm as
-`shinjuku-shielded@0.3.86`), and every command here names it. Setup prints host lines that name this exact
-version. A candidate is out for testing: `shinjuku-shield@0.3.106` (npm tag `next`,
-2026-10-26). It fixes known issues 1 to 7 of 0.3.86, shows a QR code for a
-deposit, asks for your own wallet address in setup, asks "Use Tor?" when
-your agent app sets up the wallet, waits for your answer in the setup box,
-names your recovery file when setup ends, says when you confirmed a send,
-and asks for each value in a terminal instead of a flag. It adds slash
-commands in Claude Code: type / and pick a command, then add its value, or
-press Enter and the agent asks. It gives you the `shinjuku` command for a
-terminal (`npm install -g --no-audit --no-fund shinjuku@0.3.106`, then
-`shinjuku help`). The private AI chat and the private AI address use one
-default model, `qwen3-8-flash`, with 4096 tokens for an answer; the address
-names its model and says what to do after a restart. When a seller refuses a payment at once, it
-says when the refund lands. See the [changelog](CHANGELOG.md).
+The stable version is 0.3.86 (pinned 2026-10-23), and every command here
+names it. Setup prints host lines that name this exact version. A candidate,
+0.3.106, is out for testing (npm tag `next`, 2026-10-26): [Status](#status)
+and the [changelog](CHANGELOG.md) say what it changes.
 
 A later stable version gets its own row in the
 [Releases table](#releases): run its setup once and
@@ -439,11 +423,12 @@ put its version in your host's config. Your wallet, its address, and its balance
 ### 1. Run the setup in a terminal
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup
+npm install -g shinjuku@0.3.86
+shinjuku setup
 ```
 
-It asks for the caps (Enter keeps the default) and Tor. `--yes` asks
-nothing. `--add-to claude-code` (or `claude-desktop`, `cursor`) also adds
+It asks two questions, Tor and private AI (Enter keeps the default), and at
+the end it offers to add funds (Enter skips). `--yes` asks nothing. `--add-to claude-code` (or `claude-desktop`, `cursor`) also adds
 the server to that host's config. In our runs, setup took about 10-16 s on a
 fast line, with the proof-tool download of about 191 MB. Over Tor (`--tor`),
 it took 89 s to 5 min in our 0.3.86 tests (2026-10-23). At the end it prints a
@@ -490,6 +475,10 @@ Claude Code:
 claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp
 ```
 
+`--no-audit --no-fund` stop npx from asking npm's audit and funding
+services when it starts a new version. Once, that request held the start for
+5 minutes.
+
 On native Windows, the line that setup prints puts `cmd /c` before `npx`.
 With a wallet folder that is not the default, it adds
 `-e SHIELDED_WALLET_HOME=<home>` (or an `"env"` block in JSON).
@@ -515,11 +504,10 @@ server starts in setup mode. Ask your agent "what is my balance". Your MCP
 client asks you to confirm: create a Shinjuku Shielded wallet on this
 machine. Accept, and the setup runs (with the proof-tool download of about
 191 MB). Then the same server switches to the wallet tools. You do not
-restart it. A client that cannot ask is told to run
-`npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup` in a terminal.
+restart it. A client that cannot ask is told to run the setup in a
+terminal.
 
-In a terminal, `npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp` asks
-"Set up Shinjuku Shielded now? (y/n)".
+In a terminal, `shinjuku mcp` asks "Set up Shinjuku Shield now? (y/n)".
 
 ### 3. Add funds
 
@@ -532,7 +520,7 @@ server runs: our relayer pays every fee.
 From an exchange, in a terminal, whole USDC only:
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.86 add-funds --route exchange --amount 2
+shinjuku add-funds --route exchange --amount 2
 ```
 
 It prints a one-time address. Withdraw exactly that amount of USDC (Solana
@@ -556,8 +544,7 @@ echo "b650bf0682830e05207f52bad2ba426ec7f8fa1bbbfdb7e028057865e3d83d24  shinjuku
 node shinjuku-wallet.mjs setup
 ```
 
-With the file, replace `npx -y --no-audit --no-fund shinjuku-shield@0.3.86` with
-`node /abs/path/shinjuku-wallet.mjs`.
+With the file, replace `shinjuku` with `node /abs/path/shinjuku-wallet.mjs`.
 
 ### Advanced: flags instead of config.json
 
@@ -579,7 +566,7 @@ claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shi
 
 With `--pool`, `--program` and `--memo-service` are required. Setup writes the pool, the program, and the
 facilitator into `config.json`: `<pool>` is the pool in your `config.json`.
-`npx -y --no-audit --no-fund shinjuku-shield@0.3.86 help mcp` prints every flag.
+`shinjuku help mcp` prints every flag.
 
 Use absolute paths: a host starts the server from its own folder. On Windows,
 write `C:/Users/you/...`. `--proof-tools` turns `wallet_shield` on.
@@ -645,7 +632,7 @@ says. A cap refusal tells the agent to ask you: only you set the caps.
 An unshield is your own money, so it does not count against the payment
 budget of the wallet file (`init --max-payment`, `--max-cumulative`).
 Payments to sellers still count. To show, change, or remove those
-wallet-file caps, run `shinjuku-wallet limits` (`none` removes a cap). A
+wallet-file caps, run `shinjuku limits` (`none` removes a cap). A
 refusal by one of them tells the agent to ask you for this.
 
 Upkeep is automatic. After a deposit lands, and before a payment or unshield
@@ -738,8 +725,7 @@ our first customer and our live demo.
   in the setup box, names your recovery file when setup ends, says when you
   confirmed a send, and asks for each value in a terminal instead of a flag.
   It adds slash commands in Claude Code (type / and pick a command, then add
-  its value, or press Enter and the agent asks), the `shinjuku` command for a
-  terminal (`npm install -g --no-audit --no-fund shinjuku@0.3.106`), one default AI model
+  its value, or press Enter and the agent asks), one default AI model
   (`qwen3-8-flash`, 4096 tokens for an answer) for the chat and the private AI address, and the
   time when a refund lands after a seller refuses at once.
 - `shielded-exact` payments from the shielded balance: live on mainnet.
@@ -969,7 +955,10 @@ reproducible: two independent builds (Windows and Linux) of that commit give
 the same SHA-256, and our server refuses to start if the file it serves differs
 from the pinned hash.
 
-## Get the wallet
+## Advanced: the wallet file without npm
+
+You do not need this part: `shinjuku setup` does all of it. It is for a
+machine without npm, or to get and check each file yourself.
 
 The wallet needs Node.js 22.21 or later (or Node.js 24 or later) and nothing
 else. The stable release is `b650bf06`: put it in place of `<sha8>` below.
@@ -1036,7 +1025,7 @@ With the wallet file alone, these commands work: every `help` page, `init`,
 `--refresh`), and `limits`. The money commands also need
 the proof tools (next section).
 
-## Get the proof tools
+### 4. Get the proof tools
 
 `add-funds`, `deposit`, `recover`, `balance --refresh`, `pay`, `buy-item`,
 `unshield`, and `pocket reshield` need the proof tools of the
@@ -1073,11 +1062,11 @@ Go on only when the list check prints `OK` and the last check prints
 
 The wallet checks the SHA-256 of each binary again before every run.
 
-## Quick start
+### 5. Use the wallet file
 
 The full guide is the wallet's own help. The steps below follow it.
 
-### What you need
+#### What you need
 
 - Node.js 22.21 or later, or Node.js 24 or later. (The two `privacy-cash` commands need Node.js 24 and
   the Privacy Cash SDK, which the wallet file does not include.)
@@ -1096,14 +1085,14 @@ W=shinjuku-wallet.mjs
 
 Keep the same passphrase in `passphrase.txt` and your RPC URL in `rpc.txt`.
 
-### Hide your IP
+#### Hide your IP
 
 Add `--tor` to any command. Start Tor with one line in `torrc`:
 `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr`. The wallet checks that it
 reaches the network through Tor before it sends any other request, and it
 refuses any connection that does not go through the proxy.
 
-### 1. Create the wallet
+#### 1. Create the wallet
 
 ```sh
 node $W init --pool $POOL --network $NETWORK --asset $MINT \
@@ -1125,14 +1114,14 @@ to the new `--backup-out` file, never to the screen. Copy that file to two
 offline places, then delete it from this machine. Keep the
 `solanaFeePayer` and `seedFingerprint` that `init` prints beside it.
 
-### 2. Back up (after every step that moves value)
+#### 2. Back up (after every step that moves value)
 
 ```sh
 node $W backup-export --pool $POOL --to /backups/01-created
 node $W backup-verify --pool $POOL --backup-dir /backups/01-created
 ```
 
-### 3. Add funds privately
+#### 3. Add funds privately
 
 ```sh
 node $W help add-funds
@@ -1154,7 +1143,7 @@ with `ready` and your balance. Three routes:
 Never fund the one-time address from a wallet that you use elsewhere. That
 transfer links you.
 
-### 4. Pay
+#### 4. Pay
 
 ```sh
 node $W help pay
@@ -1174,7 +1163,7 @@ USDC) cannot pay 2.001 USDC in one payment, although the total covers it.
 payment: nothing leaves the pool, and our relayer pays every fee. After it,
 wait for the next pool anchor (usually within a minute), then pay.
 
-### 5. Check your balance and withdraw
+#### 5. Check your balance and withdraw
 
 ```sh
 node $W help balance

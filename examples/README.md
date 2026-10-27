@@ -42,7 +42,8 @@ The output must be `v22` or higher.
 ### 2. Set it up in a terminal
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup
+npm install -g shinjuku@0.3.86
+shinjuku setup
 ```
 
 In our runs, setup took about 10-16 s on a fast line, with the proof-tool
@@ -57,7 +58,7 @@ Setup writes to `~/.carbon-shielded-wallet`:
   offline places, then delete it from this machine.
 - No spending limit by default: only the balance bounds a payment. To set
   limits, run the setup with `--max-payment`, `--max-session`, and
-  `--max-cumulative`, in USDC (`npx -y --no-audit --no-fund shinjuku-shield@0.3.86 help setup`).
+  `--max-cumulative`, in USDC (`shinjuku help setup`).
 
 ### 3. Add the server to your agent
 
@@ -74,7 +75,7 @@ You can also add the server first and skip step 2:
 
 Accept. The setup runs (with the proof-tool download of about 191 MB) and
 the same server switches to the wallet tools. If your client cannot show the
-question, run `npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup` in a terminal, then restart
+question, run `shinjuku setup` in a terminal, then restart
 the agent host.
 
 ### 4. Add funds
@@ -108,7 +109,7 @@ encrypted backup to `$SHIELDED_WALLET_HOME/auto-backups/<pool>/` by itself.
 A shield is a public step. The chain shows USDC leave the wallet's own
 address, the amount, and the time. Payments from the shielded balance after
 that do not show this wallet. For the exchange route in a terminal, see
-`npx -y --no-audit --no-fund shinjuku-shield@0.3.86 help add-funds`.
+`shinjuku help add-funds`.
 
 ### 5. Pay a URL
 

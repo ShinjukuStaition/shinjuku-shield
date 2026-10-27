@@ -110,7 +110,7 @@ and only the balance bounds a payment. Set `--max-payment` and
 `--max-session` (or give them to setup) to limit it. A tool call can only
 lower a cap. `--allow-host` limits which sellers it pays. Caps in the
 wallet file itself (`init --max-payment`, `--max-cumulative`) change with
-`shinjuku-wallet limits` (`none` removes a cap).
+`shinjuku limits` (`none` removes a cap).
 
 Limits: without `--max-unshield`, a confirmed unshield can move the whole
 shielded balance. The MCP host and its model provider see every URL, body,
@@ -137,7 +137,7 @@ reproducibly: two independent builds give the same SHA-256.
 One payment spends one piece plus at most 3 notes. Each deposit is its own
 piece. When no single piece covers the price, the wallet gathers the pieces
 inside the pool: the MCP server does it by itself, and in a terminal
-`shinjuku-shield help` names the command. Our relayer pays every fee. Wait
+`shinjuku help` names the command. Our relayer pays every fee. Wait
 for the next pool anchor (usually within a minute), then pay again.
 
 ### Which operating systems?

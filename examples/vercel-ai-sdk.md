@@ -7,7 +7,8 @@ examples, so you do not need another package.
 ## 1. Set up the wallet in a terminal
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup
+npm install -g shinjuku@0.3.86
+shinjuku setup
 ```
 
 Setup creates the wallet only after you confirm it. An AI SDK app does not
