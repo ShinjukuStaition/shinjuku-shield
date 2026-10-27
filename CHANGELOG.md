@@ -4,6 +4,23 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-27: wallet release `1406c0d4`, npm `shinjuku@0.3.112` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.111 and these:
+
+- Answers no longer show you a request id. Before, the agent could tell you
+  "The request ID is auto-..." about an id you never use. The agent still
+  reads the id from the answer when it must pass it.
+- The balance names an open private send by its amount and the address it
+  pays.
+- The request id of a payment and of an AI chat says to leave it out for a
+  new payment or question. Before, an agent could make the same id for the
+  same question in a new conversation, and the answer then spoke of a
+  payment made earlier.
+
 ## 2026-10-27: wallet release `ca9504f8`, npm `shinjuku@0.3.111` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
