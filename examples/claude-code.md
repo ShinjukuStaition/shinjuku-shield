@@ -1,11 +1,12 @@
 # Claude Code
 
-Set up Shinjuku Shielded and add it to Claude Code with one command. You
+Set up Shinjuku Shielded and add it to Claude Code with two commands. You
 need Node.js 22.21 or later (or Node.js 24 or later), on Linux or on Windows with WSL. macOS is not
 supported.
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup --add-to claude-code
+npm install -g shinjuku@0.3.86
+shinjuku setup --add-to claude-code
 ```
 
 Setup makes the wallet, a random passphrase file, the checked proof tools
@@ -52,7 +53,7 @@ the caps.
 ## Tor
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup --prefer-tor
+shinjuku setup --prefer-tor
 ```
 
 `--prefer-tor` records Tor in `config.json`. The server then sends every
@@ -76,7 +77,7 @@ payment. Setup records the caps you set in `config.json`. To set them, give
 them to the first setup, in USDC (`0.05` = 5 cents):
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup --max-payment 0.1 --max-session 2 --max-cumulative 50
+shinjuku setup --max-payment 0.1 --max-session 2 --max-cumulative 50
 ```
 
 When setup creates the wallet, it also writes `--max-payment` (the most one
@@ -89,9 +90,9 @@ together) into the wallet file. A later setup never changes the wallet file:
 - A payment above the wallet file's own per-payment limit is still refused,
   and the lifetime total stays as it was created.
 - To show, change, or remove those two limits, run
-  `npx -y --no-audit --no-fund shinjuku-shield@0.3.86 limits --pool <pool>` with `--max-payment` or
+  `shinjuku limits --pool <pool>` with `--max-payment` or
   `--max-cumulative` (`none` removes a limit;
-  `npx -y --no-audit --no-fund shinjuku-shield@0.3.86 help limits`).
+  `shinjuku help limits`).
 - Money that you send to yourself or others with `wallet_unshield` does not
   count against the lifetime total.
 
@@ -118,7 +119,7 @@ For example:
 claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp --max-per-host-day 0.5
 ```
 
-`npx -y --no-audit --no-fund shinjuku-shield@0.3.86 help mcp` and `npx -y --no-audit --no-fund shinjuku-shield@0.3.86 help setup`
+`shinjuku help mcp` and `shinjuku help setup`
 print the full flag lists on your machine.
 
 ## A wallet from before 0.2.0
@@ -129,7 +130,7 @@ your wallet folder and your passphrase file. It keeps your wallet and writes
 
 ```sh
 SHIELDED_WALLET_HOME=/home/you/.shielded-wallet \
-  npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup --passphrase-file /home/you/shinjuku/passphrase.txt
+  shinjuku setup --passphrase-file /home/you/shinjuku/passphrase.txt
 claude mcp add --scope user -e SHIELDED_WALLET_HOME=/home/you/.shielded-wallet \
   shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp
 ```

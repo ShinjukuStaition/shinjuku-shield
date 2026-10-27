@@ -7,7 +7,8 @@ supported.
 First, run the setup in a terminal:
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.86 setup
+npm install -g shinjuku@0.3.86
+shinjuku setup
 ```
 
 It makes the wallet, a random passphrase file, the checked proof tools

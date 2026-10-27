@@ -52,5 +52,5 @@ The agent does what `next` says. Some codes that you can see:
 | `p03_float_price_above_capacity` | The price is above the largest price that our float pays for one request. Nothing was paid. |
 | `p03_float_busy_retry_later`, `p03_float_not_ready_retry_later` | Our float is busy or is being filled. Nothing was paid. Call again later with the same `request_id`. |
 | `p03_merchant_respend_insufficient_recovered_value` | The balance covers the price only in total, over several deposits. Run the command that `next` names (it readies the balance for one payment), wait for the next pool anchor (usually within a minute), then pay again. |
-| `wallet_spend_refused_per_payment_cap_exceeded` | A cap in the wallet file refused it. You change it with `shinjuku-wallet limits`. |
+| `wallet_spend_refused_per_payment_cap_exceeded` | A cap in the wallet file refused it. You change it with `shinjuku limits`. |
 | a code that ends in `_retry_same_request` | Call `x402_pay` again with the same `request_id`. It never pays twice. |
