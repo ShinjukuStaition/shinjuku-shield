@@ -4,6 +4,22 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-27: wallet release `f6ab1c40`, npm `shinjuku@0.3.110` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.109 and these:
+
+- While a private send keeps money for its next payment and the change of
+  your last payment is still on its way, the balance says when one payment
+  can use that change, and how much. Before, it said that no payment could
+  use the money yet, so agents told the user that new payments would fail.
+- The balance gives that time and amount only when no private send can still
+  take the change. Otherwise it says that no payment can use the money yet.
+- A payment or an AI chat with a request id that an earlier payment used now
+  says that nothing was paid, and names one new request id to use.
+
 ## 2026-10-27: wallet release `b09cef56`, npm `shinjuku@0.3.109` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
