@@ -4,6 +4,30 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-27: wallet release `b09cef56`, npm `shinjuku@0.3.109` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.108 and these:
+
+- A private send keeps the money that its next payments need. Other payments
+  and sends can no longer split that money, so the last payment of a send no
+  longer waits until you cancel it. A payment that only this money could pay
+  says so, names the send, and names the call that stops it.
+- When a payment of a private send fails a try, every answer says so: how
+  many tries, why, and that the wallet tries again by itself. A cancel says
+  how much came back to the private balance.
+- When the wallet must first get the balance ready to pay, the first answer
+  of the payment is no longer an error. It says that the wallet gets the
+  balance ready, then pays.
+- A shield or a send asked again with the request id of a finished one names
+  one new request id to use.
+- When a seller's payment offer names no fee payer, the answer also names the
+  price that the offer asks.
+- A refund answer asked again gives the same reason as the first answer: the
+  seller's answer code, a seller that charged too late, or a request to fix.
+
 ## 2026-10-27: wallet release `3163c1c6`, npm `shinjuku@0.3.108` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
