@@ -100,7 +100,8 @@ plain requests.
 
 ### Get started
 
-You need Node.js 22.21 or newer, or Node.js 24. Tor is optional: run it if
+You need Node.js 22.21 or newer, or Node.js 24 (`node --version` shows
+which one your `node` command runs). Tor is optional: run it if
 you also want to hide your IP address.
 
 1. **Set up the wallet.** In a terminal:
@@ -109,6 +110,9 @@ you also want to hide your IP address.
    npm install -g shinjuku@0.3.86
    shinjuku setup
    ```
+
+   Type the two lines as they are. `npx install shinjuku` does not work:
+   npx reads `install` as the name of another npm package.
 
    Setup asks two questions, Tor and private AI (Enter keeps the default).
    It makes the wallet on your machine and a private passphrase file, and
@@ -413,7 +417,7 @@ yet.
 
 The stable version is 0.3.86 (pinned 2026-10-23), and every command here
 names it. Setup prints host lines that name this exact version. A candidate,
-0.3.107, is out for testing (npm tag `next`, 2026-10-27): [Status](#status)
+0.3.108, is out for testing (npm tag `next`, 2026-10-27): [Status](#status)
 and the [changelog](CHANGELOG.md) say what it changes.
 
 A later stable version gets its own row in the
@@ -717,8 +721,8 @@ our first customer and our live demo.
   [0.3.86 release notes](#release-0386).
   Hash: the `b650bf06` row of [Releases](#releases).
 - The stable version before it: wallet release `98296ff0` (npm 0.3.80).
-- Candidate (2026-10-27, not the stable version): wallet release `28821f7e`, npm
-  `shinjuku-shield@0.3.107` under the tag `next`. It fixes known issues 1 to 7 of
+- Candidate (2026-10-27, not the stable version): wallet release `3163c1c6`, npm
+  `shinjuku-shield@0.3.108` under the tag `next`. It fixes known issues 1 to 7 of
   0.3.86, shows a QR code for a deposit, takes any amount from 0.01 USDC in a
   terminal, keeps every tool text short enough for agent apps to read in full,
   asks "Use Tor?" when an agent app sets up the wallet, waits for your answer
@@ -729,6 +733,8 @@ our first customer and our live demo.
   (`qwen3-8-flash`, 4096 tokens for an answer) for the chat and the private AI address, and the
   time when a refund lands after a seller refuses at once. It says when a
   seller works too long before it charges (about 30 s) for any wallet to pay it.
+  Open in it (no money is lost): when other payments or sends run while a
+  private send waits, its last payment can wait until you cancel it.
 - `shielded-exact` payments from the shielded balance: live on mainnet.
 - Float pay to any Solana x402 `exact` endpoint that takes USDC: live on
   mainnet since 2026-10-11 (wallet release `e3348092` and later). On
@@ -947,6 +953,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-10-26 (candidate, npm `next`) | [`2408266a`](https://shinjukustaition.com/wallet/2408266a/shinjuku-wallet.mjs) | `2408266a7f9cbcbb20184b9057f7a4b2c4f16aae5cc8bfc4860c9ec2ae491022` | 12,809,303 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-26 (candidate, npm `next`) | [`f8173150`](https://shinjukustaition.com/wallet/f8173150/shinjuku-wallet.mjs) | `f8173150b96135bb49254f76b2b0de6154439b0d8dd47133320c2df65499e494` | 8,272,978 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-27 (candidate, npm `next`) | [`28821f7e`](https://shinjukustaition.com/wallet/28821f7e/shinjuku-wallet.mjs) | `28821f7e8b417b970591f4d9e27071b1d4886575f770c29b29cb112f7ed89963` | 8,286,646 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
+| 2026-10-27 (candidate, npm `next`) | [`3163c1c6`](https://shinjukustaition.com/wallet/3163c1c6/shinjuku-wallet.mjs) | `3163c1c64f3d99abd84b0d2914132a07377d9a5ad2c08f803bd75ca8f042a67c` | 8,295,891 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
