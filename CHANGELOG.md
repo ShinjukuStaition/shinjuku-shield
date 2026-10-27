@@ -4,6 +4,32 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-27: wallet release `28821f7e`, npm `shinjuku@0.3.107` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.106 and these:
+
+- Install the terminal command with `npm install -g shinjuku@0.3.107`.
+- Right after a payment, the balance says that one payment can use the rest
+  after the last payment settles; it no longer says that no payment can use
+  it, and the next payment waits for it by itself.
+- When a seller refuses after payment, the answer shows the seller's own
+  reason, and no error code asks the agent to try again while the text says
+  that there is nothing to do.
+- A seller that works more than about 30 s before it charges cannot be paid
+  by any wallet: a Solana payment expires about 30 s after it is signed. The
+  answer now says so, and says that the payment comes back once the payment
+  service proves that its transfer expired.
+- The wallet starts to read its own public USDC, its other tokens and its
+  open add-funds addresses when the agent app starts it. A read that does not
+  answer in time says so, and never looks like an empty balance or "no
+  tokens". One balance request after a deposit lands starts that deposit.
+- Agent apps show `shinjuku <command>` for each terminal step, and you stop
+  the private AI address by asking the agent.
+- In the chat, `/balance` reads the balance itself.
+
 ## 2026-10-26: wallet release `f8173150`, npm `shinjuku@0.3.106` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
