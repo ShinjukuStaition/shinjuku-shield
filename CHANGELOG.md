@@ -4,6 +4,23 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-27: wallet release `148b3f52`, npm `shinjuku@0.3.115` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.114 and these:
+
+- When a payment is still open with the seller, the answer no longer shows
+  you its request id. The agent keeps the id and uses it to ask for the
+  result.
+- When the agent app ends the wallet during a private send, the next start
+  finishes the send without holding up your first payment. Before, that
+  payment could wait about 8 seconds.
+- A private send in parts no longer stops and starts again when a part
+  finishes before the chain marks it final. The wallet waits a few seconds
+  and tries again. Before, such a part took about 25 seconds longer.
+
 ## 2026-10-27: wallet release `dc0b6b99`, npm `shinjuku@0.3.114` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
