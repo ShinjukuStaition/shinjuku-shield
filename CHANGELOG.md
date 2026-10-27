@@ -4,6 +4,27 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-27: wallet release `dc0b6b99`, npm `shinjuku@0.3.114` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.113 and these:
+
+- A refund notice names the payment it belongs to ("for the payment to
+  example.com"), and the list of refunds on their way names the seller too.
+  Before, two refunds side by side could read as one conflict.
+- A refund notice stays until an answer shows it, also when the agent app
+  starts the wallet again between answers. Answers to an AI question carry
+  refund notices too. Before, some notices were lost.
+- The agent keeps request ids to itself in every answer that carries one.
+- A payment answers sooner after the seller answers: the wallet checks older
+  refunds while the seller works. Before, that check could add up to 3
+  seconds after the seller answered.
+- A payment during a private send in parts waits for one step of a part, not
+  the whole part. Before, a payment or an AI question could wait about 30
+  seconds.
+
 ## 2026-10-27: wallet release `bfaedd12`, npm `shinjuku@0.3.113` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
