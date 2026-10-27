@@ -4,6 +4,39 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-27: wallet release `3163c1c6`, npm `shinjuku@0.3.108` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.107 and these:
+
+- Install the terminal command with `npm install -g shinjuku@0.3.108`, then
+  type `shinjuku setup`. The npm page now shows these two lines first.
+- The first payment after the agent app starts the wallet no longer waits
+  about one second for the seller search: the wallet reads and writes its
+  saved seller lists in small steps, and never while a payment runs.
+- When a seller's payment offer cannot be paid (another network or token, or
+  no fee payer), the answer says why, says that nothing was paid, and says to
+  pay another seller.
+- Each refund on its way names the request id of its payment, so an answer
+  about one payment never shows another payment's refund as its own.
+- A shield asked again with the request id of a finished shield says that
+  this call moved nothing, and to use a new request id.
+- While a private send still has payments to go, the balance answer names
+  it: its request id, how much is sent and left, and when the next payment
+  goes. The agent no longer asks you for the send's id.
+- When the `node` command is older than Node.js 22, the first line says
+  which Node it found, where, and to install Node.js 24.
+- `shinjuku` with no command starts with `setup`. The terminal says "this
+  wallet's own key" for the address the wallet receives on, so it is not
+  mixed up with your own address from setup.
+
+Open in this version (no money is lost): when other payments or sends run
+while a private send waits between its payments, its last payment can wait
+until you cancel it. The value stays private, and a cancel gives it back to
+the balance. The fix comes in a later release.
+
 ## 2026-10-27: wallet release `28821f7e`, npm `shinjuku@0.3.107` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays

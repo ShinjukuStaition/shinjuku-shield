@@ -12,8 +12,13 @@ This is version {{VERSION}}. The npm packages `shinjuku-shield` and
 ## Set up
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@{{VERSION}} setup
+npm install -g shinjuku@{{VERSION}}
+shinjuku setup
 ```
+
+Type the two lines as they are. `npx install shinjuku` does not work: npx
+reads `install` as the name of another npm package. To set up without
+installing, type `npx shinjuku@{{VERSION}} setup`.
 
 Setup makes the wallet on this machine, a private passphrase file, and the
 checked proof tools (about 191 MB), and writes `config.json`. It also writes
@@ -23,13 +28,8 @@ server to that host's config.
 
 ## The `shinjuku` command
 
-```sh
-npm install -g --no-audit --no-fund shinjuku@{{VERSION}}
-shinjuku help
-```
-
 Every wallet command works after `shinjuku`, for example `shinjuku balance`,
-`shinjuku chat` or `shinjuku infer start`.
+`shinjuku chat` or `shinjuku infer start`. `shinjuku help` lists them.
 
 ## Add it to your agent host
 
@@ -85,7 +85,7 @@ which wallet paid. The wallet keeps no copy of a conversation.
 
 ## Needs
 
-- Node.js 22.21 or later, or Node.js 24 or later (a `--tor` run needs `NODE_USE_ENV_PROXY`, which Node.js 23 does not have).
+- Node.js 22.21 or later, or Node.js 24 or later (`node --version` shows yours; a `--tor` run needs `NODE_USE_ENV_PROXY`, which Node.js 23 does not have).
 - Linux, or Windows with WSL. macOS is not supported: the provers are Linux
   programs.
 - Tor, for private AI (and for `--tor`).
