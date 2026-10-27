@@ -417,7 +417,7 @@ yet.
 
 The stable version is 0.3.86 (pinned 2026-10-23), and every command here
 names it. Setup prints host lines that name this exact version. A candidate,
-0.3.110, is out for testing (npm tag `next`, 2026-10-27): [Status](#status)
+0.3.111, is out for testing (npm tag `next`, 2026-10-27): [Status](#status)
 and the [changelog](CHANGELOG.md) say what it changes.
 
 A later stable version gets its own row in the
@@ -721,8 +721,8 @@ our first customer and our live demo.
   [0.3.86 release notes](#release-0386).
   Hash: the `b650bf06` row of [Releases](#releases).
 - The stable version before it: wallet release `98296ff0` (npm 0.3.80).
-- Candidate (2026-10-27, not the stable version): wallet release `f6ab1c40`, npm
-  `shinjuku-shield@0.3.110` under the tag `next`. It fixes known issues 1 to 7 of
+- Candidate (2026-10-27, not the stable version): wallet release `ca9504f8`, npm
+  `shinjuku-shield@0.3.111` under the tag `next`. It fixes known issues 1 to 7 of
   0.3.86, shows a QR code for a deposit, takes any amount from 0.01 USDC in a
   terminal, keeps every tool text short enough for agent apps to read in full,
   asks "Use Tor?" when an agent app sets up the wallet, waits for your answer
@@ -736,7 +736,9 @@ our first customer and our live demo.
   A private send keeps the money that its next payments need, so its last
   payment no longer waits until you cancel it. The balance then says when
   one payment can use the change of your last payment, and a request id
-  that an earlier payment used gets one new request id named.
+  that an earlier payment used gets one new request id named. A new
+  deposit or send leaves its request id out, so an old send never answers
+  for a new one.
 - `shielded-exact` payments from the shielded balance: live on mainnet.
 - Float pay to any Solana x402 `exact` endpoint that takes USDC: live on
   mainnet since 2026-10-11 (wallet release `e3348092` and later). On
@@ -958,6 +960,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-10-27 (candidate, npm `next`) | [`3163c1c6`](https://shinjukustaition.com/wallet/3163c1c6/shinjuku-wallet.mjs) | `3163c1c64f3d99abd84b0d2914132a07377d9a5ad2c08f803bd75ca8f042a67c` | 8,295,891 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-27 (candidate, npm `next`) | [`b09cef56`](https://shinjukustaition.com/wallet/b09cef56/shinjuku-wallet.mjs) | `b09cef5660e803ffc955922b067c8e00b717853b994c096d2fc591053bd59378` | 8,328,905 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-27 (candidate, npm `next`) | [`f6ab1c40`](https://shinjukustaition.com/wallet/f6ab1c40/shinjuku-wallet.mjs) | `f6ab1c4098bf84c9d5af4dbbcbf9aa077430dd347aa14912fbaf571741bd314a` | 8,332,382 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
+| 2026-10-27 (candidate, npm `next`) | [`ca9504f8`](https://shinjukustaition.com/wallet/ca9504f8/shinjuku-wallet.mjs) | `ca9504f8356a05d2a1fc36428f6443419e6943406d11e201d4fa2ff9d6c84814` | 8,333,810 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
