@@ -4,6 +4,36 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-28: wallet release `b2d6f450`, npm `shinjuku@0.3.121` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.120 and these:
+
+- When a paid site cannot be reached, the answer tells your agent app never
+  to reach that site on its own (with its own tools that would show your IP
+  address to the site), and not to try again at once. It says why when the
+  wallet can tell, and what you can do. The agent app also gets this rule
+  when it starts. Before, an agent app could offer to check the site without
+  Tor.
+- With a private balance of 0, a payment or an AI question above your limit
+  says that the balance is 0 and how to add money. It no longer asks you
+  "Allow it once?" first, a question whose yes could not pay.
+- The private AI address for your other AI apps, and the agent app answers,
+  no longer show internal codes of the wallet.
+- When Tor on your computer keeps closing connections with no answer, the
+  wallet stops after a few tries and says to check that Tor runs. Before, it
+  tried again with no limit until the request's time ran out.
+- `shinjuku infer` above `--max-payment`, `shinjuku limits` with less than
+  the 0.001 USDC fee left, and `shinjuku chat` with a limit too small for one
+  answer say so in plain words, and the chat says it when it starts.
+- The lists of paid services that the wallet searches for you are kept for
+  up to 24 hours. A new start downloads a list only when its copy is older than
+  that, and a search answers at once from an older copy while a new one
+  downloads. Before, each start more than 10 minutes after the last download
+  fetched about 25 MB again, at the time of a first payment.
+
 ## 2026-10-28: wallet release `967a5d2f`, npm `shinjuku@0.3.120` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
