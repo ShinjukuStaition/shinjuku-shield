@@ -4,6 +4,31 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-28: wallet release `67cedf24`, npm `shinjuku@0.3.122` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.121 and these:
+
+- Your agent app is told, in every answer, never to reach a paid site or look
+  up its address on its own (no browser, no curl and no DNS lookup, also over
+  HTTPS), also when you ask for no Tor: that would show your IP address to the
+  site or to a DNS company. Before, an agent app asked to check a site without
+  Tor looked up its address itself.
+- With a private balance of 0, a payment or an AI question above your limit
+  says that the balance is 0 and how to add money, also when the last check of
+  your balance is more than a minute old: the wallet checks again first. Before,
+  it could still ask "Allow it once?". A wallet with money makes no extra
+  check, so payments are not slower.
+- A balance answer names the check it just made, not an older one.
+- "Allow it once?" for a payment that Shinjuku makes for you names the
+  seller's price and Shinjuku's fee apart, for example "the price 0.005 USDC
+  plus Shinjuku's fee 0.001 USDC".
+- The private AI address for your other AI apps says "your private balance is
+  0 USDC" when the wallet knows it is 0.
+- `shinjuku infer` shows each amount once ("--max-payment 0.005 USDC").
+
 ## 2026-10-28: wallet release `b2d6f450`, npm `shinjuku@0.3.121` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
