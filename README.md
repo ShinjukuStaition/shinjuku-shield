@@ -193,7 +193,8 @@ production, with real USDC, on 2026-10-23.
   window). Splits a send into pieces that leave at random times, so the
   amount and the time do not match one payment. The pieces go out in the
   background, even after your agent app closes. Ask: "Send 0.02 USDC to
-  my main wallet in 2 pieces within the next 10 minutes."
+  my main wallet in 2 pieces within the next 10 minutes." The candidate
+  0.3.116 no longer splits a send: each send leaves in one transfer.
 - **Send all of it** (`wallet_unshield`, `shinjuku unshield --amount all`). A
   balance from several deposits is readied by itself when you send all of it.
   You do nothing extra. Ask: "Send all of it."
@@ -417,7 +418,7 @@ yet.
 
 The stable version is 0.3.86 (pinned 2026-10-23), and every command here
 names it. Setup prints host lines that name this exact version. A candidate,
-0.3.115, is out for testing (npm tag `next`, 2026-10-27): [Status](#status)
+0.3.116, is out for testing (npm tag `next`, 2026-10-28): [Status](#status)
 and the [changelog](CHANGELOG.md) say what it changes.
 
 A later stable version gets its own row in the
@@ -721,8 +722,8 @@ our first customer and our live demo.
   [0.3.86 release notes](#release-0386).
   Hash: the `b650bf06` row of [Releases](#releases).
 - The stable version before it: wallet release `98296ff0` (npm 0.3.80).
-- Candidate (2026-10-27, not the stable version): wallet release `148b3f52`, npm
-  `shinjuku-shield@0.3.115` under the tag `next`. It fixes known issues 1 to 7 of
+- Candidate (2026-10-28, not the stable version): wallet release `458187f8`, npm
+  `shinjuku-shield@0.3.116` under the tag `next`. It fixes known issues 1 to 7 of
   0.3.86, shows a QR code for a deposit, takes any amount from 0.01 USDC in a
   terminal, keeps every tool text short enough for agent apps to read in full,
   asks "Use Tor?" when an agent app sets up the wallet, waits for your answer
@@ -745,7 +746,12 @@ our first customer and our live demo.
   the whole part. A refund notice names its payment and stays until an
   answer shows it. A send that the agent app cut finishes at the next
   start without holding up the first payment, and a part that finishes
-  before the chain marks it final waits and tries again.
+  before the chain marks it final waits and tries again. A new private
+  send leaves in one transfer, and a terminal send of money you received
+  goes straight to the address. The wallet reads the chain before it says
+  your balance is 0, and a terminal command with no money says how to add
+  money before it asks anything. The words of an answer name no tool
+  and no field. The history reads go in fewer, shared requests.
 - `shielded-exact` payments from the shielded balance: live on mainnet.
 - Float pay to any Solana x402 `exact` endpoint that takes USDC: live on
   mainnet since 2026-10-11 (wallet release `e3348092` and later). On
@@ -972,6 +978,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-10-27 (candidate, npm `next`) | [`bfaedd12`](https://shinjukustaition.com/wallet/bfaedd12/shinjuku-wallet.mjs) | `bfaedd12d120b4b5421cdf6c9c06b07b7e338fd6d4e74b7225f2a0d3aa150cf4` | 8,339,853 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-27 (candidate, npm `next`) | [`dc0b6b99`](https://shinjukustaition.com/wallet/dc0b6b99/shinjuku-wallet.mjs) | `dc0b6b99ced49b6c454c44c8b92ee46d77d38d5fdabcf44154b4200894425006` | 8,345,095 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-27 (candidate, npm `next`) | [`148b3f52`](https://shinjukustaition.com/wallet/148b3f52/shinjuku-wallet.mjs) | `148b3f5279bf4b0914aa076c617b9fd51956480a57058dfee4492c208fd72e7a` | 8,348,544 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
+| 2026-10-28 (candidate, npm `next`) | [`458187f8`](https://shinjukustaition.com/wallet/458187f8/shinjuku-wallet.mjs) | `458187f8965d771cfb6028f26b902dea88f170e8d38c3943d7e3b3d5d1625593` | 8,387,014 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
