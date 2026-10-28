@@ -4,6 +4,43 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-28: wallet release `458187f8`, npm `shinjuku@0.3.116` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.115 and these:
+
+- A private send leaves in one transfer. The wallet no longer splits a send
+  into parts at random times. A send in parts that an older version started
+  still finishes.
+- In a terminal, a send of money you received goes straight to the address.
+  Before, the terminal first paid the wallet itself, and the send took longer.
+- Before the wallet says your private balance is 0, it reads the chain. In a
+  terminal, `infer`, `curl` and `unshield` check the balance before the first
+  question. At 0 they say how to add money. Before, you could answer every
+  question and then learn that there was no money.
+- A payment or an AI question with no money says that nothing was paid and
+  how to add money. Before, the AI chat said that it may be paid already.
+- The words that an answer gives you name no tool and no field. They say
+  what to ask for in plain words, for example "ask me to add funds".
+- A balance of payments you received says that you can send them to a
+  wallet address, and the receipts list each received payment. Before, the
+  balance said that no payment could use them yet.
+- A balance that the wallet still reads shows your public USDC and how to
+  make it private.
+- A spending limit says where it was set. When no limit is set, setup and the
+  balance say how to set one in a terminal.
+- When the wallet is not set up, its status says so and offers setup.
+- The AI chat shows one price in its banner.
+- When a seller offers several ways to pay, the wallet picks Solana USDC.
+- The wallet accepts a seller's payment terms that name the address you asked
+  for with its query items in another order. Before, it refused them.
+- The wallet reads the pool history in fewer requests, and two reads at the
+  same time share them. The first payment stays fast when the pool history
+  grows past 4,096 records. Each history request has a random number, so
+  requests over Tor do not link by their numbers.
+
 ## 2026-10-27: wallet release `148b3f52`, npm `shinjuku@0.3.115` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
