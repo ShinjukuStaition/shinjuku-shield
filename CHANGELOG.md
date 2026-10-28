@@ -4,6 +4,41 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-28: wallet release `27af600c`, npm `shinjuku@0.3.119` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.118 and these:
+
+- `shinjuku setup` in a terminal opens with the Shinjuku animation before its
+  first question. Any key skips it. A setup with `--yes` does not play it.
+- When your own spending limits are below what a payment needs, every answer
+  gives one step: `shinjuku limits`. Before, some answers asked you to raise a
+  limit for one command, and the wallet then refused that payment anyway. A
+  limit for one command above your own spending limits is refused before
+  anything starts.
+- Your limit for any 24 hours now counts every payment of the wallet, also
+  after you restart the private AI address or the terminal chat, and also for
+  `shinjuku infer`, `shinjuku curl` and `shinjuku pay`. When the limit is
+  reached, the answer says to wait or to run `shinjuku limits`.
+- The terminal chat shows the room you have left in your 24-hour limit,
+  counted over every payment of the wallet, and stops before a payment that
+  would not fit. Before, it showed its own room only.
+- `shinjuku balance` also shows USDC on the wallet's own public address that
+  is not private yet, and how to make it private.
+- `shinjuku infer` counts Shinjuku's 0.001 USDC fee in its first check, so a
+  limit of 0.01 USDC per answer is refused before anything starts, with the
+  limit that works (0.011 USDC).
+- When the private AI address for your other AI apps cannot pay because of
+  your spending limits or an empty balance, its answer says that nothing was
+  paid and gives the command that works. Before, it could say that a payment
+  may have gone out, or give a server error.
+- While your agent app pays, the wallet pauses its download of the list of
+  paid APIs, and continues it after the payment.
+- The agent's texts use plain words. A balance check is always safe: it starts
+  no payment.
+
 ## 2026-10-28: wallet release `ec36e97e`, npm `shinjuku@0.3.118` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
