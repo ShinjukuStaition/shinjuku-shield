@@ -4,6 +4,27 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-28: wallet release `ec36e97e`, npm `shinjuku@0.3.118` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.117 and these:
+
+- The QR code of a deposit address shows in the chat: as a picture in an app
+  that shows pictures, and as text in a terminal. The wallet no longer saves
+  it as a file and gives you the file's path. `shinjuku add-funds` no longer
+  prints an image path under its QR code.
+- When the search for paid APIs could read only part of a long seller list,
+  the answer says how much of that list it searched.
+- When the private AI address for your other AI apps has a limit per answer
+  below 0.011 USDC (the AI provider's standard 0.01 USDC payment plus the
+  0.001 USDC Shinjuku fee), each answer about it says so and gives the exact
+  command that raises the limit, for the place your limit came from.
+- The agent does not tell you the names of the wallet's tools, fields or
+  codes, unless an answer asks it to pass a code on. The wallet's texts name
+  Shinjuku where they used a technical word for our payment service.
+
 ## 2026-10-28: wallet release `396cdf6f`, npm `shinjuku@0.3.117` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
