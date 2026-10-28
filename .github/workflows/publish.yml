@@ -88,9 +88,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # Every curl in this file has a time limit and retries: one stalled download (2026-10-28) waited until
+          # the job limit cancelled the run.
           if [[ "$DIST_TAG" == "latest" ]]; then
             # The pin: the release the site names as its current one.
-            curl -fsS --proto '=https' --tlsv1.2 "$SITE/api/wallet/release" -o "$RUNNER_TEMP/release.json"
+            curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 60 --retry 3 --retry-all-errors \
+              "$SITE/api/wallet/release" -o "$RUNNER_TEMP/release.json"
             served_dir=$(jq -r '.wallet.dir' "$RUNNER_TEMP/release.json")
             served_sha=$(jq -r '.wallet.sha256' "$RUNNER_TEMP/release.json")
             served_bytes=$(jq -r '.wallet.bytes' "$RUNNER_TEMP/release.json")
@@ -98,14 +101,15 @@ jobs:
           else
             # A candidate: served in its own folder beside the pin; the site's current release stays the pin, so wallets
             # on the pin get no update notice for it.
-            curl -fsS --proto '=https' --tlsv1.2 "$SITE/wallet/$RELEASE/manifest.json" -o "$RUNNER_TEMP/release.json"
+            curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 60 --retry 3 --retry-all-errors \
+              "$SITE/wallet/$RELEASE/manifest.json" -o "$RUNNER_TEMP/release.json"
             served_sha=$(jq -r '.sha256' "$RUNNER_TEMP/release.json")
             served_bytes=$(jq -r '.bytes' "$RUNNER_TEMP/release.json")
           fi
           [[ "$served_sha" =~ ^[0-9a-f]{64}$ && "$served_sha" == "$RELEASE"* ]] || { echo "::error::site sha256 $served_sha does not start with $RELEASE"; exit 1; }
           [[ "$served_bytes" =~ ^[0-9]+$ ]] || { echo "::error::site bytes is not a number"; exit 1; }
 
-          curl -fsS --proto '=https' --tlsv1.2 \
+          curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 60 --retry 3 --retry-all-errors \
             -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github.raw" \
             "$HASH_README_API" -o "$RUNNER_TEMP/hash-readme.md"
           # Releases table row: | date | `sha8` or [`sha8`](url) | `sha256` | bytes | ...
@@ -125,7 +129,8 @@ jobs:
         run: |
           set -euo pipefail
           for f in shinjuku-wallet.mjs LICENSE.txt THIRD_PARTY_NOTICES.txt manifest.json; do
-            curl -fsS --proto '=https' --tlsv1.2 "$SITE/wallet/$RELEASE/$f" -o "$f"
+            curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 60 --retry 3 --retry-all-errors \
+              "$SITE/wallet/$RELEASE/$f" -o "$f"
           done
           echo "$SHA256  shinjuku-wallet.mjs" | sha256sum -c -
           [[ "$(stat -c %s shinjuku-wallet.mjs)" == "$BYTES" ]] || { echo "::error::wallet size differs from the site"; exit 1; }
