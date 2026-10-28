@@ -4,6 +4,36 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-28: wallet release `967a5d2f`, npm `shinjuku@0.3.120` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.119 and these:
+
+- On Windows, `shinjuku setup` in a terminal no longer loses your first Enter
+  at its second question. The opening animation does not read keys on
+  Windows; Ctrl+C still ends it. On other systems any key still skips it.
+- `shinjuku curl` checks your spending limits before it asks you to pay. When
+  a limit has no room for the price, it says which limit and what to do, and
+  asks nothing. Before, it asked, and refused only after you answered y.
+- When you choose Decline at "Allow it once?" (or close the question), the
+  answer says only that you did not allow the payment and that nothing was
+  paid. Before, it also kept the limit's own refusal, and an agent app could
+  report a second reason that was not true.
+- `shinjuku infer` refuses a payment limit below the least an AI answer costs
+  before it reads your balance, so the answer comes at once.
+- When a payment would pass your limit for any 24 hours, the terminal shows
+  the plain sentence only, with no internal code.
+- When a payment needs more than is left of one of your limits, the step
+  names that limit and the least it needs, not a higher maximum for the
+  command (which the wallet would refuse again).
+- `shinjuku limits` shows what is left now of your limits for any 24 hours
+  and for all payments, and says when that is too little for an AI answer.
+- The private AI address for your other AI apps answers an empty or low
+  balance and a reached limit with the standard code these apps know
+  (`insufficient_quota`), so they show the message and do not retry.
+
 ## 2026-10-28: wallet release `27af600c`, npm `shinjuku@0.3.119` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
