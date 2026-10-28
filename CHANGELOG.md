@@ -4,6 +4,31 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-28: wallet release `396cdf6f`, npm `shinjuku@0.3.117` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.116 and these:
+
+- The search for paid APIs reads the public seller lists through Shinjuku's
+  own copies of them. Before, with Tor on, two of the lists refused the
+  search, so it skipped them. Now every list works with Tor, and no list
+  host sees your search. Your search words still stay on your machine.
+- When a list cannot be read, the answer says which list was not searched.
+- When your limit for one AI answer is below 0.01 USDC, the AI chat says why
+  no answer can start and the one step that works. The `limits` command
+  says so when you set such a limit.
+- The price check of a paid URL says when your private balance is too low to
+  pay it, before you say yes.
+- After you decline an "Allow it once?" question, the agent says that you
+  declined it. It does not ask you whether a question showed.
+- When you ask for the AI models with no question, the answer lists them
+  with their notes and the price of a default answer. It says when your
+  limit or your balance is too low for an answer.
+- A balance of 0 says that nothing can be paid yet and how to add money.
+- The wallet deletes its old copies of the seller lists (about 80 MB) once.
+
 ## 2026-10-28: wallet release `458187f8`, npm `shinjuku@0.3.116` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
