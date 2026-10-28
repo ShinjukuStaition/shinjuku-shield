@@ -4,6 +4,28 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-28: wallet release `916f76a4`, npm `shinjuku@0.3.123` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.122 and these:
+
+- `shinjuku curl` with a `--max-payment` above your own limit stops at once
+  and says so. Before, it first asked the site for its price, which took
+  about 6 seconds over Tor.
+- A payment that stops at a limit says it in one plain sentence: the price,
+  your limit, that nothing was paid, and what to do next (`shinjuku limits`
+  shows your limits and asks for new ones). Before, it could print only an
+  error code, or name an internal id.
+- When a payment that Shinjuku makes for you is above your limit, "Allow it
+  once?" and the answer after Decline name the seller's price and Shinjuku's
+  fee apart, for example "the price 0.005 USDC plus Shinjuku's fee 0.001
+  USDC".
+- The private AI address for your other AI apps says "your private balance
+  is 0 USDC" when the wallet just checked and found nothing, also right
+  after you start it.
+
 ## 2026-10-28: wallet release `67cedf24`, npm `shinjuku@0.3.122` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
