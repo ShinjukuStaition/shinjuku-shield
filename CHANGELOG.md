@@ -4,6 +4,196 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-29: wallet release `885a1cb2`, npm `shinjuku@0.3.124` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.123 and these:
+
+### Fixed
+
+- Asking again for a paid request could pay twice. After you allowed a payment
+  once and the seller failed, a second call of the same request now sends the
+  same payment again or gives back its saved answer. It never pays more than
+  the first payment. It never says "Nothing was paid" for a request that
+  already has a payment, and it gives no new request id for it. This also
+  holds after the wallet restarts and in the AI chat.
+- A request that you closed now says "this request was closed earlier". It
+  no longer loops on "Ask again".
+- A request id that another unfinished request uses, with nothing sent yet,
+  now says so: "Nothing was paid: another request has this id and X USDC set
+  aside." It offers two steps: finish that request, or close it and send
+  yours. Before, it said only "Ask again to pay for this one".
+- A payment that is ready but was never sent now says so ("Nothing was sent: a
+  payment of X USDC is prepared") and names the same request. You can send it,
+  or cancel it first. This also holds for one that an older version of the
+  wallet made ready.
+- Cancel now gives your spending room back for a request that was never sent,
+  and for a sent one that the wallet proved can never arrive.
+- A payment that the wallet made ready but never sent now follows the
+  limits you have now. Before, it was sent with no check. Above your limit
+  for one payment, your AI app asks "Allow it once?" first: a yes sends
+  that same payment, never a second one, and a no sends nothing.
+  `shinjuku curl` asks "Pay X USDC for ...? [y/N]" first. Above a limit
+  that you lowered with `shinjuku limits` after the payment was made ready,
+  and in `shinjuku infer`, `shinjuku pay`, `shinjuku chat` and the local AI
+  address, the wallet stops, sends nothing, and says how to raise the limit
+  or close the payment. This also holds for such a payment that an older
+  version of the wallet made ready.
+- A payment that was made ready but whose price offer ran out before it
+  was sent can never be sent. The wallet now says so at once, with no
+  "Allow it once?" question, and tells you to close it before you try
+  again: in your AI app, in the terminal, in the AI chat and at the local
+  AI address (HTTP 402, not 500). Before, no answer said what happened.
+- A payment that the wallet made ready but never sent now also stays
+  inside your limit for all payments together. Above that limit, the
+  wallet sends nothing and does not ask: raise the limit with
+  `shinjuku limits`, or cancel the request.
+- Cancel now closes every payment that is ready but was never sent.
+  Before, it said there was nothing to close for some of them. Cancel
+  gives your spending room back, and the wallet never sends that request
+  after it.
+- `shinjuku cancel` now takes the request id that you paid with, also for
+  a payment that Shinjuku makes for you.
+- `shinjuku cancel` for a payment that it cannot close printed only an
+  error code. It now says why and what to do next: the payment is finished
+  and paid, it never went through (pay again with a new request id if you
+  still want it), it was paid to Shinjuku (run the command that started it
+  again, with the same request id; it never pays twice), or this wallet has
+  no payment with that id.
+- A payment that Shinjuku makes for you, whose first step never went
+  through, now ends with nothing paid. The wallet does not send it to the
+  seller again, and it does not count against your limit for one seller
+  site. Your balance no longer shows a refund for it. Asking for the same
+  request again says that nothing was paid, and gives the earlier answer
+  when there is one. Cancel now says the same: nothing was paid and nothing
+  comes back. Before, it could say that the payment was finished and paid,
+  or that a refund was coming.
+- A payment that an earlier run of the wallet sent, and that this run
+  finishes, now counts once: in your 24-hour limit, not again in the limit of
+  this run.
+- After a seller refused a payment, the wallet waited up to 8 seconds and then
+  still said "not certain". It now answers within about 1 second. Your
+  receipts and your balance show the result later.
+- A balance that the wallet is checking again now says so: "Your last known
+  balance is X USDC private; the wallet is checking it now. Ask again in about
+  30 seconds." A refund that arrived no longer shows as "coming".
+- Short answers in your AI app were cut in the middle of a sentence. The
+  wallet now drops whole sentences, never part of one.
+- A wallet with missing setup files said that a standard USDC payment could
+  still work. That was false: every payment needs the setup files. It now says
+  one sentence: run `shinjuku setup` in a terminal, then reconnect the wallet.
+  Every message now calls these files "setup files".
+
+### Changed: paying more than your limit ("Allow it once?")
+
+- When a request asks to pay more than your limit for one payment, the wallet
+  reads the price first. A price inside your limit pays with no question. A
+  price above it asks you once, and the question shows the price and the fee
+  apart. Your yes covers that total only. Before, the wallet asked before it
+  knew the price.
+- The wallet asks only when a yes can pay. When your 24-hour limit or another
+  limit would still stop the payment, the answer names that limit and what
+  works, with no question. When your saved balance is below the total, it
+  says so, with no question.
+- A yes now pays in a wallet whose limits you set with `shinjuku limits`.
+  Before, the wallet's own check refused the payment after your yes. A yes
+  never lifts your total limit for all payments.
+- A yes is kept for the same web address only. Another page of the same site
+  asks again. A new question for a request removes an earlier yes for it.
+- When the time for a call runs out while the question is open, the wallet
+  tells your AI app to close the question and pays nothing. When your AI app
+  stops the call, the same happens. A new call opens a new question.
+- In the AI chat, the question shows the most that an answer can cost plus
+  the fee, and your yes covers that total. An answer that would cost more is
+  refused with your real limit named. The 24-hour limit no longer stops an
+  answer that it can pay. A refusal suggests a shorter answer or a cheaper
+  model. The chat names the AI service, not "this seller".
+- When the wallet offers a new request id, it now says to use it only if you
+  still want that request.
+- The limit for one seller site in 24 hours now counts the payments that
+  Shinjuku makes for you by the seller's site, at the price plus the fee.
+  Before, it counted them under Shinjuku's own site.
+
+### Changed: AI answers (`shinjuku chat`, `shinjuku infer`, and the local AI address for your apps)
+
+- A private AI chat can now pay an AI service that offers both a private
+  payment and a standard USDC payment: Shinjuku pays it for you. Before, the
+  chat refused that service. A service that offers only a private payment is
+  refused, as before.
+- A request that your app sends again with the same request key
+  (`Idempotency-Key`) to a restarted local AI address now gets its first
+  payment's answer and pays nothing more. Before, it got a limit refusal.
+  `shinjuku infer --request-id` with a held id finishes or replays its own
+  payment at a lower `--max-payment`.
+- When Shinjuku cannot take a payment, the chat, `shinjuku infer` and the
+  local AI address say what happened in plain words, with one step: another
+  model, try again in about 5 seconds, or run setup and restart. The local AI
+  address answers HTTP 402, or 503 when Shinjuku cannot take a payment now,
+  not 500.
+- A request id that is already in use is now explained by what that request
+  did: a payment that left (with its amount), a payment that is prepared and
+  not sent, an earlier try that is not finished (close it first), or a
+  closed request. Each answer gives the step that works. The chat's last
+  error line no longer ends in a code. For a payment that is ready but not
+  sent yet, it says so, with `/retry` (it sends that same payment, never a
+  second one) and the close step.
+- `shinjuku infer` and the local AI address now measure a payment that is
+  ready but was never sent at its own amount, not at the most that the
+  answer could cost. When the `--max-payment` that you typed is below that
+  amount or above your limits, the next step names `--max-payment` at that
+  amount.
+
+### Changed: words
+
+- In `shinjuku curl`, the errors and the terminal hints, plain words replace
+  the payment type names: "a private payment", "a standard USDC payment" and
+  "hidden-amount payments". The `shinjuku curl` paid line now says "paid X
+  USDC from your private balance in transaction S (the chain does not show
+  who paid)", or "Shinjuku paid the seller for you".
+- A seller that takes too long to charge now gets: "This seller takes too
+  long to charge, so it cannot be paid. Not known yet whether your X USDC
+  comes back. Nothing to do now." Before, it said the money "comes back if
+  the charge failed", which you could not check.
+- A token send whose saved record cannot be read now says that nothing moved
+  in this call and that you can start a new send.
+- `shinjuku balance --refresh` and `shinjuku recover` with `--rpc-file` now
+  keep your RPC address in your file. Before, they passed it on as a typed
+  address and printed a warning that told you to use `--rpc-file`, which
+  you already did.
+- `shinjuku pay` and `shinjuku unshield` with `--rpc-file` now send their
+  chain reads to your own RPC. Before, some of these reads still went to
+  Shinjuku's server. The public payment history that the wallet checks
+  still comes from Shinjuku's history service unless you add
+  `--history-rpc own`.
+- `shinjuku unshield` with your RPC address in `UNDERMARKET_SOLANA_RPC_URL`
+  no longer prints a warning about `--rpc` after the send.
+- The 24-hour limit message now names `shinjuku limits`.
+- When a payment is above your limit for one payment, or above what is left
+  of your limit for all payments together, the answer in your AI app now
+  names that limit and the amount, not an error code.
+- `shinjuku curl`, `balance`, `pay`, `setup`, `infer`, `chat` and the other
+  commands print their progress paragraphs only with `--verbose`. An answer
+  that you save with `> file` no longer fills the terminal.
+
+### Changed: the terminal home screen
+
+- A new opening animation in the brand colors, with the shield mark. It ends
+  on "SENDER HIDDEN" (nothing is paid at the opening). It takes about 3
+  seconds.
+- The home screen says SHINJUKU SHIELD and shows your data sooner. The shield
+  mark now shows in a standard 120 x 30 terminal window, and every line fits
+  from 80 columns.
+- The home screen shows which AI apps use this wallet. With Tor off, it says
+  that your internet address is not hidden. A wallet that opens only with its
+  passphrase says that your AI app cannot open it.
+- Plain labels: "[u] send money out", "only you hold your keys", "last
+  payments".
+- The key `c` ("connect an agent") now adds the wallet only to the AI app you
+  pick. It then tells you to restart that app and ask "what is my balance".
+  Before, it ran the full setup.
+
 ## 2026-10-28: wallet release `916f76a4`, npm `shinjuku@0.3.123` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
