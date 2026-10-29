@@ -4,6 +4,52 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-29: wallet release `ffeec7cc`, npm `shinjuku@0.3.126` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.125 and these:
+
+### Fixed
+
+- A refund after a seller fails no longer waits behind a long read of the
+  payment history. Right after a payment, the chain can list it about a
+  second after it shows it; the wallet now reads again twice, one second
+  apart, with every check, before it reads the whole history. Before, a
+  refund could take more than 8 minutes.
+- A failed transaction now counts as failed only when the chain has made it
+  final. A refund and a deposit no longer give up on a transaction that
+  could still go through.
+- When a seller refuses a paid request with only "payment required", the
+  wallet now shows the seller's own, more exact reason when the seller sends
+  one.
+- When a seller answered with errors and you ask again too late for the
+  payment to reach it, the wallet now says what the seller answered, for
+  example "The seller answered an error (HTTP 503)." Before, it said that the
+  seller did not answer in time. An answer that only accepted the request and
+  sent no data is no longer called an error.
+- With an add-funds address already open, every answer now says that the
+  address takes at least 0.01 USDC, and that less than that waits at the
+  address until more arrives, with nothing lost. Before, your AI app could
+  tell you to send less.
+- When what is left of a limit is no more than Shinjuku's 0.001 USDC fee, the
+  wallet no longer tells you to look for a cheaper seller: no price fits
+  there. It names the limit and how to change it.
+
+### Changed
+
+- Private AI answers now give one price everywhere: "about 0.00312 USDC, at
+  most 0.011 USDC" for a short question with the default model. That is what
+  such an answer paid in every test, plus the most one answer can cost. Other
+  models and lengths show only the most. Before, the terminal chat, a chat
+  with a low limit and your AI app named three different numbers.
+- The home screen now lists an AI answer under "last payments" as
+  "private AI: qwen3-8-flash" (the model's name), as your receipts do. Before, it showed the AI
+  provider's web address.
+- The home screen now says "waiting for 0.05 USDC" (your amount) while an
+  add-funds address waits for its USDC. Before, it said adding funds "none".
+
 ## 2026-10-29: wallet release `48f5c8ab`, npm `shinjuku@0.3.125` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
