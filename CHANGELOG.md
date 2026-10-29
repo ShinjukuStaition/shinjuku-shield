@@ -4,6 +4,85 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-29: wallet release `48f5c8ab`, npm `shinjuku@0.3.125` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.124 and these:
+
+### Fixed
+
+- On the first screen of a new install, the key `r` now restores a
+  wallet: it asks for your recovery file, makes the wallet again with a new
+  passphrase, finishes setup, and reads your money back from the chain. A
+  restore that stops goes on where it stopped; if you stop its setup with
+  Ctrl-C, it says that the same command goes on from there. Before, `r`
+  printed a long page of technical steps.
+- On Windows, restore no longer refuses a recovery file that you
+  copied to a new place, such as your Desktop or a USB drive. It asks "Make it
+  readable by you alone now? [Y/n]" and locks the file as setup does.
+- A restore that finds 0 USDC now gives the add-funds step next.
+- With a private balance of 0 USDC, the home screen keys `u` (send
+  money out) and `p` (pay a link), `shinjuku unshield`, `shinjuku curl` and
+  `shinjuku infer` now read your balance once, say that it is 0 and what the
+  link costs, and give the add-funds step. They ask no question and pay
+  nothing. This also holds while an add-funds deposit is still waiting for
+  its USDC. Before, they asked for an amount, an address or a "y" first.
+- With Tor on, a payment keeps its connection to the seller for up to
+  20 seconds while the wallet makes the payment proof. Some sellers refused a
+  payment that came on a new connection; the money came back, but you got no
+  data. A kept connection never moves to another Tor route.
+- When a seller fails and you ask again later, the wallet no longer
+  sends Shinjuku's transfer to the seller once it is too close to its end (a
+  transfer on Solana lasts about 30 seconds after it is signed). It says so:
+  if the seller did not take it, the money comes back to your private balance
+  by itself, usually about 2 minutes after the payment (up to about 7). Do not
+  pay again until then.
+- Private AI answers now name three numbers apart: what an answer
+  usually costs (about 0.003 USDC for a default answer), the most one answer
+  can cost (0.011 USDC), and the smallest limit for one payment that an AI
+  answer needs (0.01 USDC, a limit and not a price). Before, your AI app could
+  take that limit for the price.
+- Adding less than 0.01 USDC now says that you can add 0.01 to 5 USDC
+  at one time. Before, it said only "Nothing was paid or moved." Other answers
+  that said only that line now say why: a note that is too long, a token
+  transfer that cannot run, a wallet file that cannot be read at that moment
+  (ask again in a minute), and a wallet from an older version.
+- The price check now gives the same answer as the payment. Above
+  your limit for one payment, it says the price and that your AI app asks you
+  to allow it once if you ask to buy it. Near your 24-hour limit, it names
+  that limit and what is left of it. It also checks the limits saved in your
+  wallet.
+- When your AI app answers the "Allow it once?" question without
+  showing it to you, the wallet now says so. Before, it said that a yes for
+  another payment had replaced yours.
+- Your receipts now say when a refund was sent, and whether it is
+  final on chain yet. Before, they could say "on its way" for about a minute
+  after the refund arrived.
+
+### Changed
+
+- `shinjuku limits` now says where a low limit for one payment stops
+  AI answers: the AI in your terminal (`shinjuku chat` and `shinjuku infer`)
+  needs a limit of at least 0.01 USDC, and your AI app can ask you to allow
+  an answer above the limit, one answer at a time. After you decline an AI
+  answer or a payment, your AI app gives the limit that stops these
+  questions only if you ask for that.
+- A wallet that holds only money it received no longer says that a
+  payment can spend it. A payment, the price check and the list of AI models
+  now say that this money can pay a seller only after you add funds once
+  (0.01 USDC or more), and they ask nothing. You can still send it to a
+  wallet address, one received payment at a time.
+- The home screen also shows the USDC that is public on your
+  wallet's own address: the amount from the last finished read by
+  `shinjuku balance` or your AI app, how long ago that read was (for example
+  "read 12 min ago"), and the next step. The home screen itself still reads
+  nothing from the network, and shows no row before the first saved read.
+  `shinjuku balance --refresh` now reads that USDC at the same time as your
+  private balance, so over Tor it names that USDC more often, and its whole
+  answer comes sooner.
+
 ## 2026-10-29: wallet release `885a1cb2`, npm `shinjuku@0.3.124` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
