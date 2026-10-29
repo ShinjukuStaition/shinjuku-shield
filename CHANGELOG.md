@@ -4,6 +4,43 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-29: wallet release `487128ca`, npm `shinjuku@0.3.127` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.126 and these:
+
+### Fixed
+
+- Setup in your AI app now asks for your own wallet address (optional), as
+  the terminal setup does, and says where to find it: in Phantom or
+  Solflare, Receive shows it; at an exchange, use its USDC deposit address on
+  Solana. A send back to yourself then needs no address. When no address is
+  saved, a send says where to copy one.
+- The new command `shinjuku own-address` shows your saved address and lets
+  you replace or remove it, with a yes/no question first. A removal counts at
+  once, also in an AI app that is already open.
+- In Claude Code, the wallet's checks that move no money (balance, receipts
+  and the like) no longer ask "Do you want to proceed?" once you add the wallet
+  with `shinjuku setup --add-to claude-code` or the home screen key `c`.
+  Payments and sends still ask first. The wallet keeps a backup of the
+  settings file it changes, and you can undo this in Claude Code's
+  /permissions.
+- Claude Code's question before a wallet tool now shows the name
+  "Shinjuku Shield".
+- The add-funds wait says "next try in 20 s", not a machine time stamp.
+- The balance gives one amount you can spend, and names no parts of it. A
+  larger payment first gets the balance ready by itself.
+- `shinjuku unshield` prints "Sent" as soon as the money leaves, about 3 to 5
+  seconds sooner, and says "Transaction:", not "Exit transaction:". If you
+  close the window right after "Sent", the next `shinjuku unshield` finishes
+  the wallet's records first, and nothing is sent twice.
+- A send or payment that needs the wallet to join its balance goes on as
+  soon as the join is final, up to about 30 seconds sooner.
+- The home screen shows "waiting for" an amount while an add-funds address
+  from your AI app waits for its USDC. Before, it said "none".
+
 ## 2026-10-29: wallet release `ffeec7cc`, npm `shinjuku@0.3.126` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
