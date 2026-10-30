@@ -4,6 +4,38 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-30: wallet release `8f281d4a`, npm `shinjuku@0.3.130` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.129 and these:
+
+### Changed
+
+- A new wallet's first payment is faster: setup now does the one check of
+  the wallet program that the first payment did before (it took 6 to 10
+  seconds), and that check reads in parallel.
+- The wallet reads each part of the payment history once, and a payment
+  waits for the history read that is already running instead of starting a
+  second one.
+
+### Fixed
+
+- If a send stopped part way, the same plain command (`shinjuku unshield
+  all`, or a new send in your AI app) now finishes it first, to the address
+  you chose. It never sends twice. Before, the command said your balance was
+  0 and asked you to add money.
+- When Shinjuku is busy, a send waits and asks once more. If it still
+  cannot go on, it says in one plain sentence that nothing was sent and that
+  the same command goes on where it stopped.
+- A payment limit written as a count of the smallest USDC units (10000 for
+  0.01 USDC) is now refused also in a newly started AI app.
+- Setup on a wallet that uses Tor now asks before it replaces another
+  wallet's entry in Claude Code.
+- The end of a send no longer tells you to run a prepare step.
+- The home screen's payment list keeps the AI source in view, and a proxy
+  that does not answer is named in plain words.
 ## 2026-10-30: wallet release `1de148b9`, npm `shinjuku@0.3.129` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
