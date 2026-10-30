@@ -4,6 +4,28 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-30: wallet release `3c8b302d`, npm `shinjuku@0.3.131` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.130 and these:
+
+### Fixed
+
+- A send that stopped at any point, also after it was signed, now finishes
+  with the same plain command (`shinjuku unshield all`, `shinjuku balance`,
+  or a new send in your AI app), to the address you chose. It never sends
+  twice. The receipts say it is a send this wallet started itself.
+- Ask your AI app to "send my money back to my wallet": it now uses the
+  address you gave at setup and does not ask for it again.
+- Ask your AI app to sell or swap a token: it now finds the tool for it.
+- A limit you set with `shinjuku limits` now applies at the next payment in
+  an AI app that is already open, also a new 24-hour limit. No restart.
+- Setup now says how to switch Claude Code to manual mode, so that every
+  payment and send asks you first.
+- Setup now installs the newest `shinjuku` command at once, also in the
+  first minutes after a release.
 ## 2026-10-30: wallet release `8f281d4a`, npm `shinjuku@0.3.130` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
