@@ -4,6 +4,47 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-30: wallet release `821b09a3`, npm `shinjuku@0.3.128` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.127 and these:
+
+### Changed
+
+- A token transfer no longer asks you for SOL: Shinjuku pays the network fee
+  of the sale. Before Shinjuku signs, it checks the sale byte by byte, so its
+  fee key can pay for nothing else. What this shows: Shinjuku now sees which
+  token you sell and how much, and the chain shows Shinjuku's fee key beside
+  your key at the sale, as it already does when you make that USDC private.
+- A token transfer now sends your USDC in one transfer, not in parts at
+  random times. The amount sent never equals the sale's exact amount.
+
+### Fixed
+
+- If your Tor program is older than 0.4.9.13, the wallet now stops before it
+  sends anything and gives you the command to install a newer Tor. Older Tor
+  versions have a known fault that can link two of your payments.
+- A slow Tor connection no longer holds a payment for a minute: the wallet has
+  a spare Tor address for its history reads, and a slow download is no longer
+  cut and started again from zero.
+- In Claude Code and other AI apps, a send or a payment that first gets your
+  balance ready now answers within about 100 seconds. It says what has moved
+  so far, and asking again goes on with the same send. The time it gives is an
+  honest range.
+- The wallet pays nothing to a seller's address that misses a value the seller
+  says it needs, and it tells you which value to add.
+- Receipts say where an AI payment came from (terminal chat, AI app, local AI
+  address), and a refund shows as refunded as soon as it is confirmed. The
+  home screen shows every refund the same way.
+- When another app uses the wallet, the message names that app and says to
+  try again in a minute.
+- Setup's last lines give Claude Code the same one-line setup command as the
+  other apps, so its checks that move no money ask no question.
+- The balance no longer mentions other tokens when it could not read them in
+  time.
+
 ## 2026-10-29: wallet release `487128ca`, npm `shinjuku@0.3.127` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
