@@ -4,6 +4,46 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-30: wallet release `1de148b9`, npm `shinjuku@0.3.129` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.86` (wallet release `b650bf06`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.87 to 0.3.128 and these:
+
+### Changed
+
+- If an AI app gives a payment limit as a count of the smallest USDC units
+  (for example 10000 for 0.01 USDC), the wallet now refuses it and asks for
+  the limit in USDC. Before, it read 10000 as 10,000 USDC.
+- A paid answer now names the seller's price and Shinjuku's fee apart, so
+  your AI app does not call the fee a network fee.
+- The wallet waits less before it spends money left over from a payment.
+- A send to your own wallet can finish sooner: Shinjuku checks for the final
+  confirmation more often in the first seconds.
+
+### Fixed
+
+- Setup in a second wallet folder now asks once before it replaces the first
+  folder's wallet in Claude Code. If you say no, nothing changes. The first
+  wallet and its files are never touched.
+- "Send all my money back to my wallet" uses the address you saved at setup.
+  Your AI app no longer asks you to paste it.
+- When your AI app blocks a send, the wallet keeps the question for you and
+  adds no way around it. Setup says what Claude Code's auto mode does.
+- The home screen now reads your balance itself when it is not known yet, and
+  its payment list names where an AI payment came from first.
+- When recent payments are still settling, the balance says how much one
+  payment can use now and when the rest is ready.
+- Tor messages in the terminal are plain words. When Tor is off, an AI app
+  is told that any wallet tool can start it again. The message for a Tor that
+  is too old says how to stop the old one first, and on Linux the restart
+  command works without systemd.
+- A token transfer names the real amount of SOL it gets back when it closes
+  the token holder.
+- A refunded receipt names the private payment it came from.
+- Time ranges start at the least time a step can take, and the waits before a
+  payment say in plain words what the wallet waits for.
 ## 2026-10-30: wallet release `821b09a3`, npm `shinjuku@0.3.128` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
