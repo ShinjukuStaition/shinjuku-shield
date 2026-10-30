@@ -114,14 +114,15 @@ you also want to hide your IP address.
    Type the two lines as they are. `npx install shinjuku` does not work:
    npx reads `install` as the name of another npm package.
 
-   Setup asks two questions, Tor and private AI (Enter keeps the default).
+   Setup asks whether to use Tor and for your own wallet address (optional;
+   Enter keeps the default or skips).
    It makes the wallet on your machine and a private passphrase file, and
    downloads every proof file it needs (about 191 MB, checked by hash).
 
-2. **Add it to your agent host.** At the end, setup prints the exact line
-   for Claude Code and the config for Claude Desktop, Cursor and other MCP
-   hosts. Run the line, or paste the config, once. Your agent host then
-   starts the wallet by itself.
+2. **Add it to your agent host.** For Claude Code, run
+   `shinjuku setup --add-to claude-code` once. For Claude Desktop, Cursor and
+   other hosts, setup prints the config at the end: paste it once. Your agent
+   host then starts the wallet by itself.
 
 3. **Add money.** Ask your agent "Add 1 USDC to my private balance." It gives
    you a one-time address. Send USDC on Solana to it from any wallet or
@@ -432,20 +433,25 @@ npm install -g shinjuku@0.3.131
 shinjuku setup
 ```
 
-It asks two questions, Tor and private AI (Enter keeps the default), and at
-the end it offers to add funds (Enter skips). `--yes` asks nothing. `--add-to claude-code` (or `claude-desktop`, `cursor`) also adds
-the server to that host's config. In our runs, setup took about 10-16 s on a
-fast line, with the proof-tool download of about 191 MB. Over Tor (`--tor`),
-it took 89 s to 5 min in our 0.3.86 tests (2026-10-23). At the end it prints a
-summary, for example:
+It asks whether to use Tor and for your own wallet address (optional: your
+agent can then send money back to you without asking for it). When the
+`shinjuku` command is not installed yet, it offers to install it. Enter keeps
+the default or skips. At the end it offers
+to add funds (Enter skips). `--yes` asks nothing. `--add-to claude-code` (or
+`claude-desktop`, `cursor`) also adds the server to that host's config; if
+Claude Code already has a wallet entry for another wallet folder, setup asks
+before it replaces it. In our 0.3.131 runs (2026-10-30), setup took about 17 s
+on a fast line and about 80 s over Tor, with the setup-file download of about
+191 MB. At the end it prints a summary, for example:
 
 ```
-Shinjuku Shielded is set up.
+Shinjuku Shield is set up.
   limits       no limit per payment, no limit in any 24 hours, no limit for the life of the wallet
   config       <home>/config.json
   passphrase   <home>/passphrase.txt (a new random passphrase; only you can read the file; it is never printed)
-  proof tools  <home>/proof-tools/a9af32df (29 files downloaded, every hash checked)
-  wallet       created; your public address (solanaFeePayer): <address>
+  setup files  <home>/proof-tools/a9af32df (30 files downloaded, every hash checked)
+  balance      prepared during setup: your first balance after a deposit shows sooner
+  wallet       created
   recovery     <home>/recovery-<time>.txt
 ```
 
@@ -472,12 +478,14 @@ and it checks every proof-tool file again.
 
 ### 2. Add the server to your agent host
 
-If you gave `--add-to`, this step is done. Setup also prints these lines.
+If you gave `--add-to`, this step is done. For Claude Code, the simplest way is
+`shinjuku setup --add-to claude-code` (it runs the line below for you). Setup also
+prints these lines. Add the wallet once: one entry named `shinjuku`.
 
 Claude Code:
 
 ```sh
-claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp
+claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp
 ```
 
 `--no-audit --no-fund` stop npx from asking npm's audit and funding
@@ -494,7 +502,7 @@ and other JSON-config hosts:
 ```json
 {
   "mcpServers": {
-    "shinjuku-shielded": {
+    "shinjuku": {
       "command": "npx",
       "args": ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.131", "mcp"]
     }
@@ -558,7 +566,7 @@ To give the flags yourself (for example, for a wallet that you made with
 `init` before 0.2.0):
 
 ```sh
-claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp \
+claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp \
   --max-payment 0.05 --max-session 0.2 --tor \
   --pool <pool> \
   --program 8PYPw3FSFTMbvSneXdcoH6jNoN4VD23nHwPY2A2riUy1 \
