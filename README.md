@@ -41,7 +41,7 @@ set.
   it. We never run it, and we never hold your money.
 - **Shielded payments.** Your agent pays from a shielded balance. Add `--tor`
   and no server sees your IP.
-- **Two commands to set up.** `npm install -g shinjuku@0.3.86`, then
+- **Two commands to set up.** `npm install -g shinjuku@0.3.131`, then
   `shinjuku setup`. Setup makes the wallet, a private passphrase file, and
   the checked proof tools, and prints the line that adds the wallet to your
   agent host.
@@ -84,18 +84,18 @@ This repository holds the setup guide, the [examples](examples/), the [docs](#do
   changelog of the wallet file, up to `08a4b56f` (npm 0.3.8):
   [changelog-to-0.3.8.md](docs/changelog-to-0.3.8.md).
 
-## Release 0.3.86
+## Release 0.3.131
 
-Stable version, pinned 2026-10-23. A self-custody wallet for AI agents. It
+Stable version, pinned 2026-10-30. A self-custody wallet for AI agents. It
 pays any x402 endpoint from a shielded balance, so the chain does not show
 which wallet paid. Two commands set it up. Your agent does the rest from
 plain requests.
 
 | | |
 |---|---|
-| Pinned version | `shinjuku-shield@0.3.86` |
-| Same files, older name | `shinjuku-shielded@0.3.86` |
-| Wallet release | b650bf06 ([its hash](#releases)) |
+| Pinned version | `shinjuku-shield@0.3.131` |
+| Same files, older name | `shinjuku-shielded@0.3.131` |
+| Wallet release | 3c8b302d ([its hash](#releases)) |
 | Network | Solana, USDC |
 
 ### Get started
@@ -107,7 +107,7 @@ you also want to hide your IP address.
 1. **Set up the wallet.** In a terminal:
 
    ```sh
-   npm install -g shinjuku@0.3.86
+   npm install -g shinjuku@0.3.131
    shinjuku setup
    ```
 
@@ -216,7 +216,7 @@ production, with real USDC, on 2026-10-23.
   refused before anything is paid, and the answer says how to change the
   limit. Set them in setup or in your host's MCP entry, for example
   `--max-payment 0.05`.
-- **Version pin and update notice** (`npx ... shinjuku-shield@0.3.86 mcp`).
+- **Version pin and update notice** (`npx ... shinjuku-shield@0.3.131 mcp`).
   Your host runs the exact version it names. When a new release is ready,
   the wallet tells you to restart. Nothing to ask.
 
@@ -251,7 +251,7 @@ production, with real USDC, on 2026-10-23.
   settles and pays network fees; it never holds your money. Back up after
   setup: `shinjuku help backup-export`
 - **The terminal command**
-  (`npm install -g shinjuku@0.3.86`). Every
+  (`npm install -g shinjuku@0.3.131`). Every
   wallet action from a terminal: setup, add-funds, balance, pay, unshield,
   chat, infer and more. Terminal: `shinjuku help`
 
@@ -266,10 +266,10 @@ the wallet never paid before (a fresh wallet process, production,
 | Direct | 4.85 s (payai.agentstools.dev) | 11.31 s |
 | Over Tor | 9.94 s (werner.ddns.net) | 18.14 s |
 
-### Known issues
+### Known issues in 0.3.86
 
-None of these loses money. Each one gets its own fix release, tested live
-before the next.
+The stable version 0.3.131 fixes these seven issues from 0.3.86.
+The list stays here as a record of the older release.
 
 1. When a seller fails before it takes the money, the answer starts with
    "Paid". The money is not taken and comes back by itself.
@@ -416,10 +416,10 @@ to pay again.
 You need Node.js 22.21 or later (or Node.js 24 or later), on Windows or Linux. macOS is not supported
 yet.
 
-The stable version is 0.3.86 (pinned 2026-10-23), and every command here
-names it. Setup prints host lines that name this exact version. A candidate,
-0.3.131, is out for testing (npm tag `next`, 2026-10-30): [Status](#status)
-and the [changelog](CHANGELOG.md) say what it changes.
+The stable version is 0.3.131 (wallet release `3c8b302d`, pinned 2026-10-30).
+Every command here names it. Setup prints host lines that name this exact version.
+It uses npm tag `latest`. There is no newer candidate now.
+[Status](#status) and the [changelog](CHANGELOG.md) list its changes.
 
 A later stable version gets its own row in the
 [Releases table](#releases): run its setup once and
@@ -428,7 +428,7 @@ put its version in your host's config. Your wallet, its address, and its balance
 ### 1. Run the setup in a terminal
 
 ```sh
-npm install -g shinjuku@0.3.86
+npm install -g shinjuku@0.3.131
 shinjuku setup
 ```
 
@@ -477,7 +477,7 @@ If you gave `--add-to`, this step is done. Setup also prints these lines.
 Claude Code:
 
 ```sh
-claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp
+claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp
 ```
 
 `--no-audit --no-fund` stop npx from asking npm's audit and funding
@@ -496,7 +496,7 @@ and other JSON-config hosts:
   "mcpServers": {
     "shinjuku-shielded": {
       "command": "npx",
-      "args": ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.86", "mcp"]
+      "args": ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.131", "mcp"]
     }
   }
 }
@@ -558,7 +558,7 @@ To give the flags yourself (for example, for a wallet that you made with
 `init` before 0.2.0):
 
 ```sh
-claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp \
+claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp \
   --max-payment 0.05 --max-session 0.2 --tor \
   --pool <pool> \
   --program 8PYPw3FSFTMbvSneXdcoH6jNoN4VD23nHwPY2A2riUy1 \
@@ -714,16 +714,15 @@ our first customer and our live demo.
 
 ## Status
 
-- Stable version (pinned 2026-10-23): wallet release `b650bf06`, npm
-  `shinjuku-shield@0.3.86` (the same files as `shinjuku-shielded@0.3.86`).
+- Stable version (pinned 2026-10-30): wallet release `3c8b302d`, npm
+  `shinjuku-shield@0.3.131` (the same files as `shinjuku-shielded@0.3.131`).
   Install that exact version. It adds private AI in the terminal and for
   agent apps.
   Every feature and how to use it: the
-  [0.3.86 release notes](#release-0386).
-  Hash: the `b650bf06` row of [Releases](#releases).
-- The stable version before it: wallet release `98296ff0` (npm 0.3.80).
-- Candidate (2026-10-30, not the stable version): wallet release `3c8b302d`, npm
-  `shinjuku-shield@0.3.131` under the tag `next`. A send that stopped at
+  [0.3.131 release notes](#release-03131).
+  Hash: the `3c8b302d` row of [Releases](#releases).
+- The stable version before it: wallet release `b650bf06` (npm 0.3.86).
+- What 0.3.131 changes: a send that stopped at
   any point finishes with the same plain command, a send to your own wallet
   needs no address, and a new limit applies without a restart.
   It shows the QR code of a
@@ -791,8 +790,8 @@ Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io/v
 as `io.github.ShinjukuStaition/shinjuku-mcp`. npm: [`shinjuku-shield`](https://www.npmjs.com/package/shinjuku-shield) (also as `shinjuku-shielded`),
 published from this repository's workflow with npm provenance (from 0.1.1).
 
-Live on Solana mainnet. The current wallet release is `b650bf06` (npm
-0.3.86, pinned 2026-10-23). Every feature and how to use it: [Release 0.3.86](#release-0386).
+Live on Solana mainnet. The current wallet release is `3c8b302d` (npm
+0.3.131, pinned 2026-10-30). Every feature and how to use it: [Release 0.3.131](#release-03131).
 
 Every release and its changes: [CHANGELOG.md](CHANGELOG.md).
 
@@ -831,8 +830,9 @@ Our website serves the files and their SHA-256 hashes at
 `https://shinjukustaition.com/proof-tools/<sha8>/`. This repository is a
 second, separate place for those hashes: each release adds its row here.
 
-The stable version is `b650bf06`, on npm as `shinjuku-shield@0.3.86` and
-`shinjuku-shielded@0.3.86` (pinned 2026-10-23). Use it for a new install. A row marked "candidate" is a newer
+The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131` and
+`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. There is no newer candidate now.
+A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
 marked "no longer served" are gone from the website; the other older rows
@@ -1003,7 +1003,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-10-30 (candidate, npm `next`) | [`821b09a3`](https://shinjukustaition.com/wallet/821b09a3/shinjuku-wallet.mjs) | `821b09a3d1295b30eee38eafb6aad2665a60808a3163baddeb14c02366109e56` | 8,815,826 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-30 (candidate, npm `next`) | [`1de148b9`](https://shinjukustaition.com/wallet/1de148b9/shinjuku-wallet.mjs) | `1de148b9fd19cd1bac5b690267cb77c227a3e74300873fa9eda02085833ccb2f` | 8,826,955 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-30 (candidate, npm `next`) | [`8f281d4a`](https://shinjukustaition.com/wallet/8f281d4a/shinjuku-wallet.mjs) | `8f281d4a0dfc79a40a10dbf8c31de01823d8dffb15c151b6e774d781e96f1736` | 8,847,121 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-10-30 (candidate, npm `next`) | [`3c8b302d`](https://shinjukustaition.com/wallet/3c8b302d/shinjuku-wallet.mjs) | `3c8b302d8f0616edc98cc277f1b41b5cc47d121efb77a7b1cba3214ab60fb8b8` | 8,854,666 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
+| 2026-10-30 (stable, npm `latest`) | [`3c8b302d`](https://shinjukustaition.com/wallet/3c8b302d/shinjuku-wallet.mjs) | `3c8b302d8f0616edc98cc277f1b41b5cc47d121efb77a7b1cba3214ab60fb8b8` | 8,854,666 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
