@@ -4,6 +4,27 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-31: wallet release `4a323f15`, npm `shinjuku@0.3.134` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the changes of
+0.3.133 and these:
+
+### Added
+
+- `shinjuku setup --add-to codex` adds the wallet to Codex (the Codex app and
+  Codex CLI read the same settings file).
+- The private AI address on your computer (`shinjuku infer start`) now works
+  with Codex: it takes the newer OpenAI request format and tool calls, so a
+  whole Codex session can run on it with each answer paid privately.
+  `shinjuku infer status --verbose` prints the Codex settings.
+
+### Fixed
+
+- A private chat question that failed before anything was paid now says
+  "Nothing was paid" and asks you to try again.
+
 ## 2026-10-31: wallet release `60d67f9e`, npm `shinjuku@0.3.133` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
