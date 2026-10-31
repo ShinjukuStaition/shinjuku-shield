@@ -4,6 +4,21 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-31: wallet release `45b6c2ae`, npm `shinjuku@0.3.135` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the changes of
+0.3.134 and these fixes:
+
+### Fixed
+
+- In an agent app, a payment to a new service that came soon after another
+  payment could wait about 1.5 s more while the wallet read its history. The
+  wallet now reads it before the payment needs it.
+- `shinjuku infer status --verbose` now says that Codex pays once for each
+  model call, so a turn with tool calls pays several times.
+
 ## 2026-10-31: wallet release `4a323f15`, npm `shinjuku@0.3.134` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
