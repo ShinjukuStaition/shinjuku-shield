@@ -16,7 +16,7 @@ chain does not show who paid.
 
 - **Privacy-only.** We do not offer a cheaper path that is not private.
 - **You keep your keys.** The wallet makes your keys on your machine. We
-  never hold them, and we never hold your money.
+  never hold them, and only they can spend your balance.
 - **We relay and pay the fees.** Our relayer sends your relayed deposits and
   exits and pays their network fees. Our facilitator pays the network fee of
   each payment that it settles.
@@ -38,7 +38,7 @@ is how your agent uses it. It runs on your machine, under caps that only you
 set.
 
 - **Self-custody.** The server runs on your machine. Your keys never leave
-  it. We never run it, and we never hold your money.
+  it. We never run it, and only your keys can spend your balance.
 - **Shielded payments.** Your agent pays from a shielded balance. Add `--tor`
   and no server sees your IP.
 - **Two commands to set up.** `npm install -g shinjuku@0.3.131`, then
@@ -249,7 +249,7 @@ production, with real USDC, on 2026-10-23.
   itself. Run Tor with `HTTPTunnelPort 127.0.0.1:9080`, then `setup --tor`.
 - **Self-custody** (`shinjuku setup`, `backup-export`). The keys are made and
   kept on your machine. Only your keys move your balance. The facilitator
-  settles and pays network fees; it never holds your money. Back up after
+  settles and pays network fees; only your keys can spend your balance. Back up after
   setup: `shinjuku help backup-export`
 - **The terminal command**
   (`npm install -g shinjuku@0.3.131`). Every
