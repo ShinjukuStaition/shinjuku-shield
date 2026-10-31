@@ -25,14 +25,6 @@ on:
         options:
           - next
           - latest
-      site:
-        description: "The site that serves this release: production (default), or staging (only after the stable pin is proved on production)"
-        required: true
-        default: production
-        type: choice
-        options:
-          - production
-          - staging
 
 permissions:
   contents: read
@@ -53,7 +45,7 @@ jobs:
     env:
       RELEASE: ${{ inputs.release }}
       VERSION: ${{ inputs.version }}
-      SITE: ${{ inputs.site == 'staging' && 'https://staging.shinjukustaition.com' || 'https://shinjukustaition.com' }}
+      SITE: https://shinjukustaition.com
       DIST_TAG: ${{ inputs.dist_tag }}
       HASH_README_API: https://api.github.com/repos/ShinjukuStaition/shinjuku-shield/readme
     steps:
