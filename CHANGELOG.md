@@ -4,6 +4,32 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-10-31: wallet release `44c08777`, npm `shinjuku@0.3.132` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It has the fixes of
+0.3.131 and these:
+
+### Changed
+
+- Private AI chat keeps no copy of your words on your computer, and no
+  fingerprint of them either. If you paid for an answer that never reached
+  you, the wallet tells you once, in every app.
+- The search for paid services now reads the whole public list (up to
+  150,000 services; it read only the first 50,000), so it finds more of them.
+- A new wallet lives in the folder `.shinjuku-shield` in your home folder.
+  A wallet you already have stays where it is; nothing moves.
+- The help and the hints no longer show the wallet's internal money steps:
+  the wallet does them for you.
+
+### Fixed
+
+- Each older one-time deposit address is checked over its own Tor path, so
+  the checks cannot be tied together.
+- The wallet no longer offers a deposit when adding money is turned off.
+- Plainer words in the help, the hints and the setup messages.
+
 ## 2026-10-30: 0.3.131 is the stable version
 
 npm `latest` is now 0.3.131 (wallet release `3c8b302d`) for
