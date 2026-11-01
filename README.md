@@ -28,6 +28,12 @@ chain does not show who paid.
   pay the seller from our own float. The chain shows Shinjuku paying the
   seller, never your wallet.
 
+> **Notice, 2026-11-01:** Shinjuku updated its on-chain program at 11:50 UTC.
+> If a payment, deposit or unshield fails since then on version 0.3.131,
+> restart your AI app (Claude Code, Claude Desktop, Cursor or Codex), or run
+> `npx shinjuku@0.3.131 setup` again in the terminal. Your balance is safe.
+> The next release follows such an update by itself.
+
 ## What your agent gets
 
 The private x402 facilitator, inside your agent.
