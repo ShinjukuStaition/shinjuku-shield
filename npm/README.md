@@ -23,8 +23,8 @@ installing, type `npx shinjuku@{{VERSION}} setup`.
 Setup makes the wallet on this machine, a private passphrase file, and the
 checked proof tools (about 191 MB), and writes `config.json`. It also writes
 a recovery file: copy it to two offline places, then delete it from this
-machine. `--add-to claude-code` (or `claude-desktop`, `cursor`) also adds the
-server to that host's config.
+machine. `--add-to claude-code` (or `claude-desktop`, `cursor`, `codex`) also
+adds the wallet to that app.
 
 ## The `shinjuku` command
 
@@ -48,6 +48,17 @@ Claude Desktop (`claude_desktop_config.json`) or Cursor (`~/.cursor/mcp.json`):
 On native Windows, if the host cannot find `npx`, use `"command": "cmd"` and
 put `"/c", "npx"` at the start of `args`. The server's name in host
 configs is `shinjuku`.
+
+Codex (the Codex app and Codex CLI read the same file, `~/.codex/config.toml`):
+`shinjuku setup --add-to codex` adds these lines; or add them yourself:
+
+```toml
+[mcp_servers.shinjuku]
+command = "npx"
+args = ["-y", "--no-audit", "--no-fund", "shinjuku-shield@{{VERSION}}", "mcp"]
+startup_timeout_sec = 120
+tool_timeout_sec = 300
+```
 
 ## Add funds
 
@@ -78,9 +89,10 @@ which wallet paid. The wallet keeps no copy of a conversation.
   an api key. It keeps running in the background after the terminal closes;
   `shinjuku infer status` shows it, and `shinjuku infer stop` stops it. Your
   agent can also start it with the MCP tool `inference_server`. It serves
-  the OpenAI Chat Completions API (`/v1/chat/completions`, streaming too)
-  and `/v1/models`. Apps that use the OpenAI Responses API
-  (`/v1/responses`) do not work with it yet.
+  the OpenAI Chat Completions API (`/v1/chat/completions`, streaming and
+  function tools too), the OpenAI Responses API (`/v1/responses`, which
+  Codex uses) and `/v1/models`. `shinjuku infer status --verbose` prints
+  the lines that run a whole Codex session on it.
 - `inference_chat` (MCP): one answer for your agent.
 
 ## Needs
