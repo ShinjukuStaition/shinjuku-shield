@@ -419,7 +419,7 @@ yet.
 
 The stable version is 0.3.131 (wallet release `3c8b302d`, pinned 2026-10-30).
 Every command here names it. Setup prints host lines that name this exact version.
-It uses npm tag `latest`. A candidate, 0.3.141, is out for testing (npm tag `next`, 2026-11-01).
+It uses npm tag `latest`. A candidate, 0.3.142, is out for testing (npm tag `next`, 2026-11-01).
 [Status](#status) and the [changelog](CHANGELOG.md) list its changes.
 
 A later stable version gets its own row in the
@@ -730,8 +730,8 @@ our first customer and our live demo.
   [0.3.131 release notes](#release-03131).
   Hash: the `3c8b302d` row of [Releases](#releases).
 - The stable version before it: wallet release `b650bf06` (npm 0.3.86).
-- Candidate (2026-11-01, not the stable version): wallet release `ace1fa7c`, npm
-  `shinjuku-shield@0.3.141` under the tag `next`. It adds the wallet to Codex. Private AI chat keeps no
+- Candidate (2026-11-01, not the stable version): wallet release `88aadc66`, npm
+  `shinjuku-shield@0.3.142` under the tag `next`. It adds the wallet to Codex. Private AI chat keeps no
   copy of your words on your computer, the search for paid services reads
   the whole public list, and a new wallet works in every command. The
   [changelog](CHANGELOG.md) lists the rest.
@@ -844,7 +844,7 @@ Our website serves the files and their SHA-256 hashes at
 second, separate place for those hashes: each release adds its row here.
 
 The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131` and
-`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `ace1fa7c` (npm 0.3.141, tag `next`), is out for testing.
+`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `88aadc66` (npm 0.3.142, tag `next`), is out for testing.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
@@ -1027,6 +1027,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-11-01 (candidate, npm `next`) | [`51521402`](https://shinjukustaition.com/wallet/51521402/shinjuku-wallet.mjs) | `51521402af917323f8486e12a6e6bbc1396e183e5a1186ec62bc25eb256a83e3` | 8,968,335 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-11-01 (candidate, npm `next`) | [`41c076e0`](https://shinjukustaition.com/wallet/41c076e0/shinjuku-wallet.mjs) | `41c076e0ad1a4e8cbbed89853e89f1d088bcd1613f6b2f63e8894688da89c1b6` | 8,971,541 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-11-01 (candidate, npm `next`) | [`ace1fa7c`](https://shinjukustaition.com/wallet/ace1fa7c/shinjuku-wallet.mjs) | `ace1fa7cb7cd41ecf9a719c8983c8f85c6bce82d94bb2caf5bf0542a63ebb168` | 8,971,557 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
+| 2026-11-01 (candidate, npm `next`) | [`88aadc66`](https://shinjukustaition.com/wallet/88aadc66/shinjuku-wallet.mjs) | `88aadc6644df79f42aba537416608eea0462184073f62a0053c9d6f83f3cb46d` | 8,972,142 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
