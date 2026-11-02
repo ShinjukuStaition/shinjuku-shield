@@ -4,7 +4,31 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
-## 2026-11-01: wallet release `ca3639ce`, npm `shinjuku@0.3.151` (candidate, npm tag `next`)
+## 2026-11-02: wallet release `8ab2085b`, npm `shinjuku@0.3.152` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+The candidates 0.3.132 to 0.3.151 are withdrawn. npm marks them deprecated and
+the website no longer serves their wallet files. Use 0.3.131 or this version.
+
+### Added
+
+- Private AI chat shows the Shinjuku look when it starts, asks whether you want
+  one question at a time or a conversation, and lists only the models the AI
+  service serves now.
+- Pick the AI company first, then one of its most used models, or type to
+  search all of its models. `/model` changes the model and `/provider`
+  changes the company during the chat.
+
+### Fixed
+
+- The terminal names the AI price before it pays.
+- Plainer terminal words for getting a deposit back and for a send that gets
+  your balance ready first.
+
+## 2026-11-01: wallet release `ca3639ce`, npm `shinjuku@0.3.151` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -18,7 +42,7 @@ one. To try the candidate, install its exact version. It has the changes of
   again shortly, at once.
 - The private AI price words are true: the "at most" price covers a normal
   question, and the model list includes the AI service's own fee.
-## 2026-11-01: wallet release `35457f8a`, npm `shinjuku@0.3.150` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `35457f8a`, npm `shinjuku@0.3.150` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -30,7 +54,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - Private AI chat and `shinjuku infer` can use claude-opus-5 again. The price
   the wallet shows now includes the AI service's own fee, so the shown maximum is
   true and the answer is paid.
-## 2026-11-01: wallet release `fe9d8f3d`, npm `shinjuku@0.3.149` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `fe9d8f3d`, npm `shinjuku@0.3.149` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -44,7 +68,7 @@ one. To try the candidate, install its exact version. It has the changes of
   command first.
 - `shinjuku balance` says how much you can spend and how much fits in one
   payment now.
-## 2026-11-01: wallet release `c6990ffc`, npm `shinjuku@0.3.148` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `c6990ffc`, npm `shinjuku@0.3.148` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -55,7 +79,7 @@ one. To try the candidate, install its exact version. It has the changes of
 
 - When the wallet reuses proof files already on your computer, it keeps to the
   same size limits as a download.
-## 2026-11-01: wallet release `a23e64e5`, npm `shinjuku@0.3.147` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `a23e64e5`, npm `shinjuku@0.3.147` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -67,7 +91,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - After an update of Shinjuku's on-chain program, the wallet reuses the proof
   files it already has and downloads only the few that changed (about 10 KB,
   not 191 MB), each checked by its hash.
-## 2026-11-01: wallet release `1911a3de`, npm `shinjuku@0.3.146` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `1911a3de`, npm `shinjuku@0.3.146` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -80,7 +104,7 @@ one. To try the candidate, install its exact version. It has the changes of
   running keeps working: payments, joins and unshields use the new files with no
   restart. A wallet used only in the terminal no longer waits minutes; it reads
   the new release list at once.
-## 2026-11-01: wallet release `a104f1f4`, npm `shinjuku@0.3.145` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `a104f1f4`, npm `shinjuku@0.3.145` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -92,7 +116,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - When your balance is split into many small parts, a payment first joins them.
   The joins now run back to back with no fixed pause, and the payment goes out
   in the same request. Before, your agent had to ask again.
-## 2026-11-01: wallet release `325c7ac7`, npm `shinjuku@0.3.144` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `325c7ac7`, npm `shinjuku@0.3.144` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -103,7 +127,7 @@ one. To try the candidate, install its exact version. It has the changes of
 
 - The payment step at the start of a new 5-minute period no longer waits for
   Shinjuku's new on-chain marker either (0.3.143 fixed only the price quote).
-## 2026-11-01: wallet release `d1d7233b`, npm `shinjuku@0.3.143` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `d1d7233b`, npm `shinjuku@0.3.143` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -115,7 +139,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - A payment that starts in the first seconds of a new 5-minute period no longer
   waits about 1 to 1.5 seconds for Shinjuku's new on-chain marker. It uses the
   newest marker that is still valid.
-## 2026-11-01: wallet release `88aadc66`, npm `shinjuku@0.3.142` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `88aadc66`, npm `shinjuku@0.3.142` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -127,7 +151,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - The line after a payment or an unshield is shorter for a wallet made by
   setup: it names `shinjuku balance` and the backup help, with no note about
   options.
-## 2026-11-01: wallet release `ace1fa7c`, npm `shinjuku@0.3.141` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `ace1fa7c`, npm `shinjuku@0.3.141` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -139,7 +163,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - After setup, `shinjuku pay` uses the saved address of the private message
   service; you no longer type it.
 - The line after a payment or an unshield now names `shinjuku balance`.
-## 2026-11-01: wallet release `41c076e0`, npm `shinjuku@0.3.140` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `41c076e0`, npm `shinjuku@0.3.140` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -153,7 +177,7 @@ one. To try the candidate, install its exact version. It has the changes of
   newest signed release list every time.
 - The help of a command with no options no longer shows an empty "Flags:"
   heading.
-## 2026-11-01: wallet release `51521402`, npm `shinjuku@0.3.139` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `51521402`, npm `shinjuku@0.3.139` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -166,7 +190,7 @@ one. To try the candidate, install its exact version. It has the changes of
   `shinjuku seller status`. Setup asks for your price, your API address and
   whether to use Tor (on by default). Buyers then pay you privately, and the
   money goes into your private balance. Take it out with `shinjuku unshield`.
-## 2026-11-01: wallet release `5bfd2104`, npm `shinjuku@0.3.138` (candidate, npm tag `next`)
+## 2026-11-01: wallet release `5bfd2104`, npm `shinjuku@0.3.138` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -186,7 +210,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - The seller service now calls your service only after it stores the payment
   receipt. A repeat of the same request gets the same answer, and a failure of
   your service gives the buyer a clear error.
-## 2026-10-31: wallet release `65cad659`, npm `shinjuku@0.3.137` (candidate, npm tag `next`)
+## 2026-10-31: wallet release `65cad659`, npm `shinjuku@0.3.137` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -199,7 +223,7 @@ one. To try the candidate, install its exact version. It has the changes of
   and what happens next (ask again to finish it, or it comes back to your
   private balance by itself). Before, that money was simply not shown.
 
-## 2026-10-31: wallet release `24c033c4`, npm `shinjuku@0.3.136` (candidate, npm tag `next`)
+## 2026-10-31: wallet release `24c033c4`, npm `shinjuku@0.3.136` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -212,7 +236,7 @@ one. To try the candidate, install its exact version. It has the changes of
   in the terminal now shows the refund once it arrives. Before, only an agent
   app saw it at once; the terminal could show the money as missing for minutes.
 
-## 2026-10-31: wallet release `45b6c2ae`, npm `shinjuku@0.3.135` (candidate, npm tag `next`)
+## 2026-10-31: wallet release `45b6c2ae`, npm `shinjuku@0.3.135` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -227,7 +251,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - `shinjuku infer status --verbose` now says that Codex pays once for each
   model call, so a turn with tool calls pays several times.
 
-## 2026-10-31: wallet release `4a323f15`, npm `shinjuku@0.3.134` (candidate, npm tag `next`)
+## 2026-10-31: wallet release `4a323f15`, npm `shinjuku@0.3.134` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -248,7 +272,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - A private chat question that failed before anything was paid now says
   "Nothing was paid" and asks you to try again.
 
-## 2026-10-31: wallet release `60d67f9e`, npm `shinjuku@0.3.133` (candidate, npm tag `next`)
+## 2026-10-31: wallet release `60d67f9e`, npm `shinjuku@0.3.133` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
@@ -266,7 +290,7 @@ one. To try the candidate, install its exact version. It has the changes of
 - The help no longer uses the word "pocket".
 - A Tor message no longer runs into the line before it.
 
-## 2026-10-31: wallet release `44c08777`, npm `shinjuku@0.3.132` (candidate, npm tag `next`)
+## 2026-10-31: wallet release `44c08777`, npm `shinjuku@0.3.132` (withdrawn)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
 `0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
