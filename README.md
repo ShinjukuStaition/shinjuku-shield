@@ -425,7 +425,7 @@ yet.
 
 The stable version is 0.3.131 (wallet release `3c8b302d`, pinned 2026-10-30).
 Every command here names it. Setup prints host lines that name this exact version.
-It uses npm tag `latest`. A candidate, 0.3.151, is out for testing (npm tag `next`, 2026-11-01).
+It uses npm tag `latest`. A candidate, 0.3.152, is out for testing (npm tag `next`, 2026-11-02).
 [Status](#status) and the [changelog](CHANGELOG.md) list its changes.
 
 A later stable version gets its own row in the
@@ -736,8 +736,8 @@ our first customer and our live demo.
   [0.3.131 release notes](#release-03131).
   Hash: the `3c8b302d` row of [Releases](#releases).
 - The stable version before it: wallet release `b650bf06` (npm 0.3.86).
-- Candidate (2026-11-01, not the stable version): wallet release `ca3639ce`, npm
-  `shinjuku-shield@0.3.151` under the tag `next`. It adds the wallet to Codex. Private AI chat keeps no
+- Candidate (2026-11-02, not the stable version): wallet release `8ab2085b`, npm
+  `shinjuku-shield@0.3.152` under the tag `next`. It adds the wallet to Codex. Private AI chat keeps no
   copy of your words on your computer, the search for paid services reads
   the whole public list, and a new wallet works in every command. The
   [changelog](CHANGELOG.md) lists the rest.
@@ -850,7 +850,7 @@ Our website serves the files and their SHA-256 hashes at
 second, separate place for those hashes: each release adds its row here.
 
 The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131` and
-`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `ca3639ce` (npm 0.3.151, tag `next`), is out for testing.
+`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `8ab2085b` (npm 0.3.152, tag `next`), is out for testing.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
@@ -1023,26 +1023,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-10-30 (candidate, npm `next`) | [`1de148b9`](https://shinjukustaition.com/wallet/1de148b9/shinjuku-wallet.mjs) | `1de148b9fd19cd1bac5b690267cb77c227a3e74300873fa9eda02085833ccb2f` | 8,826,955 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-30 (candidate, npm `next`) | [`8f281d4a`](https://shinjukustaition.com/wallet/8f281d4a/shinjuku-wallet.mjs) | `8f281d4a0dfc79a40a10dbf8c31de01823d8dffb15c151b6e774d781e96f1736` | 8,847,121 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
 | 2026-10-30 (stable, npm `latest`) | [`3c8b302d`](https://shinjukustaition.com/wallet/3c8b302d/shinjuku-wallet.mjs) | `3c8b302d8f0616edc98cc277f1b41b5cc47d121efb77a7b1cba3214ab60fb8b8` | 8,854,666 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-10-31 (candidate, npm `next`) | [`44c08777`](https://shinjukustaition.com/wallet/44c08777/shinjuku-wallet.mjs) | `44c08777030db28cf13b7d377f8f09cbfac5a6d3580d1cc53712460d5eb36019` | 8,862,829 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-10-31 (candidate, npm `next`) | [`60d67f9e`](https://shinjukustaition.com/wallet/60d67f9e/shinjuku-wallet.mjs) | `60d67f9e68f5464e9c70a24a9743bb01a5c6e208627f1f7d6c966f8b2731b75b` | 8,867,259 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-10-31 (candidate, npm `next`) | [`4a323f15`](https://shinjukustaition.com/wallet/4a323f15/shinjuku-wallet.mjs) | `4a323f156e4f709e57aa52c578de19b1cbb5845f87133e47f3595eabfd736dc0` | 8,895,185 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-10-31 (candidate, npm `next`) | [`45b6c2ae`](https://shinjukustaition.com/wallet/45b6c2ae/shinjuku-wallet.mjs) | `45b6c2ae1564c104f82be3d93124b0dffe53f6d5663167b874e720fb8231bc6f` | 8,896,515 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-10-31 (candidate, npm `next`) | [`24c033c4`](https://shinjukustaition.com/wallet/24c033c4/shinjuku-wallet.mjs) | `24c033c4a5ba30b63911674d18a731e7ad32c2bb22f660dc451dd2af6258a275` | 8,900,675 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-10-31 (candidate, npm `next`) | [`65cad659`](https://shinjukustaition.com/wallet/65cad659/shinjuku-wallet.mjs) | `65cad6591d92c21ba417dd24845ebb1f978e8ba59a0341a0e2c75e22b3bbe0b1` | 8,904,356 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`5bfd2104`](https://shinjukustaition.com/wallet/5bfd2104/shinjuku-wallet.mjs) | `5bfd21041455a7de19335b0e0d943f0bbbf61823f50124656586a5cbb8fe2e95` | 8,916,541 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`51521402`](https://shinjukustaition.com/wallet/51521402/shinjuku-wallet.mjs) | `51521402af917323f8486e12a6e6bbc1396e183e5a1186ec62bc25eb256a83e3` | 8,968,335 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`41c076e0`](https://shinjukustaition.com/wallet/41c076e0/shinjuku-wallet.mjs) | `41c076e0ad1a4e8cbbed89853e89f1d088bcd1613f6b2f63e8894688da89c1b6` | 8,971,541 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`ace1fa7c`](https://shinjukustaition.com/wallet/ace1fa7c/shinjuku-wallet.mjs) | `ace1fa7cb7cd41ecf9a719c8983c8f85c6bce82d94bb2caf5bf0542a63ebb168` | 8,971,557 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`88aadc66`](https://shinjukustaition.com/wallet/88aadc66/shinjuku-wallet.mjs) | `88aadc6644df79f42aba537416608eea0462184073f62a0053c9d6f83f3cb46d` | 8,972,142 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`d1d7233b`](https://shinjukustaition.com/wallet/d1d7233b/shinjuku-wallet.mjs) | `d1d7233b86e252e58009678280970cb3aaa264c8569bd29f790e5a592a948138` | 8,974,175 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`325c7ac7`](https://shinjukustaition.com/wallet/325c7ac7/shinjuku-wallet.mjs) | `325c7ac76ca281c68aaeb201b8601305495083f9bfb211578189e55f2f9f298c` | 8,975,329 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`a104f1f4`](https://shinjukustaition.com/wallet/a104f1f4/shinjuku-wallet.mjs) | `a104f1f4855717492e6a01550a0e2fc02f50651f70a1812173ef94d2bcc963f7` | 8,976,086 | [`a9af32df`](https://shinjukustaition.com/proof-tools/a9af32df/SHA256SUMS) | `a9af32df6b7ff7e3243bd607b7ff582da5732fa422f28afd9b8bc3e9f0d6c741` | 30 (191,112,305 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`1911a3de`](https://shinjukustaition.com/wallet/1911a3de/shinjuku-wallet.mjs) | `1911a3de9cfa2a0a75d42a1772b0e49bac0dfa9c89e02624253e9c3866931ea0` | 8,984,781 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`a23e64e5`](https://shinjukustaition.com/wallet/a23e64e5/shinjuku-wallet.mjs) | `a23e64e5d0a5f23235ec503e1b2cfe15d01aad2b58a478ef71f53e6b5bb51e5b` | 8,986,283 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`c6990ffc`](https://shinjukustaition.com/wallet/c6990ffc/shinjuku-wallet.mjs) | `c6990ffc94f21e46128aa3386b0ca78934100ab75aea6687ed1ea7d01386c689` | 8,986,535 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`fe9d8f3d`](https://shinjukustaition.com/wallet/fe9d8f3d/shinjuku-wallet.mjs) | `fe9d8f3d2b651457cd793f78e205b8b21398eb2b77fb5174c2181dfa996b6b51` | 8,996,422 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`35457f8a`](https://shinjukustaition.com/wallet/35457f8a/shinjuku-wallet.mjs) | `35457f8ab4f209c7518da98152cb6ee55157a1df110729c1c3998962cfb15dce` | 8,997,333 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
-| 2026-11-01 (candidate, npm `next`) | [`ca3639ce`](https://shinjukustaition.com/wallet/ca3639ce/shinjuku-wallet.mjs) | `ca3639ce1818313ec1b2c26a387efcc18a2c08856a8c8bb1e69f8dc544130d88` | 9,007,322 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
+| 2026-11-02 (candidate, npm `next`) | [`8ab2085b`](https://shinjukustaition.com/wallet/8ab2085b/shinjuku-wallet.mjs) | `8ab2085ba462b3c2dda5d50de087d053593a7e96d2210bf9dfaa6d763dbe20d2` | 9,047,711 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
