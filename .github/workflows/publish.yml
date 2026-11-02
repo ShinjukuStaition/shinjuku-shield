@@ -131,6 +131,20 @@ jobs:
           echo "$(jq -r '.notices.sha256' manifest.json)  THIRD_PARTY_NOTICES.txt" | sha256sum -c -
           head -n 1 shinjuku-wallet.mjs | grep -qx '#!/usr/bin/env node' || { echo "::error::wallet file has no node shebang"; exit 1; }
 
+      # Fails closed: without the secret, or with any match, nothing is published. The names live only in the
+      # secret, so this public file does not list them; grep -l prints file names, never the matched text.
+      - name: Refuse private names in the files to publish
+        env:
+          PRIVATE_NAMES_RE: ${{ secrets.PRIVATE_NAMES_RE }}
+        run: |
+          set -euo pipefail
+          [[ -n "${PRIVATE_NAMES_RE:-}" ]] || { echo "::error::the secret PRIVATE_NAMES_RE is not set, so the private-name check cannot run; nothing was published"; exit 1; }
+          if grep -rIilE -- "$PRIVATE_NAMES_RE" . ../names/shinjuku; then
+            echo "::error::the files above name a private account, machine or user; nothing was published"
+            exit 1
+          fi
+          echo "no private names in the files to publish"
+
       - name: Stamp package.json
         env:
           SHA256: ${{ steps.hash.outputs.sha256 }}
