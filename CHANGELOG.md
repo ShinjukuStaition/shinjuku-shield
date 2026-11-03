@@ -4,6 +4,27 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-03: wallet release `46b6176b`, npm `shinjuku@0.3.157` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- Private AI chat and `shinjuku infer` count every answer that was paid or may
+  be paid, also when the AI provider fails after the payment, so a spending
+  limit always holds. The chat says "nothing was paid" only when the wallet can
+  prove it.
+- A paid answer that did not come back is never dropped without a word:
+  `/mode`, `/new`, Ctrl+C and the end of the chat tell you, and `/retry`
+  finishes it without paying twice.
+- A paid empty answer is reported as a failure, not as a success.
+- Type `shinjuku infer` alone in a terminal and it asks for your question.
+- The chat and `shinjuku infer` no longer print the AI provider's own error
+  words, because they can repeat your question. Private AI receipts keep no
+  provider header values on disk.
+
 ## 2026-11-03: wallet release `003fb669`, npm `shinjuku@0.3.156` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
