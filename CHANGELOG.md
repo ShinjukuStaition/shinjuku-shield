@@ -4,6 +4,50 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-03: wallet release `7e2a4392`, npm `shinjuku@0.3.158` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Added
+
+- The wallet runs Tor for you. When you choose Tor, the wallet downloads Tor
+  once (checked by its hash) and runs it in the background. No window stays
+  open, and it works again after a restart.
+- Windows needs no WSL. Setup runs the proof programs natively on Windows x64
+  (and on Linux on arm64), with no administrator and no restart. Setup starts
+  each program once before it makes a key, and says plainly when Windows or
+  an antivirus blocks one.
+- The `shinjuku` screen is where you do everything in a terminal: a private
+  AI chat, add funds, send money out, pay a link, Tor on or off, save a
+  backup, spending limits, connect an agent app. Each job runs inside the
+  screen and comes back to it.
+- A backup step before the first deposit: save the recovery file and the
+  passphrase file to a USB drive or a folder, checked by hash, in one step.
+  Agent apps ask for it too.
+- The private AI chat shows its commands under the prompt (/model, /mode,
+  /cost, /new, /help, /exit), lets you change the AI in the middle of a
+  chat, and shows each model's price before you pay.
+
+### Fixed
+
+- On Windows, `npx -y shinjuku@0.3.158 setup` works in Command Prompt and
+  `npx.cmd -y shinjuku@0.3.158 setup` in PowerShell, also on a second
+  Windows account.
+- With Tor on, the wallet never reaches npm outside Tor, also when an agent
+  app starts it.
+- A paste of several lines is one message in the chat (Ctrl+V and
+  right-click in a Command Prompt window included). A pasted "y" never
+  confirms a question.
+- A payment that was prepared and never sent closes by itself; you never
+  run a cancel step.
+- Setup's download keeps what it already checked when it stops, works on a
+  slow connection, checks the free disk space first, and two setups at once
+  wait for each other.
+- An agent app's entry starts the wallet the way that app does, and setup
+  checks the start before it says the app is ready.
+
 ## 2026-11-03: wallet release `46b6176b`, npm `shinjuku@0.3.157` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
