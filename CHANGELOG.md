@@ -4,6 +4,24 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-04: wallet release `eb6f9ba6`, npm `shinjuku@0.3.160` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- The backup can go to a folder you name that does not exist yet: the wallet
+  makes it, on this computer or a USB drive.
+- In an agent app, the agent now tells you your backup code. You need it to
+  add money.
+- A backup never goes to a folder that a cloud service copies (OneDrive,
+  Dropbox, Google Drive, iCloud): the wallet does not offer such a folder and
+  refuses it if you name it, because your recovery file would be uploaded.
+- A backup never follows a link to another place, and a backup that fails
+  leaves nothing behind.
+
 ## 2026-11-04: wallet release `cefda627`, npm `shinjuku@0.3.159` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
