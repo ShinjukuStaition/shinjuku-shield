@@ -4,6 +4,29 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-04: wallet release `9bbc535c`, npm `shinjuku@0.3.161` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Added
+
+- Setup can add the wallet to six more AI apps by itself: VS Code (GitHub
+  Copilot), Devin Desktop (Windsurf), Cline, Continue, Gemini CLI and
+  Antigravity CLI (`--add-to vscode`, `devin`, `cline`, `continue`,
+  `gemini`, `antigravity`). You do not edit a settings file by hand.
+
+### Fixed
+
+- If an app saves its settings while setup adds the wallet, setup keeps what
+  the app saved.
+- A settings file that is a link stays a link; setup changes the file it
+  points to.
+- An app name setup does not know stops setup at once, with a clear message.
+- On Windows, when the wallet cannot start Tor itself, the command it shows
+  starts Tor in the background. You do not keep a window open.
+
 ## 2026-11-04: wallet release `eb6f9ba6`, npm `shinjuku@0.3.160` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
