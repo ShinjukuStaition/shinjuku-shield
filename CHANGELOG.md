@@ -4,6 +4,24 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-05: wallet release `b033b5f8`, npm `shinjuku@0.3.171` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- The three paid-service tools now have plain names: `pay_for_service`,
+  `check_price` and `find_paid_services`. The old names still work.
+- The "allow once" question stays open until you answer it, and its answer
+  covers the whole request.
+- When you ask to stop a send, the wallet says what the send is doing now: it
+  waits for your yes, it is on its way, it was sent, or it ended. It never says
+  nothing was sent before it checked.
+- `shinjuku setup --add-to grok` adds the wallet to Grok Build. It keeps your
+  own settings and another wallet's entry.
+
 ## 2026-11-05: wallet release `1011ea8e`, npm `shinjuku@0.3.170` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
