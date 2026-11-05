@@ -116,8 +116,7 @@ you also want to hide your IP address.
    npx -y shinjuku@0.3.131 setup
    ```
 
-   (`npx install shinjuku` does not work: npx reads `install` as the name of
-   another npm package.) Setup offers to install the `shinjuku` command. On a
+   Setup offers to install the `shinjuku` command. On a
    Windows computer with more than one account, a new window can then say
    "'shinjuku' is not recognized": Node.js puts npm's folder on the PATH of
    the account that installed it only. Then type `npx -y shinjuku@0.3.131` in
