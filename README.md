@@ -138,9 +138,9 @@ you also want to hide your IP address.
 
    With the candidate 0.3.171 (`npx -y shinjuku@0.3.171 setup`), setup also adds
    the wallet for you: `--add-to codex` for the ChatGPT desktop app (its Codex
-   side) and Codex CLI, and `--add-to claude-desktop` for Claude Desktop, also
-   the Microsoft Store version. Setup then says how to restart and check that
-   app. In the ChatGPT desktop app, use its Codex side: ChatGPT's own chat
+   side) and Codex CLI, `--add-to claude-desktop` for Claude Desktop, also
+   the Microsoft Store version, and `--add-to grok` for Grok Build. Setup then
+   says how to restart and check that app. In the ChatGPT desktop app, use its Codex side: ChatGPT's own chat
    cannot start a program on your computer.
 
 3. **Add money.** Ask your agent "Add 1 USDC to my private balance." It gives
