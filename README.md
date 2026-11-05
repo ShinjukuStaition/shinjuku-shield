@@ -125,10 +125,20 @@ you also want to hide your IP address.
    It makes the wallet on your machine and a private passphrase file, and
    downloads every proof file it needs (about 191 MB, checked by hash).
 
-2. **Add it to your agent host.** For Claude Code, run
+2. **Add it to your agent app.** For Claude Code, run
    `shinjuku setup --add-to claude-code` once. For Claude Desktop, Cursor and
-   other hosts, setup prints the config at the end: paste it once. Your agent
-   host then starts the wallet by itself.
+   other apps, setup prints the config at the end: paste it once (in Claude
+   Desktop, Settings > Developer > Edit Config opens its settings file). Then
+   restart the app once. On Windows, Claude Desktop keeps running when you close
+   its window: right-click its icon by the clock and choose Quit, then open it
+   again. Your agent app then starts the wallet by itself.
+
+   With the candidate 0.3.167 (`npx -y shinjuku@0.3.167 setup`), setup also adds
+   the wallet for you: `--add-to codex` for the ChatGPT desktop app (its Codex
+   side) and Codex CLI, and `--add-to claude-desktop` for Claude Desktop, also
+   the Microsoft Store version. Setup then says how to restart and check that
+   app. In the ChatGPT desktop app, use its Codex side: ChatGPT's own chat
+   cannot start a program on your computer.
 
 3. **Add money.** Ask your agent "Add 1 USDC to my private balance." It gives
    you a one-time address. Send USDC on Solana to it from any wallet or
@@ -425,7 +435,7 @@ yet.
 
 The stable version is 0.3.131 (wallet release `3c8b302d`, pinned 2026-10-30).
 Every command here names it. Setup prints host lines that name this exact version.
-It uses npm tag `latest`. A candidate, 0.3.166, is out for testing (npm tag `next`, 2026-11-05).
+It uses npm tag `latest`. A candidate, 0.3.167, is out for testing (npm tag `next`, 2026-11-05).
 [Status](#status) and the [changelog](CHANGELOG.md) list its changes.
 
 A later stable version gets its own row in the
@@ -670,7 +680,7 @@ one to another place.
 - Your agent host and its model provider see every URL, body, price, paid
   answer, amount, and unshield address the agent handles. A local model
   removes that observer.
-- Your MCP client app (Claude Code, Claude Desktop, Cursor, ...) answers the
+- Your MCP client app (Claude Code, Codex, Claude Desktop, Cursor, ...) answers the
   confirmation of a send, not the model. So a prompt-injected agent cannot
   approve a send. But the wallet trusts the client app to show the dialog to
   you: a malicious or modified client app could answer "accept" by itself.
@@ -736,9 +746,9 @@ our first customer and our live demo.
   [0.3.131 release notes](#release-03131).
   Hash: the `3c8b302d` row of [Releases](#releases).
 - The stable version before it: wallet release `b650bf06` (npm 0.3.86).
-- Candidate (2026-11-05, not the stable version): wallet release `162d3a00`, npm
-  `shinjuku-shield@0.3.166` under the tag `next`. The wallet runs Tor for you,
-  Windows needs no WSL (on Windows type `npx -y shinjuku@0.3.166 setup` in
+- Candidate (2026-11-05, not the stable version): wallet release `6801635b`, npm
+  `shinjuku-shield@0.3.167` under the tag `next`. The wallet runs Tor for you,
+  Windows needs no WSL (on Windows type `npx -y shinjuku@0.3.167 setup` in
   Command Prompt), the `shinjuku` screen runs every job, setup offers a backup
   before the first deposit, and a wallet from an older version updates with no
   new setup. The [changelog](CHANGELOG.md) lists the rest.
@@ -851,7 +861,7 @@ Our website serves the files and their SHA-256 hashes at
 second, separate place for those hashes: each release adds its row here.
 
 The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131` and
-`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `162d3a00` (npm 0.3.166, tag `next`), is out for testing.
+`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `6801635b` (npm 0.3.167, tag `next`), is out for testing.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
@@ -1039,6 +1049,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-11-04 (candidate, npm `next`) | [`c7dd8df8`](https://shinjukustaition.com/wallet/c7dd8df8/shinjuku-wallet.mjs) | `c7dd8df81dd11b9f7cce75520a5c4ebacc1cd071faa64497a5454745cce12a8e` | 9,297,384 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 | 2026-11-04 (candidate, npm `next`) | [`a896aa3c`](https://shinjukustaition.com/wallet/a896aa3c/shinjuku-wallet.mjs) | `a896aa3cf3bf8327b7e63ff433a9373a16c26437b16ba8a319c0668c32523fbe` | 9,298,619 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 | 2026-11-05 (candidate, npm `next`) | [`162d3a00`](https://shinjukustaition.com/wallet/162d3a00/shinjuku-wallet.mjs) | `162d3a005e0491faedec0df58d95385a183a68993d209faa54e51dbdc2c81afb` | 9,298,964 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
+| 2026-11-05 (candidate, npm `next`) | [`6801635b`](https://shinjukustaition.com/wallet/6801635b/shinjuku-wallet.mjs) | `6801635b43f010f60eea3c04a763a1ad06ef772c20b6a77907c8bdc66fae8e75` | 9,301,251 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside

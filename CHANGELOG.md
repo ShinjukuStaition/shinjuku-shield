@@ -4,6 +4,22 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-05: wallet release `6801635b`, npm `shinjuku@0.3.167` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- Claude Desktop from the Microsoft Store: `shinjuku setup --add-to
+  claude-desktop` now adds the wallet to the settings file that this app
+  reads. If the computer has more than one such file, setup adds nothing and
+  shows the entry to add by hand.
+- Setup now says how to restart and check each app: Claude Desktop (quit it
+  from its icon by the clock, then + > Connectors) and the ChatGPT desktop
+  app (its Codex side, then `/mcp`). A second setup run says it again.
+
 ## 2026-11-05: wallet release `162d3a00`, npm `shinjuku@0.3.166` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
