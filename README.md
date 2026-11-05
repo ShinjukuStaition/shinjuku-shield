@@ -47,8 +47,7 @@ set.
   it. We never run it, and only your keys can spend your balance.
 - **Shielded payments.** Your agent pays from a shielded balance. Add `--tor`
   and no server sees your IP.
-- **Two commands to set up.** `npm install -g shinjuku@0.3.131`, then
-  `shinjuku setup`. Setup makes the wallet, a private passphrase file, and
+- **One command to set up.** `npx -y shinjuku@0.3.131 setup`. Setup makes the wallet, a private passphrase file, and
   the checked proof tools, and prints the line that adds the wallet to your
   agent host.
 - **Add funds from 0.01 USDC.** Ask your agent to add funds.
@@ -272,7 +271,7 @@ production, with real USDC, on 2026-10-23.
   settles and pays network fees; only your keys can spend your balance. Back up after
   setup: `shinjuku help backup-export`
 - **The terminal command**
-  (`npm install -g shinjuku@0.3.131`). Every
+  (setup offers to install it). Every
   wallet action from a terminal: setup, add-funds, balance, pay, unshield,
   chat, infer and more. Terminal: `shinjuku help`
 
@@ -449,8 +448,7 @@ put its version in your host's config. Your wallet, its address, and its balance
 ### 1. Run the setup in a terminal
 
 ```sh
-npm install -g shinjuku@0.3.131
-shinjuku setup
+npx -y shinjuku@0.3.131 setup
 ```
 
 It asks whether to use Tor and for your own wallet address (optional: your
