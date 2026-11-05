@@ -4,6 +4,22 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-05: wallet release `1018a534`, npm `shinjuku@0.3.174` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- An agent app can start the wallet from your project folder. If that folder
+  has its own npm settings (for example a rule against new versions or another
+  registry), the wallet could fail to start. Setup now writes the app entry so
+  npm uses the wallet's own folder for its settings. Run setup with
+  `--add-to <app>` again to update an entry an older version wrote.
+- When the wallet downloads over Tor, an npm setting that skips the proxy for
+  npm's own site can no longer send that download around Tor.
+
 ## 2026-11-05: wallet release `190dcbc3`, npm `shinjuku@0.3.173` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
