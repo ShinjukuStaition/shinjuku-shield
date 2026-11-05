@@ -134,8 +134,9 @@ you also want to hide your IP address.
    other apps, setup prints the config at the end: paste it once (in Claude
    Desktop, Settings > Developer > Edit Config opens its settings file). Then
    restart the app once. On Windows, Claude Desktop keeps running when you close
-   its window: right-click its icon by the clock and choose Quit, then open it
-   again. Your agent app then starts the wallet by itself.
+   its window: right-click its icon by the clock (it may be under the ^ arrow
+   there) and choose Exit, then open it again. On a Mac, press Command+Q. Your
+   agent app then starts the wallet by itself.
 
    With the candidate 0.3.168 (`npx -y shinjuku@0.3.168 setup`), setup also adds
    the wallet for you: `--add-to codex` for the ChatGPT desktop app (its Codex
