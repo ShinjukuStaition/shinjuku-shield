@@ -47,7 +47,7 @@ set.
   it. We never run it, and only your keys can spend your balance.
 - **Shielded payments.** Your agent pays from a shielded balance. Add `--tor`
   and no server sees your IP.
-- **One command to set up.** `npx -y shinjuku@0.3.131 setup`. Setup makes the wallet, a private passphrase file, and
+- **Two lines to set up.** `npm install -g shinjuku@0.3.131`, then `shinjuku setup`. Setup makes the wallet, a private passphrase file, and
   the checked proof tools, and prints the line that adds the wallet to your
   agent host.
 - **Add funds from 0.01 USDC.** Ask your agent to add funds.
@@ -109,16 +109,18 @@ You need Node.js 22.21 or newer, or Node.js 24 (`node --version` shows
 which one your `node` command runs). Tor is optional: run it if
 you also want to hide your IP address.
 
-1. **Set up the wallet.** In a terminal, type this line as it is:
+1. **Set up the wallet.** In a terminal, type these two lines as they are:
 
    ```sh
-   npx -y shinjuku@0.3.131 setup
+   npm install -g shinjuku@0.3.131
+   shinjuku setup
    ```
 
-   Setup offers to install the `shinjuku` command. On a
-   Windows computer with more than one account, a new window can then say
-   "'shinjuku' is not recognized": Node.js puts npm's folder on the PATH of
-   the account that installed it only. Then type `npx -y shinjuku@0.3.131` in
+   The first line installs the `shinjuku` command for every folder and every
+   new terminal window (`-g` means global). Or, without installing anything:
+   `npx -y shinjuku@0.3.131 setup`. On a Windows computer with more than one
+   account, `shinjuku` can say "'shinjuku' is not recognized": Node.js puts
+   npm's folder on the PATH of the account that installed it only. Then type `npx -y shinjuku@0.3.131` in
    place of `shinjuku` in the lines below. The candidate 0.3.171 adds npm's
    folder to your PATH by itself.
 
