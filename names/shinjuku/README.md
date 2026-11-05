@@ -7,8 +7,7 @@ the exact version it names (the same version number as this package). Your
 keys never leave your machine.
 
 ```sh
-npm install -g --no-audit --no-fund shinjuku@{{VERSION}}
-shinjuku setup
+npx -y shinjuku@{{VERSION}} setup
 ```
 
 Every wallet command works the same way after `shinjuku`, for example

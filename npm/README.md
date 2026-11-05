@@ -12,13 +12,12 @@ This is version {{VERSION}}. The npm packages `shinjuku-shield` and
 ## Set up
 
 ```sh
-npm install -g shinjuku@{{VERSION}}
-shinjuku setup
+npx -y shinjuku@{{VERSION}} setup
 ```
 
-Type the two lines as they are. `npx install shinjuku` does not work: npx
-reads `install` as the name of another npm package. To set up without
-installing, type `npx shinjuku@{{VERSION}} setup`.
+Setup offers to install the `shinjuku` command and, on Windows, adds npm's
+folder to your PATH when it is missing: open a new window after setup to
+type `shinjuku`.
 
 Setup makes the wallet on this machine, a private passphrase file, and the
 checked proof tools (about 191 MB), and writes `config.json`. It also writes
@@ -98,8 +97,8 @@ which wallet paid. The wallet keeps no copy of a conversation.
 ## Needs
 
 - Node.js 22.21 or later, or Node.js 24 or later (`node --version` shows yours; a `--tor` run needs `NODE_USE_ENV_PROXY`, which Node.js 23 does not have).
-- Linux, or Windows with WSL. macOS is not supported: the provers are Linux
-  programs.
+- Windows x64 or Linux. macOS is not supported yet: setup says so before it
+  asks anything.
 - Tor, for private AI (and for `--tor`).
 
 The package has no install scripts. `node_modules/.bin` and the global npm
