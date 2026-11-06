@@ -121,7 +121,7 @@ you also want to hide your IP address.
    `npx -y shinjuku@0.3.131 setup`. On a Windows computer with more than one
    account, `shinjuku` can say "'shinjuku' is not recognized": Node.js puts
    npm's folder on the PATH of the account that installed it only. Then type `npx -y shinjuku@0.3.131` in
-   place of `shinjuku` in the lines below. The candidate 0.3.179 adds npm's
+   place of `shinjuku` in the lines below. The candidate 0.3.180 adds npm's
    folder to your PATH by itself.
 
    Setup asks whether to use Tor and for your own wallet address (optional;
@@ -138,7 +138,7 @@ you also want to hide your IP address.
    there) and choose Exit, then open it again. On a Mac, press Command+Q. Your
    agent app then starts the wallet by itself.
 
-   With the candidate 0.3.179 (`npx -y shinjuku@0.3.179 setup`), setup also adds
+   With the candidate 0.3.180 (`npx -y shinjuku@0.3.180 setup`), setup also adds
    the wallet for you: `--add-to codex` for the ChatGPT desktop app (its Codex
    side) and Codex CLI, `--add-to claude-desktop` for Claude Desktop, also
    the Microsoft Store version, `--add-to grok` for Grok Build, and `--add-to hermes`
@@ -441,7 +441,7 @@ yet.
 
 The stable version is 0.3.131 (wallet release `3c8b302d`, pinned 2026-10-30).
 Every command here names it. Setup prints host lines that name this exact version.
-It uses npm tag `latest`. A candidate, 0.3.179, is out for testing (npm tag `next`, 2026-11-06).
+It uses npm tag `latest`. A candidate, 0.3.180, is out for testing (npm tag `next`, 2026-11-06).
 [Status](#status) and the [changelog](CHANGELOG.md) list its changes.
 
 A later stable version gets its own row in the
@@ -615,6 +615,155 @@ A send to a new address needs a host that supports MCP elicitation (it shows
 you the confirmation). With a host that does not, name each address with
 `--unshield-to`.
 
+## Use your private AI from your own code
+
+Your wallet can run a private AI address on your computer. Any program that
+talks to OpenAI can use it. Each answer is paid from your private balance.
+With Tor on (the setup default), the AI company does not see your IP address.
+
+These steps ran on the candidate 0.3.179 on a new Windows account, one short
+question each, with curl, TypeScript, Python and LangChain.
+
+### 1. Start the address
+
+```
+npx -y shinjuku@0.3.180 infer start
+```
+
+It prints the address, an API key and the model. You need the first two:
+
+```
+base_url http://127.0.0.1:11402/v1
+api key  <your key: 48 letters and numbers>
+model    qwen3-8-flash
+```
+
+The address keeps running in the background. It stops when your computer
+restarts: then run the line again (the key stays the same). To stop it:
+`npx -y shinjuku@0.3.180 infer stop`.
+
+### 2. Put your key where your program can find it
+
+In the same window (Windows, Command Prompt):
+
+```
+set OPENAI_API_KEY=<your key from step 1>
+```
+
+On a Mac or Linux: `export OPENAI_API_KEY=<your key from step 1>`. This lasts
+until you close the window. Keep the key to yourself: a program on your
+computer that has it can spend from your balance.
+
+### 3a. curl (no install needed on Windows 10 or 11)
+
+In Command Prompt (one line; copy it as it is):
+
+```
+curl http://127.0.0.1:11402/v1/chat/completions -H "Authorization: Bearer %OPENAI_API_KEY%" -H "Content-Type: application/json" -d "{\"model\":\"qwen3-8-flash\",\"max_tokens\":256,\"messages\":[{\"role\":\"user\",\"content\":\"What is the capital of Japan?\"}]}"
+```
+
+The answer is the text after `"content":`. The rest of the reply says what
+you paid.
+
+### 3b. TypeScript or JavaScript (needs Node.js)
+
+Node.js is already on your computer if the wallet runs. In a new folder:
+
+```
+npm install openai tsx
+```
+
+Save this as `ask.ts` (in Notepad: File, Save as, "Save as type: All files",
+file name `ask.ts`):
+
+```ts
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "http://127.0.0.1:11402/v1",
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+async function main() {
+  const answer = await client.chat.completions.create({
+    model: "qwen3-8-flash",
+    max_tokens: 256,
+    messages: [{ role: "user", content: "What is the capital of Japan?" }],
+  });
+  console.log(answer.choices[0].message.content);
+}
+
+main();
+```
+
+Run it: `npx tsx ask.ts`
+
+### 3c. Python (needs Python 3)
+
+If `python --version` says "Python was not found" or opens the Microsoft
+Store, install Python from https://www.python.org/downloads/ and tick
+"Add python.exe to PATH" in the installer. Then close the window and open a
+new one (the old window does not see the new Python), go back to your folder
+and set your key again (step 2).
+
+```
+pip install openai
+```
+
+pip can print yellow "not on PATH" warnings and a note about a newer pip.
+They do no harm. Save this as `ask.py`:
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://127.0.0.1:11402/v1",
+    api_key=os.environ["OPENAI_API_KEY"],
+)
+
+answer = client.chat.completions.create(
+    model="qwen3-8-flash",
+    max_tokens=256,
+    messages=[{"role": "user", "content": "What is the capital of Japan?"}],
+)
+print(answer.choices[0].message.content)
+```
+
+Run it: `python ask.py`
+
+### 3d. LangChain (Python)
+
+Do 3c first, then:
+
+```
+pip install langchain-openai
+```
+
+Save this as `ask_langchain.py`:
+
+```python
+import os
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    base_url="http://127.0.0.1:11402/v1",
+    api_key=os.environ["OPENAI_API_KEY"],
+    model="qwen3-8-flash",
+    max_tokens=256,
+)
+print(llm.invoke("What is the capital of Japan?").content)
+```
+
+Run it: `python ask_langchain.py`
+
+### What it costs
+
+Each answer is paid before it runs, for the longest reply you allow
+(`max_tokens`). A part you do not use is not paid back, so a small
+`max_tokens` keeps each answer cheap. `infer start` says the most it pays for
+one answer and for one run.
+
 ## Examples
 
 [examples/](examples/) has complete configs and a walkthrough:
@@ -751,9 +900,9 @@ our first customer and our live demo.
   [0.3.131 release notes](#release-03131).
   Hash: the `3c8b302d` row of [Releases](#releases).
 - The stable version before it: wallet release `b650bf06` (npm 0.3.86).
-- Candidate (2026-11-06, not the stable version): wallet release `839c305e`, npm
-  `shinjuku-shield@0.3.179` under the tag `next`. The wallet runs Tor for you,
-  Windows needs no WSL (on Windows type `npx -y shinjuku@0.3.179 setup` in
+- Candidate (2026-11-06, not the stable version): wallet release `4c74d099`, npm
+  `shinjuku-shield@0.3.180` under the tag `next`. The wallet runs Tor for you,
+  Windows needs no WSL (on Windows type `npx -y shinjuku@0.3.180 setup` in
   Command Prompt), the `shinjuku` screen runs every job, setup offers a backup
   before the first deposit, and a wallet from an older version updates with no
   new setup. The [changelog](CHANGELOG.md) lists the rest.
@@ -866,7 +1015,7 @@ Our website serves the files and their SHA-256 hashes at
 second, separate place for those hashes: each release adds its row here.
 
 The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131` and
-`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `839c305e` (npm 0.3.179, tag `next`), is out for testing.
+`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `4c74d099` (npm 0.3.180, tag `next`), is out for testing.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
@@ -1067,6 +1216,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-11-06 (candidate, npm `next`) | [`8d9526ec`](https://shinjukustaition.com/wallet/8d9526ec/shinjuku-wallet.mjs) | `8d9526ec3aa19b0a648557fb5ccb8568e7988f91bab9b208767fb00a50c8b71f` | 9,405,041 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 | 2026-11-06 (candidate, npm `next`) | [`ab594bac`](https://shinjukustaition.com/wallet/ab594bac/shinjuku-wallet.mjs) | `ab594bac31fc1416d01a6b552a820a8b35f99418b00d66bffd63991692a3f5c6` | 9,406,427 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 | 2026-11-06 (candidate, npm `next`) | [`839c305e`](https://shinjukustaition.com/wallet/839c305e/shinjuku-wallet.mjs) | `839c305ea9d4e06bfef8f435128052c21d778a3754eba202d27a99359774e897` | 9,442,293 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
+| 2026-11-06 (candidate, npm `next`) | [`4c74d099`](https://shinjukustaition.com/wallet/4c74d099/shinjuku-wallet.mjs) | `4c74d0997c8a9b3f885f16ddde11a7ed912e216fdf1ac5392ca1dcbda0b0e2d2` | 9,473,780 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside

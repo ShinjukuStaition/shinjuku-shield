@@ -4,6 +4,36 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-06: wallet release `4c74d099`, npm `shinjuku@0.3.180` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- A paid file (an image or a document) is saved in your Downloads folder,
+  under Shinjuku, not among the wallet's own files. In a terminal, a paid
+  answer's pictures are saved there too, in place of long text on screen.
+- If you stop setup with Ctrl+C, it says so and shows the line to run again.
+  It no longer says that Tor failed.
+- A second setup of the same wallet says at once that it waits for the first.
+- If the wallet's settings file is damaged, the wallet says so in plain
+  words. Your agent app or the home screen can repair it, and the wallet
+  itself is not changed.
+- A paid answer says that the payment is complete as soon as the seller
+  answered.
+- The list of payments says that it holds the payments of every app and chat
+  that uses this wallet.
+- A command now ends by itself, which avoids a rare Windows crash at exit.
+- On the home screen, a key pressed at the end of a job opens that key's job
+  at once.
+
+### Added
+
+- README: "Use your private AI from your own code", with curl, TypeScript,
+  Python and LangChain.
+
 ## 2026-11-06: wallet release `839c305e`, npm `shinjuku@0.3.179` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
