@@ -4,6 +4,40 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-06: wallet release `56086b8f`, npm `shinjuku@0.3.181` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Added
+
+- Setup adds the wallet to four more apps for you: `--add-to opencode`
+  (OpenCode), `--add-to copilot` (the GitHub Copilot CLI), `--add-to
+  openclaw` (OpenClaw) and `--add-to goose` (Goose). It keeps your other
+  settings and the options you set on an older wallet entry.
+
+### Changed
+
+- Your private AI questions, and their price check, always go through Tor.
+- The DeepSeek model's price limit follows the AI provider's new prices.
+
+### Removed
+
+- The token tool (`wallet_transfer_token`, `wallet_transfer_token_status`
+  and the `transfer-token` command). A transfer that an older version left
+  open still finishes or stops safely by itself.
+
+### Fixed
+
+- A refused or unanswered paid AI question, or a refused paid link, gives one
+  true step in plain words, and a refused resend is not sent again.
+- On the home screen, add-money addresses made elsewhere are shown apart from
+  this terminal's own, with their age, and an empty one can be closed.
+- In Claude Code, a payment waits for your "Allow it once?" answer; in other
+  apps the question closes at the call's time limit, and a late yes pays
+  nothing.
+
 ## 2026-11-06: wallet release `4c74d099`, npm `shinjuku@0.3.180` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
