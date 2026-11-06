@@ -75,14 +75,14 @@ the sites do not see your internet address. Hermes itself still sends your chat 
 company sees what the wallet tools answer (links, prices, amounts, the address you send to). A local model
 removes that observer.
 
-## The next version (0.3.178, for testing)
+## The next version (0.3.179, for testing)
 
-0.3.178 is a test version beside the stable one. It adds the wallet to Hermes for you:
+0.3.179 is a test version beside the stable one. It adds the wallet to Hermes for you:
 
 ```sh
-npx -y shinjuku@0.3.178 setup --add-to hermes
+npx -y shinjuku@0.3.179 setup --add-to hermes
 ```
 
 It writes the `shinjuku` entry into Hermes' `config.yaml` (with `trust: untrusted` and `timeout: 600`), keeps
-every other line of the file, and saves a copy of the old file first. 0.3.178 runs on Windows x64 without WSL
+every other line of the file, and saves a copy of the old file first. 0.3.179 runs on Windows x64 without WSL
 and on Linux, and on Windows it starts its own Tor in the background. macOS is not supported yet.
