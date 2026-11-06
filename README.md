@@ -172,11 +172,11 @@ production, with real USDC, on 2026-10-23.
   wallet's own public address moves into the shielded balance. The
   facilitator pays the network fee. Ask: "Make the USDC on my address
   private."
-- **Send any token privately** (`wallet_transfer_token`,
-  `wallet_transfer_token_status`). Any token on the wallet's own address is
-  sold for USDC, made private, and sent on in pieces. The receiver gets USDC
-  with no link to the token wallet. Ask: "Sell my JUP for USDC and send it
-  privately to my main wallet."
+- **Sell a token** (`wallet_transfer_token`, `wallet_transfer_token_status`).
+  The wallet sells your token for USDC from your public address (anyone can
+  see that sale), then sends the USDC privately in one payment. The receiver
+  gets USDC, not the token. Ask: "Sell my JUP for USDC and send it privately
+  to my main wallet."
 
 **Pay**
 
@@ -379,7 +379,7 @@ nothing.
 | Tool | What it does |
 |---|---|
 | `wallet_receive_shielded` | Gives a new one-time private (shielded) address of this wallet, for a Shinjuku Shielded payer in the same pool. It stores, signs, and moves nothing. A wallet that never shielded can spend what it receives only after one shield; the answer says so in `notice`. |
-| `wallet_transfer_token` | Sells a Solana token for USDC (on Jupiter), makes the USDC private, and sends it privately to an address. The address gets USDC, not the token. It takes minutes. The stages are `selling`, `shielding`, `sending`, and `done`. |
+| `wallet_transfer_token` | Sells a Solana token for USDC (on Jupiter) from the wallet's public address (anyone can see that sale), makes the USDC private, and sends it privately to an address. The address gets USDC, not the token. It takes minutes. The stages are `selling`, `shielding`, `sending`, and `done`. |
 | `wallet_transfer_token_status` | Shows the stage of one transfer by `request_id`, or the list of transfers. |
 
 `wallet_shield` and `wallet_unshield` always appear in the tool list. When
