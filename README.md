@@ -121,7 +121,7 @@ you also want to hide your IP address.
    `npx -y shinjuku@0.3.131 setup`. On a Windows computer with more than one
    account, `shinjuku` can say "'shinjuku' is not recognized": Node.js puts
    npm's folder on the PATH of the account that installed it only. Then type `npx -y shinjuku@0.3.131` in
-   place of `shinjuku` in the lines below. The candidate 0.3.181 adds npm's
+   place of `shinjuku` in the lines below. The candidate 0.3.182 adds npm's
    folder to your PATH by itself.
 
    Setup asks whether to use Tor and for your own wallet address (optional;
@@ -138,7 +138,7 @@ you also want to hide your IP address.
    there) and choose Exit, then open it again. On a Mac, press Command+Q. Your
    agent app then starts the wallet by itself.
 
-   With the candidate 0.3.181 (`npx -y shinjuku@0.3.181 setup`), setup also adds
+   With the candidate 0.3.182 (`npx -y shinjuku@0.3.182 setup`), setup also adds
    the wallet for you: `--add-to codex` for the ChatGPT desktop app (its Codex
    side) and Codex CLI, `--add-to claude-desktop` for Claude Desktop, also
    the Microsoft Store version, `--add-to grok` for Grok Build, `--add-to hermes`
@@ -174,7 +174,7 @@ production, with real USDC, on 2026-10-23.
   facilitator pays the network fee. Ask: "Make the USDC on my address
   private."
 - **Sell a token** (`wallet_transfer_token`, `wallet_transfer_token_status`; in
-  0.3.131 to 0.3.180 only: the candidate 0.3.181 removes this tool).
+  0.3.131 to 0.3.180 only: the candidates from 0.3.181 remove this tool).
   The wallet sells your token for USDC from your public address (anyone can
   see that sale), then sends the USDC privately in one payment. The receiver
   gets USDC, not the token. Ask: "Sell my JUP for USDC and send it privately
@@ -326,7 +326,7 @@ Ask your agent the way you would ask a person:
 | "pay this URL" | `x402_preview`, then `x402_pay` |
 | "ask an AI model privately" | `inference_chat` |
 | "send 2 USDC privately to <address>" | `wallet_unshield` |
-| "sell my JUP and send the value privately to <address>" | `wallet_transfer_token` (0.3.131 to 0.3.180; not in 0.3.181) |
+| "sell my JUP and send the value privately to <address>" | `wallet_transfer_token` (0.3.131 to 0.3.180; not in 0.3.181 and later) |
 
 Each answer tells the agent the exact next call. The wallet reads the chain
 and writes an encrypted backup by itself, so you never run a command for
@@ -381,7 +381,7 @@ nothing.
 | Tool | What it does |
 |---|---|
 | `wallet_receive_shielded` | Gives a new one-time private (shielded) address of this wallet, for a Shinjuku Shielded payer in the same pool. It stores, signs, and moves nothing. A wallet that never shielded can spend what it receives only after one shield; the answer says so in `notice`. |
-| `wallet_transfer_token` | In 0.3.131 to 0.3.180 only (the candidate 0.3.181 removes it). Sells a Solana token for USDC (on Jupiter) from the wallet's public address (anyone can see that sale), makes the USDC private, and sends it privately to an address. The address gets USDC, not the token. It takes minutes. The stages are `selling`, `shielding`, `sending`, and `done`. |
+| `wallet_transfer_token` | In 0.3.131 to 0.3.180 only (the candidates from 0.3.181 remove it). Sells a Solana token for USDC (on Jupiter) from the wallet's public address (anyone can see that sale), makes the USDC private, and sends it privately to an address. The address gets USDC, not the token. It takes minutes. The stages are `selling`, `shielding`, `sending`, and `done`. |
 | `wallet_transfer_token_status` | In 0.3.131 to 0.3.180 only. Shows the stage of one transfer by `request_id`, or the list of transfers. |
 
 `wallet_shield` and `wallet_unshield` always appear in the tool list. When
@@ -443,7 +443,7 @@ yet.
 
 The stable version is 0.3.131 (wallet release `3c8b302d`, pinned 2026-10-30).
 Every command here names it. Setup prints host lines that name this exact version.
-It uses npm tag `latest`. A candidate, 0.3.181, is out for testing (npm tag `next`, 2026-11-06).
+It uses npm tag `latest`. A candidate, 0.3.182, is out for testing (npm tag `next`, 2026-11-06).
 [Status](#status) and the [changelog](CHANGELOG.md) list its changes.
 
 A later stable version gets its own row in the
@@ -630,7 +630,7 @@ question each, with curl, TypeScript, Python and LangChain.
 ### 1. Start the address
 
 ```
-npx -y shinjuku@0.3.181 infer start
+npx -y shinjuku@0.3.182 infer start
 ```
 
 It prints the address, an API key and the model. You need the first two:
@@ -643,7 +643,7 @@ model    qwen3-8-flash (others: ...)
 
 The address keeps running in the background. It stops when your computer
 restarts: then run the line again (the key stays the same). To stop it:
-`npx -y shinjuku@0.3.181 infer stop`.
+`npx -y shinjuku@0.3.182 infer stop`.
 
 ### 2. Put your key where your program can find it
 
@@ -904,9 +904,9 @@ our first customer and our live demo.
   [0.3.131 release notes](#release-03131).
   Hash: the `3c8b302d` row of [Releases](#releases).
 - The stable version before it: wallet release `b650bf06` (npm 0.3.86).
-- Candidate (2026-11-06, not the stable version): wallet release `56086b8f`, npm
-  `shinjuku-shield@0.3.181` under the tag `next`. The wallet runs Tor for you,
-  Windows needs no WSL (on Windows type `npx -y shinjuku@0.3.181 setup` in
+- Candidate (2026-11-06, not the stable version): wallet release `a38a1b54`, npm
+  `shinjuku-shield@0.3.182` under the tag `next`. The wallet runs Tor for you,
+  Windows needs no WSL (on Windows type `npx -y shinjuku@0.3.182 setup` in
   Command Prompt), the `shinjuku` screen runs every job, setup offers a backup
   before the first deposit, and a wallet from an older version updates with no
   new setup. The [changelog](CHANGELOG.md) lists the rest.
@@ -1019,7 +1019,7 @@ Our website serves the files and their SHA-256 hashes at
 second, separate place for those hashes: each release adds its row here.
 
 The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131` and
-`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `56086b8f` (npm 0.3.181, tag `next`), is out for testing.
+`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `a38a1b54` (npm 0.3.182, tag `next`), is out for testing.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
@@ -1222,6 +1222,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-11-06 (candidate, npm `next`) | [`839c305e`](https://shinjukustaition.com/wallet/839c305e/shinjuku-wallet.mjs) | `839c305ea9d4e06bfef8f435128052c21d778a3754eba202d27a99359774e897` | 9,442,293 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 | 2026-11-06 (candidate, npm `next`) | [`4c74d099`](https://shinjukustaition.com/wallet/4c74d099/shinjuku-wallet.mjs) | `4c74d0997c8a9b3f885f16ddde11a7ed912e216fdf1ac5392ca1dcbda0b0e2d2` | 9,473,780 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 | 2026-11-06 (candidate, npm `next`) | [`56086b8f`](https://shinjukustaition.com/wallet/56086b8f/shinjuku-wallet.mjs) | `56086b8fbc2942ce2fdf0a58d9d18c060af7b3d11fce2efd89e217827d0e777a` | 9,344,331 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
+| 2026-11-06 (candidate, npm `next`) | [`a38a1b54`](https://shinjukustaition.com/wallet/a38a1b54/shinjuku-wallet.mjs) | `a38a1b5453939a41409bd1049286eea2801c7c67ffa5c216ea43f6b3cb1f0f39` | 9,353,051 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
