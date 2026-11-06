@@ -4,6 +4,22 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-06: wallet release `fed76293`, npm `shinjuku@0.3.184` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- A seller that takes several minutes to answer a paid request (for example a
+  video) no longer loses its answer: the wallet waits as long as the seller
+  says it needs, up to 10 minutes.
+- `shinjuku curl` refuses a JSON body that is not valid JSON before it pays,
+  and says how to pass JSON from PowerShell.
+- In the private AI chat, the "at most" price matches the real answer length.
+- After Ctrl+C in a Windows terminal, the window works again.
+
 ## 2026-11-06: wallet release `d67bcc6c`, npm `shinjuku@0.3.183` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
