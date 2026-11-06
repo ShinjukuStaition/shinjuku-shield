@@ -619,7 +619,8 @@ you the confirmation). With a host that does not, name each address with
 
 Your wallet can run a private AI address on your computer. Any program that
 talks to OpenAI can use it. Each answer is paid from your private balance.
-With Tor on (the setup default), the AI company does not see your IP address.
+The address always runs through Tor, so the AI company does not see your IP
+address.
 
 These steps ran on the candidate 0.3.179 on a new Windows account, one short
 question each, with curl, TypeScript, Python and LangChain.
@@ -635,7 +636,7 @@ It prints the address, an API key and the model. You need the first two:
 ```
 base_url http://127.0.0.1:11402/v1
 api key  <your key: 48 letters and numbers>
-model    qwen3-8-flash
+model    qwen3-8-flash (others: ...)
 ```
 
 The address keeps running in the background. It stops when your computer
@@ -662,8 +663,8 @@ In Command Prompt (one line; copy it as it is):
 curl http://127.0.0.1:11402/v1/chat/completions -H "Authorization: Bearer %OPENAI_API_KEY%" -H "Content-Type: application/json" -d "{\"model\":\"qwen3-8-flash\",\"max_tokens\":256,\"messages\":[{\"role\":\"user\",\"content\":\"What is the capital of Japan?\"}]}"
 ```
 
-The answer is the text after `"content":`. The rest of the reply says what
-you paid.
+The answer is the text after `"content":`. The reply's `"paid_atomic"` is what
+you paid, in millionths of a USDC (3118 = 0.003118 USDC).
 
 ### 3b. TypeScript or JavaScript (needs Node.js)
 
@@ -761,8 +762,9 @@ Run it: `python ask_langchain.py`
 
 Each answer is paid before it runs, for the longest reply you allow
 (`max_tokens`). A part you do not use is not paid back, so a small
-`max_tokens` keeps each answer cheap. `infer start` says the most it pays for
-one answer and for one run.
+`max_tokens` keeps each answer cheap. 256 is the smallest: a smaller value is
+raised to 256, so the answer is not empty. A request with no `max_tokens` pays
+for 4096. `infer start` says the most it pays for one answer and for one run.
 
 ## Examples
 
