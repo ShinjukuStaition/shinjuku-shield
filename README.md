@@ -1069,6 +1069,26 @@ Full guide: https://shinjukustaition.com/skill.md ·
 Onion: http://2kfhlfuyuwvhmibjrpxqsg4nrbcxasjgjq7kmnfzgfwzptkhhznz3dad.onion/skill.md ·
 X: [@Shin_StAItion](https://x.com/Shin_StAItion)
 
+## Check a release with verify.mjs
+
+`verify.mjs` checks one published release with one command. It needs Node.js 22 or later and nothing else:
+
+```
+git clone https://github.com/ShinjukuStaition/shinjuku-shield
+cd shinjuku-shield
+node verify.mjs 0.3.131
+```
+
+- It downloads the npm package `shinjuku-shield` and checks it against its npm sha512.
+- It checks the sha256 of the wallet file inside it against the package's own record.
+- It checks the wallet file against its row in the Releases table below.
+- It checks the wallet file against the hash our website serves.
+- It reads the npm provenance and checks that it names this exact package file, this repository and `.github/workflows/publish.yml`.
+- It does the same download and provenance checks for the `shinjuku` and `shinjuku-shielded` packages of that version. A small pointer package must depend only on `shinjuku-shield` at that version and hold no wallet file. An older full copy must hold the same wallet file.
+
+Each check prints `OK` or `FAIL`. A package that npm does not have at that version prints `SKIP`, and the last line counts it. The script runs no downloaded file.
+It does not check the Sigstore signature of the provenance. To check it, run `npm audit signatures` in a folder where the package is installed.
+
 ## Releases
 
 Each release is one file, `shinjuku-wallet.mjs`, and a set of proof tools.
