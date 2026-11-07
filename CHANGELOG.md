@@ -12,9 +12,11 @@ one. To try the candidate, install its exact version.
 
 ### Fixed
 
-- A wallet that got several received payments could send one out and then refuse
-  the next. Each one can now leave by its own send, and a payment uses the money
-  it can reach. The balance says which part a payment cannot reach.
+- A wallet that got several received payments can send one out and then refuse
+  the next. This version has a partial fix: a payment uses the money it can reach,
+  and the balance says which part a payment cannot reach. **It does not fix the
+  second send from the terminal: that send still fails on this version, and no
+  money moves.** A later version fixes it.
 - A seller's balance reads the chain. Before, it could say 0 after a paid sale.
 - A price outside Shinjuku's range is named in USDC.
 
