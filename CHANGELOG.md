@@ -4,6 +4,33 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-07: wallet release `f02883e5`, npm `shinjuku@0.3.187` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Added
+
+- The wallet can pay a seller that uses x402 version 1. This has not passed a
+  run by a new user yet.
+- The package holds the seller library `shinjuku-shield/seller`, for the path
+  [Get paid by any AI agent or app](docs/get-paid-by-any-agent.md). That path is
+  not offered yet: `seller setup` refuses it until Shinjuku turns it on.
+
+### Changed
+
+- The wallet no longer adds funds through Privacy Cash. The wallet reads an older
+  plan of that kind and does not run it.
+- The background helper of the agent-app wallet now starts from a published
+  package. Before, it never started.
+
+### Fixed
+
+- A failure line names its own reason. Before, many reasons printed one general
+  code.
+- `help mcp` says that shielding needs no SOL.
+
 ## 2026-11-07: the MCP Registry name (no new wallet release)
 
 The MCP Registry entry takes the repository's name:
