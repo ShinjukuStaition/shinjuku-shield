@@ -1,8 +1,9 @@
 name: Publish shinjuku-shield and shinjuku to npm
 
-# One wallet release goes out as shinjuku-shield (npm/package.json) and as the shinjuku command (names/shinjuku: it runs
-# shinjuku-shield at the same exact version). The same files also go out under the older name shinjuku-shielded, so
-# wallets installed under that name keep updating; that copy has no `shinjuku` bin, so a machine with both installed
+# One wallet release goes out as shinjuku-shield (npm/package.json), the only package that holds the wallet. Two small
+# pointer packages at the same version depend on it at that exact version and run it: the shinjuku command
+# (names/shinjuku) and the older name shinjuku-shielded (names/shinjuku-shielded), so apps and installs that name the
+# older name keep working and updating. shinjuku-shielded has no `shinjuku` bin, so a machine with both installed
 # globally has one `shinjuku` command file. Each name has its npm Trusted Publisher on this file.
 
 on:
@@ -36,7 +37,8 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    # The npm listing wait below may take up to 15 minutes by itself (its own step limit is 17).
+    timeout-minutes: 35
     defaults:
       run:
         shell: bash
@@ -130,19 +132,22 @@ jobs:
           echo "$(jq -r '.notices.sha256' manifest.json)  THIRD_PARTY_NOTICES.txt" | sha256sum -c -
           head -n 1 shinjuku-wallet.mjs | grep -qx '#!/usr/bin/env node' || { echo "::error::wallet file has no node shebang"; exit 1; }
 
-      # Fails closed: without the secret, or with any match, nothing is published. The names live only in the
-      # secret, so this public file does not list them; grep -l prints file names, never the matched text.
+      # Fails closed: without the secret, with any match, or when grep cannot run the check (a bad pattern, a file it
+      # cannot read: exit 2), nothing is published; only grep's "no match" (exit 1) lets the run go on. The names live
+      # only in the secret, so this public file does not list them; grep -l prints file names, never the matched text.
       - name: Refuse private names in the files to publish
         env:
           PRIVATE_NAMES_RE: ${{ secrets.PRIVATE_NAMES_RE }}
         run: |
           set -euo pipefail
           [[ -n "${PRIVATE_NAMES_RE:-}" ]] || { echo "::error::the secret PRIVATE_NAMES_RE is not set, so the private-name check cannot run; nothing was published"; exit 1; }
-          if grep -rIilE -- "$PRIVATE_NAMES_RE" . ../names/shinjuku; then
-            echo "::error::the files above name a private account, machine or user; nothing was published"
-            exit 1
-          fi
-          echo "no private names in the files to publish"
+          status=0
+          grep -rIilE -- "$PRIVATE_NAMES_RE" . ../names/shinjuku ../names/shinjuku-shielded || status=$?
+          case "$status" in
+            1) echo "no private names in the files to publish" ;;
+            0) echo "::error::the files above name a private account, machine or user; nothing was published"; exit 1 ;;
+            *) echo "::error::the private-name check could not run (grep exit $status); nothing was published"; exit 1 ;;
+          esac
 
       - name: Stamp package.json
         env:
@@ -174,20 +179,48 @@ jobs:
           if npm view "shinjuku-shield@$VERSION" version >/dev/null 2>&1; then echo "already published"; exit 0; fi
           npm publish --provenance --access public --tag "$DIST_TAG" --loglevel verbose
 
-      - name: Publish the same files under the older name shinjuku-shielded
+      # Both pointer packages below depend on shinjuku-shield at this exact version, so each is published only once npm
+      # lists it: a pointer listed first cannot be installed until then (0.3.88: shinjuku listed 23:44:52 UTC,
+      # shinjuku-shield 23:45:58 UTC).
+      - name: Wait until npm lists shinjuku-shield at this version
+        # A backstop only: the loop ends itself after 15 minutes with the error below.
+        timeout-minutes: 17
         run: |
           set -euo pipefail
-          # A copy inside the checkout: npm/ stays shinjuku-shield for the shinjuku step below.
-          old="$GITHUB_WORKSPACE/npm-shinjuku-shielded"
-          rm -rf "$old" && mkdir "$old"
-          cp package.json README.md shinjuku-wallet.mjs LICENSE.txt THIRD_PARTY_NOTICES.txt manifest.json "$old/"
-          cd "$old"
-          npm pkg set "name=shinjuku-shielded" "description=The older npm name of shinjuku-shield (the same files), kept so wallets installed under it keep updating. New installs: npm install -g shinjuku"
-          npm pkg delete bin.shinjuku
-          [[ "$(jq -r '.bin.shinjuku' package.json)" == "null" ]] || { echo "::error::shinjuku-shielded must not have the shinjuku bin"; exit 1; }
-          echo "$(jq -r '.shinjukuSha256' package.json)  shinjuku-wallet.mjs" | sha256sum -c -
-          jq '{name, version, shinjukuRelease, shinjukuSha256, bin}' package.json
+          deadline=$((SECONDS + 900))
+          try=0
+          while :; do
+            try=$((try + 1))
+            if timeout 30 npm view "shinjuku-shield@$VERSION" version --prefer-online >/dev/null 2>&1; then echo "npm lists shinjuku-shield@$VERSION (check $try)"; exit 0; fi
+            [ "$SECONDS" -lt "$deadline" ] || { echo "::error::npm does not list shinjuku-shield@$VERSION after 15 minutes ($try checks), so shinjuku-shielded and shinjuku were not published; run this workflow again"; exit 1; }
+            sleep 10
+          done
+
+      - name: Publish the older name shinjuku-shielded at the same version (a pointer that runs shinjuku-shield exactly)
+        working-directory: names/shinjuku-shielded
+        run: |
+          set -euo pipefail
+          # Before the smoke test, as in the shinjuku step below (a rerun for a version already on npm).
           if npm view "shinjuku-shielded@$VERSION" version >/dev/null 2>&1; then echo "already published"; exit 0; fi
+          npm pkg set "version=$VERSION"
+          jq --arg v "$VERSION" '.dependencies = {"shinjuku-shield": $v}' package.json > "$RUNNER_TEMP/shinjuku-shielded.json"
+          mv "$RUNNER_TEMP/shinjuku-shielded.json" package.json
+          jq '{name, version, dependencies, bin}' package.json
+          # The bins of the older name (old app configs and global installs run them), all to the pointer file; never
+          # `shinjuku`, which only the shinjuku package has.
+          [[ "$(jq -c '.bin' package.json)" == '{"shinjuku-shield":"shinjuku-shielded.mjs","shinjuku-shielded":"shinjuku-shielded.mjs","shinjuku-wallet":"shinjuku-shielded.mjs"}' ]] \
+            || { echo "::error::shinjuku-shielded must have exactly the bins shinjuku-shield, shinjuku-shielded and shinjuku-wallet"; exit 1; }
+          sed -i "s/{{VERSION}}/$VERSION/g" README.md
+          ! grep -n '{{' README.md || { echo "::error::README.md still has a {{ }} token"; exit 1; }
+          # The smoke test lays out both packages by hand: the packed pointer and the wallet files of this run as
+          # shinjuku-shield (the files checked above, not a second download).
+          npm pack --pack-destination "$RUNNER_TEMP"
+          try="$RUNNER_TEMP/try-shielded/node_modules"
+          mkdir -p "$try/shinjuku-shielded" "$try/shinjuku-shield"
+          tar -xzf "$RUNNER_TEMP/shinjuku-shielded-$VERSION.tgz" -C "$try/shinjuku-shielded" --strip-components=1
+          cp ../../npm/package.json ../../npm/shinjuku-wallet.mjs ../../npm/manifest.json "$try/shinjuku-shield/"
+          node "$try/shinjuku-shielded/shinjuku-shielded.mjs" version | tee "$RUNNER_TEMP/version-shielded.txt"
+          grep -q "$VERSION" "$RUNNER_TEMP/version-shielded.txt" || { echo "::error::shinjuku-shielded did not run the wallet at $VERSION"; exit 1; }
           npm publish --provenance --access public --tag "$DIST_TAG" --loglevel verbose
 
       - name: Publish the shinjuku command at the same version, last (it runs shinjuku-shield exactly)
@@ -203,20 +236,12 @@ jobs:
           jq '{name, version, dependencies, bin}' package.json
           sed -i "s/{{VERSION}}/$VERSION/g" README.md
           ! grep -n '{{' README.md || { echo "::error::README.md still has a {{ }} token"; exit 1; }
-          # The new wallet version can still be in npm's check (a few minutes), so the smoke test lays out both packages
-          # by hand: the packed shinjuku and the wallet files of this run as shinjuku-shield.
+          # The smoke test lays out both packages by hand: the packed shinjuku and the wallet files of this run as
+          # shinjuku-shield (the files checked above, not a second download).
           npm pack --pack-destination "$RUNNER_TEMP"
           mkdir -p "$RUNNER_TEMP/try/node_modules/shinjuku" "$RUNNER_TEMP/try/node_modules/shinjuku-shield"
           tar -xzf "$RUNNER_TEMP/shinjuku-$VERSION.tgz" -C "$RUNNER_TEMP/try/node_modules/shinjuku" --strip-components=1
           cp ../../npm/package.json ../../npm/shinjuku-wallet.mjs ../../npm/manifest.json "$RUNNER_TEMP/try/node_modules/shinjuku-shield/"
           node "$RUNNER_TEMP/try/node_modules/shinjuku/shinjuku.mjs" version | tee "$RUNNER_TEMP/version.txt"
           grep -q "$VERSION" "$RUNNER_TEMP/version.txt" || { echo "::error::shinjuku did not run the wallet at $VERSION"; exit 1; }
-          # Published last, only once npm lists shinjuku-shield at this version: shinjuku depends on that exact version,
-          # so a shinjuku listed first cannot be installed until it is (0.3.88: shinjuku listed 23:44:52 UTC,
-          # shinjuku-shield 23:45:58 UTC).
-          for try in $(seq 1 90); do
-            if npm view "shinjuku-shield@$VERSION" version --prefer-online >/dev/null 2>&1; then echo "npm lists shinjuku-shield@$VERSION (check $try)"; break; fi
-            [ "$try" -lt 90 ] || { echo "::error::npm does not list shinjuku-shield@$VERSION after 15 minutes, so shinjuku was not published; run this workflow again"; exit 1; }
-            sleep 10
-          done
           npm publish --provenance --access public --tag "$DIST_TAG" --loglevel verbose

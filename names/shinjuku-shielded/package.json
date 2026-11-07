@@ -1,0 +1,44 @@
+{
+  "name": "shinjuku-shielded",
+  "version": "0.0.0",
+  "description": "The older npm name of Shinjuku Shield. It holds no wallet code: it runs the wallet package shinjuku-shield at this exact version, so apps and installs that name shinjuku-shielded keep working. New installs: npm install -g shinjuku",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "author": "Shinjuku Shield",
+  "homepage": "https://github.com/ShinjukuStaition/shinjuku-shield#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShinjukuStaition/shinjuku-shield.git",
+    "directory": "names/shinjuku-shielded"
+  },
+  "bugs": {
+    "url": "https://github.com/ShinjukuStaition/shinjuku-shield/issues"
+  },
+  "keywords": [
+    "x402",
+    "mcp",
+    "solana",
+    "usdc",
+    "wallet",
+    "privacy",
+    "shielded"
+  ],
+  "type": "module",
+  "bin": {
+    "shinjuku-shield": "shinjuku-shielded.mjs",
+    "shinjuku-shielded": "shinjuku-shielded.mjs",
+    "shinjuku-wallet": "shinjuku-shielded.mjs"
+  },
+  "files": [
+    "shinjuku-shielded.mjs",
+    "LICENSE.txt"
+  ],
+  "dependencies": {
+    "shinjuku-shield": "0.0.0"
+  },
+  "engines": {
+    "node": "^22.21.0 || >=24.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

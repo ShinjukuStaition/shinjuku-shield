@@ -6,9 +6,12 @@ answers privately, in a terminal chat or for your agent app. Its `mcp`
 command runs a local MCP server (stdio) for your agent. Your keys never
 leave your machine.
 
-This is version {{VERSION}}. The command is `shinjuku`. `shinjuku-shielded`
-is the older npm name of `shinjuku-shield`: it gets the same files, so
-wallets installed under it keep updating. New installs use `shinjuku`.
+This is version {{VERSION}}. The command is `shinjuku`. `shinjuku-shield`
+is the one package that holds the wallet. `shinjuku-shielded` {{VERSION}},
+its older npm name, is a small package that runs this package at the same
+version, so wallets installed under it keep updating (0.3.186 and earlier
+versions of `shinjuku-shielded` hold the same files as this package). New
+installs use `shinjuku`.
 
 ## Set up
 

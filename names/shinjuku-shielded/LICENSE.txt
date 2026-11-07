@@ -1,0 +1,4 @@
+Shinjuku Shield: the older package name shinjuku-shielded
+Copyright (c) 2026 Shinjuku Shield. All rights reserved.
+
+This package only starts the wallet package shinjuku-shield, which has its own license (its LICENSE.txt).

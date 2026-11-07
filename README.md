@@ -974,7 +974,7 @@ our first customer and our live demo.
 - Independent audit: none yet.
 
 Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.ShinjukuStaition/shinjuku-mcp)
-as `io.github.ShinjukuStaition/shinjuku-mcp`. npm: [`shinjuku-shield`](https://www.npmjs.com/package/shinjuku-shield) (the older name `shinjuku-shielded` gets the same files, so wallets installed under it keep updating),
+as `io.github.ShinjukuStaition/shinjuku-mcp`. npm: [`shinjuku-shield`](https://www.npmjs.com/package/shinjuku-shield) (the one package that holds the wallet; the older name `shinjuku-shielded` runs the same wallet at the same version, so wallets installed under it keep updating: from the release after 0.3.186 it is a small package that runs `shinjuku-shield`; 0.3.186 and earlier hold the same files),
 published from this repository's workflow with npm provenance (from 0.1.1).
 
 Live on Solana mainnet. The current wallet release is `3c8b302d` (npm
