@@ -67,7 +67,7 @@ shinjuku seller status
 ```
 
 It lists each sale: on its way, or paid into your private balance. Your balance shows the money that has arrived. A sale
-moves into your private balance shortly after the buyer pays. We have not measured that time yet, so this page names none.
+moves into your private balance after the buyer's payment is final. We have not measured that time yet, so this page names none.
 
 ## What others can see
 
