@@ -158,8 +158,11 @@ In a terminal, `shinjuku help` lists every command.
 
 ### Features
 
-Every feature here passed a live run on the published 0.3.86 package, on
-production, with real USDC, on 2026-10-23.
+Each feature here passed a live run on the published 0.3.131 package, on
+production, with real USDC: the check of the stable version, from
+2026-10-30 23:51 UTC to 2026-10-31 00:33 UTC, in Claude Code and in a
+terminal. No other agent app was run on 0.3.131. One feature has no run
+of its own on 0.3.131: one question with `shinjuku infer`.
 
 **Add money**
 
@@ -213,12 +216,6 @@ production, with real USDC, on 2026-10-23.
   or all of the private balance to any Solana wallet as plain USDC. The
   facilitator pays the network fee. Ask: "Send my whole private balance to my
   main wallet." Terminal: `shinjuku unshield --amount all --to <address>`
-- **Send in pieces at random times** (`wallet_unshield` with a time
-  window). Splits a send into pieces that leave at random times, so the
-  amount and the time do not match one payment. The pieces go out in the
-  background, even after your agent app closes. Ask: "Send 0.02 USDC to
-  my main wallet in 2 pieces within the next 10 minutes." The candidates
-  0.3.116 and later no longer split a send: each send leaves in one transfer.
 - **Send all of it** (`wallet_unshield`, `shinjuku unshield --amount all`). A
   balance from several deposits is readied by itself when you send all of it.
   You do nothing extra. Ask: "Send all of it."
@@ -283,17 +280,17 @@ production, with real USDC, on 2026-10-23.
 
 The time from "pay" to the seller's data, for the first payment to a seller
 the wallet never paid before (a fresh wallet process, production,
-2026-10-23):
+2026-10-23, version 0.3.86):
 
 | Route | First seller | Second seller |
 |---|---|---|
 | Direct | 4.85 s (payai.agentstools.dev) | 11.31 s |
 | Over Tor | 9.94 s (werner.ddns.net) | 18.14 s |
 
-### Known issues in 0.3.86
+### Fixed since 0.3.86
 
-The stable version 0.3.131 fixes these seven issues from 0.3.86.
-The list stays here as a record of the older release.
+These seven issues of the older stable version 0.3.86 are fixed in 0.3.131.
+Each fix passed a live run when it came out (0.3.87 to 0.3.91).
 
 1. When a seller fails before it takes the money, the answer starts with
    "Paid". The money is not taken and comes back by itself.
