@@ -82,6 +82,7 @@ This repository holds the setup guide, the [examples](examples/), the [docs](#do
   facilitator, the RPC, and the MCP host see, with each limit.
 - [Sell with Shinjuku Shielded](docs/sell-with-shinjuku.md): get paid by
   Shinjuku Shielded buyers with stock x402 middleware, and get listed.
+- [Get paid by any AI agent or app](docs/get-paid-by-any-agent.md): not offered yet.
 - [Proof](docs/proof.md): live mainnet transactions, and what each one shows
   and hides.
 - [FAQ](docs/faq.md): custody, cost, networks, Tor, recovery, and audits.
