@@ -1,6 +1,6 @@
 {
   "name": "shinjuku",
-  "version": "0.3.80",
+  "version": "0.0.0",
   "description": "The shinjuku command: runs the Shinjuku Shield wallet (npm shinjuku-shield) at this exact version. Pay x402 URLs and AI answers privately from a shielded USDC balance on Solana.",
   "license": "SEE LICENSE IN LICENSE.txt",
   "author": "Shinjuku Shield",
@@ -30,7 +30,7 @@
     "LICENSE.txt"
   ],
   "dependencies": {
-    "shinjuku-shield": "0.3.80"
+    "shinjuku-shield": "0.0.0"
   },
   "engines": {
     "node": "^22.21.0 || >=24.0.0"

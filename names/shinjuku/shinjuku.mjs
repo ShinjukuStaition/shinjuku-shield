@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// `shinjuku` runs the Shinjuku Shield wallet (the one package in package.json dependencies: shinjuku-shield, or
-// shinjuku-shielded before 0.3.81) at the exact version named there: the same commands, input, output and exit code as
-// the wallet's own shinjuku-wallet command.
+// `shinjuku` runs the Shinjuku Shield wallet (the one package in package.json dependencies: shinjuku-shield) at the
+// exact version named there (publish.yml sets it to this package's version): the same commands, input, output and exit
+// code as the wallet's own command.
 import { realpathSync } from "node:fs";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";

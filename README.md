@@ -99,7 +99,6 @@ plain requests.
 | | |
 |---|---|
 | Pinned version | `shinjuku-shield@0.3.131` |
-| Same files, older name | `shinjuku-shielded@0.3.131` |
 | Wallet release | 3c8b302d ([its hash](#releases)) |
 | Network | Solana, USDC |
 
@@ -897,7 +896,7 @@ our first customer and our live demo.
 ## Status
 
 - Stable version (pinned 2026-10-30): wallet release `3c8b302d`, npm
-  `shinjuku-shield@0.3.131` (the same files as `shinjuku-shielded@0.3.131`).
+  `shinjuku-shield@0.3.131`.
   Install that exact version. It adds private AI in the terminal and for
   agent apps.
   Every feature and how to use it: the
@@ -975,7 +974,7 @@ our first customer and our live demo.
 - Independent audit: none yet.
 
 Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.ShinjukuStaition/shinjuku-mcp)
-as `io.github.ShinjukuStaition/shinjuku-mcp`. npm: [`shinjuku-shield`](https://www.npmjs.com/package/shinjuku-shield) (also as `shinjuku-shielded`),
+as `io.github.ShinjukuStaition/shinjuku-mcp`. npm: [`shinjuku-shield`](https://www.npmjs.com/package/shinjuku-shield) (the older name `shinjuku-shielded` gets the same files, so wallets installed under it keep updating),
 published from this repository's workflow with npm provenance (from 0.1.1).
 
 Live on Solana mainnet. The current wallet release is `3c8b302d` (npm
@@ -1018,8 +1017,8 @@ Our website serves the files and their SHA-256 hashes at
 `https://shinjukustaition.com/proof-tools/<sha8>/`. This repository is a
 second, separate place for those hashes: each release adds its row here.
 
-The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131` and
-`shinjuku-shielded@0.3.131` (pinned 2026-10-30). Use it for a new install. A candidate, `80d2ed10` (npm 0.3.186, tag `next`), is out for testing.
+The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131`
+(pinned 2026-10-30). Use it for a new install. A candidate, `80d2ed10` (npm 0.3.186, tag `next`), is out for testing.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows

@@ -1,10 +1,9 @@
-name: Publish shinjuku-shield, shinjuku-shielded and shinjuku to npm
+name: Publish shinjuku-shield and shinjuku to npm
 
-# One wallet release goes out under both package names (shinjuku-shield is the main name from 0.3.81;
-# shinjuku-shielded stays, so installed wallets that update through it keep working) and as the shinjuku command
-# (names/shinjuku: it runs shinjuku-shield at the same exact version). Each has its npm Trusted Publisher on this file.
-# From 0.3.98 shinjuku-shield also has the bin `shinjuku` (the command users run); shinjuku-shielded does not, so a
-# machine with both installed globally has one `shinjuku` command file.
+# One wallet release goes out as shinjuku-shield (npm/package.json) and as the shinjuku command (names/shinjuku: it runs
+# shinjuku-shield at the same exact version). The same files also go out under the older name shinjuku-shielded, so
+# wallets installed under that name keep updating; that copy has no `shinjuku` bin, so a machine with both installed
+# globally has one `shinjuku` command file. Each name has its npm Trusted Publisher on this file.
 
 on:
   workflow_dispatch:
@@ -164,20 +163,31 @@ jobs:
 
       # --loglevel verbose: a refused trusted publisher shows only as E404 on the PUT; the verbose "oidc" line gives
       # npm's reason. npm redacts tokens in its logs.
-      - name: Publish shinjuku-shielded with provenance (npm trusted publishing; no token)
+      - name: Publish shinjuku-shield with provenance (npm trusted publishing; no token)
         run: |
           set -euo pipefail
-          if npm view "shinjuku-shielded@$VERSION" version >/dev/null 2>&1; then echo "already published"; exit 0; fi
+          # The command users run is `shinjuku`; npx still runs the bin named like the package.
+          [[ "$(jq -r '.name' package.json)" == "shinjuku-shield" ]] || { echo "::error::npm/package.json is not shinjuku-shield"; exit 1; }
+          for b in shinjuku shinjuku-shield; do
+            [[ "$(jq -r --arg b "$b" '.bin[$b]' package.json)" == "shinjuku-wallet.mjs" ]] || { echo "::error::shinjuku-shield has no bin $b"; exit 1; }
+          done
+          if npm view "shinjuku-shield@$VERSION" version >/dev/null 2>&1; then echo "already published"; exit 0; fi
           npm publish --provenance --access public --tag "$DIST_TAG" --loglevel verbose
 
-      - name: Publish the same files as shinjuku-shield
+      - name: Publish the same files under the older name shinjuku-shielded
         run: |
           set -euo pipefail
-          # The command users run is `shinjuku` (from 0.3.98); npx still runs the bin named like the package.
-          npm pkg set "name=shinjuku-shield" "bin.shinjuku=shinjuku-wallet.mjs"
-          [[ "$(jq -r '.bin["shinjuku-shield"]' package.json)" == "shinjuku-wallet.mjs" ]] || { echo "::error::shinjuku-shield has no bin named like the package"; exit 1; }
+          # A copy inside the checkout: npm/ stays shinjuku-shield for the shinjuku step below.
+          old="$GITHUB_WORKSPACE/npm-shinjuku-shielded"
+          rm -rf "$old" && mkdir "$old"
+          cp package.json README.md shinjuku-wallet.mjs LICENSE.txt THIRD_PARTY_NOTICES.txt manifest.json "$old/"
+          cd "$old"
+          npm pkg set "name=shinjuku-shielded" "description=The older npm name of shinjuku-shield (the same files), kept so wallets installed under it keep updating. New installs: npm install -g shinjuku"
+          npm pkg delete bin.shinjuku
+          [[ "$(jq -r '.bin.shinjuku' package.json)" == "null" ]] || { echo "::error::shinjuku-shielded must not have the shinjuku bin"; exit 1; }
+          echo "$(jq -r '.shinjukuSha256' package.json)  shinjuku-wallet.mjs" | sha256sum -c -
           jq '{name, version, shinjukuRelease, shinjukuSha256, bin}' package.json
-          if npm view "shinjuku-shield@$VERSION" version >/dev/null 2>&1; then echo "already published"; exit 0; fi
+          if npm view "shinjuku-shielded@$VERSION" version >/dev/null 2>&1; then echo "already published"; exit 0; fi
           npm publish --provenance --access public --tag "$DIST_TAG" --loglevel verbose
 
       - name: Publish the shinjuku command at the same version, last (it runs shinjuku-shield exactly)

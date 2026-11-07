@@ -1,12 +1,12 @@
 {
-  "name": "shinjuku-shielded",
+  "name": "shinjuku-shield",
   "version": "0.0.0",
   "mcpName": "io.github.ShinjukuStaition/shinjuku-mcp",
-  "description": "Shinjuku Shielded, the private x402 facilitator on Solana: the self-custody wallet CLI and its MCP server. Shield, pay, and unshield USDC from any MCP agent, under caps you set.",
+  "description": "Shinjuku Shield, private x402 payments on Solana: the self-custody wallet CLI and its MCP server. Shield, pay, and unshield USDC from any MCP agent, under caps you set.",
   "shinjukuRelease": "",
   "shinjukuSha256": "",
   "license": "SEE LICENSE IN LICENSE.txt",
-  "author": "Shinjuku Shielded",
+  "author": "Shinjuku Shield",
   "homepage": "https://github.com/ShinjukuStaition/shinjuku-shield#readme",
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "shielded"
   ],
   "bin": {
+    "shinjuku": "shinjuku-wallet.mjs",
     "shinjuku-shield": "shinjuku-wallet.mjs",
     "shinjuku-shielded": "shinjuku-wallet.mjs",
     "shinjuku-wallet": "shinjuku-wallet.mjs"

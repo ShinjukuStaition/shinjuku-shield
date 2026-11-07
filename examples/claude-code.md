@@ -1,11 +1,11 @@
 # Claude Code
 
-Set up Shinjuku Shielded and add it to Claude Code with two commands. You
+Set up Shinjuku Shield and add it to Claude Code with two commands. You
 need Node.js 22.21 or later (or Node.js 24 or later), on Linux or on Windows with WSL. macOS is not
 supported.
 
 ```sh
-npm install -g shinjuku@0.3.86
+npm install -g shinjuku@0.3.131
 shinjuku setup --add-to claude-code
 ```
 
@@ -19,17 +19,17 @@ Code.
 Without `--add-to`, setup prints the command. Run it once:
 
 ```sh
-claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp
+claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp
 ```
 
 What each piece of the command does:
 
 | Piece | What it does |
 |---|---|
-| `claude mcp add shinjuku-shielded` | Adds a stdio MCP server named `shinjuku-shielded` to Claude Code. |
+| `claude mcp add shinjuku` | Adds a stdio MCP server named `shinjuku` to Claude Code. |
 | `--scope user` | Makes the server available in all your projects. Without it, the scope is `local` (this project only). |
 | `--` | Ends the Claude Code options. All after it is the server command. |
-| `npx -y --no-audit --no-fund shinjuku-shield@0.3.86` | Gets and runs the npm package `shinjuku-shield` at the stable version 0.3.86. |
+| `npx -y --no-audit --no-fund shinjuku-shield@0.3.131` | Gets and runs the npm package `shinjuku-shield` at the stable version 0.3.131. |
 | `mcp` | The wallet command that runs the MCP server on stdio. |
 
 On native Windows, the printed command puts `cmd /c` before `npx`. With a
@@ -116,7 +116,7 @@ Or add a flag to the server command. A flag wins over `config.json`:
 For example:
 
 ```sh
-claude mcp add --scope user shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp --max-per-host-day 0.5
+claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp --max-per-host-day 0.5
 ```
 
 `shinjuku help mcp` and `shinjuku help setup`
@@ -132,7 +132,7 @@ your wallet folder and your passphrase file. It keeps your wallet and writes
 SHIELDED_WALLET_HOME=/home/you/.shielded-wallet \
   shinjuku setup --passphrase-file /home/you/shinjuku/passphrase.txt
 claude mcp add --scope user -e SHIELDED_WALLET_HOME=/home/you/.shielded-wallet \
-  shinjuku-shielded -- npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp
+  shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp
 ```
 
 Or give every flag yourself, as in the
@@ -140,11 +140,10 @@ Or give every flag yourself, as in the
 
 ## Check that it works
 
-1. Type `/mcp`. The list shows `shinjuku-shielded` as connected. After setup
-   it has 12 tools: `wallet_balance`, `wallet_add_funds`, `x402_pay`,
-   `x402_preview`, `x402_discover`, `wallet_unshield`, `wallet_cancel`,
-   `wallet_receipts`, `wallet_shield`, `wallet_transfer_token`,
-   `wallet_transfer_token_status`, `inference_chat`.
+1. Type `/mcp`. The list shows `shinjuku` as connected. After setup it has
+   the wallet tools, for example `wallet_balance`, `wallet_add_funds`,
+   `x402_pay` and `inference_chat`. The [README](../README.md) lists every
+   tool.
 2. Ask: "what is my balance". Claude calls `wallet_balance`. The answer
    has `balanceAtomic` (what the agent can pay with) with its `breakdown`,
    `unshieldedAtomic` (plain USDC on the wallet's own key), `ownAddress`,
@@ -160,8 +159,8 @@ Or give every flag yourself, as in the
    balance with `refreshing: true` and finishes in the background. Ask
    again after 60 s.
 
-If `shinjuku-shielded` shows as failed in `/mcp`, run
-`npx -y --no-audit --no-fund shinjuku-shield@0.3.86 mcp` in a terminal. The server writes every log
+If `shinjuku` shows as failed in `/mcp`, run
+`npx -y --no-audit --no-fund shinjuku-shield@0.3.131 mcp` in a terminal. The server writes every log
 line to stderr, and an error names what is wrong.
 
 ## Sends to a new address
@@ -176,5 +175,5 @@ again.
 To change the server command, remove the server and add it again:
 
 ```sh
-claude mcp remove shinjuku-shielded --scope user
+claude mcp remove shinjuku --scope user
 ```

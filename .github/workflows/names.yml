@@ -1,9 +1,9 @@
-name: Publish a names/ package to npm
+name: Publish a names/ pointer package to npm
 
-# The small packages under names/: `shinjuku` (the shinjuku command; it runs shinjuku-shielded at its own version) and
-# the pointer packages that keep our names (each prints how to install the wallet). A package with its npm Trusted
-# Publisher set publishes through OIDC; the first publish of a new name cannot (npm sets a Trusted Publisher per package),
-# so npm falls back to the NPM_TOKEN repository secret.
+# The pointer packages that keep our names (each prints how to install the wallet). The shinjuku command
+# (names/shinjuku) goes out with each wallet release from publish.yml. A package with its npm Trusted Publisher set
+# publishes through OIDC; the first publish of a new name cannot (npm sets a Trusted Publisher per package), so npm
+# falls back to the NPM_TOKEN repository secret.
 
 on:
   workflow_dispatch:
@@ -13,17 +13,14 @@ on:
         required: true
         type: choice
         options:
-          - shinjuku
           - shinpay
-          - shinjuku-shield
       dist_tag:
-        description: "npm dist-tag. latest = the stable pin (or a pointer package); next = any other release"
+        description: "npm dist-tag. A pointer package is always latest"
         required: true
         default: latest
         type: choice
         options:
           - latest
-          - next
 
 permissions:
   contents: read
@@ -66,25 +63,13 @@ jobs:
           if npm view "$name@$version" version >/dev/null 2>&1; then
             echo "::error::$name@$version is already published"; exit 1
           fi
-          if [[ "$name" == "shinjuku" ]]; then
-            # The shinjuku command runs shinjuku-shielded at the same version, named exactly.
-            dep=$(jq -r '.dependencies["shinjuku-shielded"]' package.json)
-            [[ "$dep" == "$version" ]] || { echo "::error::shinjuku $version must depend on shinjuku-shielded $version exactly, not $dep"; exit 1; }
-            npm view "shinjuku-shielded@$dep" version >/dev/null || { echo "::error::shinjuku-shielded@$dep is not published"; exit 1; }
-          fi
 
       - name: Smoke test the packed package and its bin
         run: |
           set -euo pipefail
           npm pack --pack-destination "$RUNNER_TEMP"
           npm install -g --prefix "$RUNNER_TEMP/try" --no-audit --no-fund "$RUNNER_TEMP"/*.tgz
-          if [[ "$PACKAGE" == "shinjuku" ]]; then
-            "$RUNNER_TEMP/try/bin/shinjuku" help mcp > /dev/null
-            "$RUNNER_TEMP/try/bin/shinjuku" version | tee "$RUNNER_TEMP/version.txt"
-            grep -q "shinjuku-shielded $(jq -r '.version' package.json)" "$RUNNER_TEMP/version.txt" || { echo "::error::the wallet did not report its version"; exit 1; }
-          else
-            "$RUNNER_TEMP/try/bin/$PACKAGE" | grep -q "shinjuku-shielded@" || { echo "::error::the pointer did not print the install line"; exit 1; }
-          fi
+          "$RUNNER_TEMP/try/bin/$PACKAGE" | grep -q "npm install -g shinjuku$" || { echo "::error::the pointer did not print the install line"; exit 1; }
           npm pack --dry-run
 
       - name: Publish with provenance (OIDC when the package has its Trusted Publisher; else the NPM_TOKEN secret)

@@ -1,7 +1,7 @@
 {
   "name": "shinpay",
-  "version": "0.0.1",
-  "description": "A name of Shinjuku Shield (private x402 payments). It prints how to install the wallet, npm shinjuku-shielded.",
+  "version": "0.0.2",
+  "description": "A name of Shinjuku Shield (private x402 payments). It prints how to install the wallet: npm install -g shinjuku.",
   "license": "SEE LICENSE IN LICENSE.txt",
   "author": "Shinjuku Shield",
   "homepage": "https://github.com/ShinjukuStaition/shinjuku-shield#readme",

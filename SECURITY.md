@@ -19,8 +19,8 @@ Please include:
 
 ## In scope
 
-The behavior of the MCP server (`shinjuku-wallet mcp`, also run as
-`npx -y --no-audit --no-fund shinjuku-shield mcp`), for example:
+The behavior of the MCP server (`shinjuku mcp`, also run as
+`npx -y --no-audit --no-fund shinjuku-shield@<version> mcp`), for example:
 
 - a payment above `--max-payment`, `--max-session`, `--max-per-host-day`, or
   outside `--allow-host`;

@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "shinjuku-shielded": {
+    "shinjuku": {
       "command": "npx",
-      "args": ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.86", "mcp"]
+      "args": ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.131", "mcp"]
     }
   }
 }

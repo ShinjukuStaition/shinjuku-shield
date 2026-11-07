@@ -6,8 +6,10 @@ a shielded USDC balance on Solana.
 This package installs nothing. It prints how to install the wallet:
 
 ```sh
-npm install -g shinjuku-shielded@0.3.80
-shinjuku-shielded setup
+npm install -g shinjuku
+shinjuku setup
 ```
+
+The README of the repository below names the exact stable version.
 
 Docs and host configs: https://github.com/ShinjukuStaition/shinjuku-shield
