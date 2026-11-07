@@ -106,8 +106,8 @@ Or add a flag to the server command. A flag wins over `config.json`:
 | `--allow-host <host>` | Pay only this seller host. Repeat it for more hosts. |
 | `--ready-pockets <0-5>` | Accepted for older configs and ignored. Standard `exact` sellers are paid through Shinjuku, and no pocket is filled. |
 | `--no-auto-pockets` | Accepted for older configs. It also stops the idle return of old pockets to the shielded balance. |
-| `--max-shield <usdc>` | The most one `wallet_shield` call may move, and the most this wallet may shield in any 24 hours, in USDC. |
-| `--no-shield` | Turns `wallet_shield` off. |
+| `--max-shield <usdc>` | The most one `wallet_shield` or `wallet_shield_from_elsewhere` deposit may move, and the most this wallet may shield in any 24 hours (both tools together), in USDC. |
+| `--no-shield` | Turns `wallet_shield` and `wallet_shield_from_elsewhere` off. |
 | `--unshield-to <address>` | A public Solana address that `wallet_unshield` sends to with no question. Repeat it for more. The wallet's own key is refused. |
 | `--max-unshield <usdc>` | The most one `wallet_unshield` call may send, and the most this wallet may send in any 24 hours, in USDC. Without it, a send that you confirm can move the whole shielded balance. |
 | `--no-tor` | This run does not use the Tor that setup recorded. |
