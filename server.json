@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.ShinjukuStaition/shinjuku-mcp",
+  "name": "io.github.ShinjukuStaition/shinjuku-shield",
   "title": "Shinjuku Shield",
   "description": "Private x402 payments on Solana: shield, pay, and unshield USDC under caps you set.",
   "version": "0.3.131",
