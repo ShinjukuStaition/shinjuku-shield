@@ -13,7 +13,8 @@ one. To try the candidate, install its exact version.
 ### Changed
 
 - A second received payment that 0.3.188 refused to send now takes its own send
-  from the terminal. **This send is not tested yet on this version.**
+  from the terminal. We ran this once, in a terminal, with 0.01 USDC. The same send
+  from an agent app has not run yet.
 - A refused send says it cannot send this amount now, and that you can send a
   smaller amount or add funds.
 - A refused send with nothing signed no longer asks you to rerun it with an id.
