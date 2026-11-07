@@ -185,6 +185,13 @@ try {
     sellerSha = sellerFile ? sha("sha256", sellerFile) : "(no file)";
     check(sellerSha === shippedManifest?.seller?.sha256, `seller library sha256 equals the tarball's manifest (${sellerSha})`,
       `seller library sha256 ${sellerSha} differs from the tarball's manifest ${shippedManifest?.seller?.sha256}`);
+    check(pkgJson.exports?.["./seller"] === "./seller.mjs", "the import name shinjuku-shield/seller opens seller.mjs",
+      `the import name shinjuku-shield/seller opens ${pkgJson.exports?.["./seller"]}, not ./seller.mjs`);
+    const loader = main.files["package/seller.mjs"]?.toString("utf8") ?? "";
+    check(/export async function createShinjukuSeller\b/.test(loader) && /library\.createShinjukuSeller\(/.test(loader),
+      "seller.mjs offers createShinjukuSeller and calls the library's", "seller.mjs does not offer createShinjukuSeller or does not call the library's");
+    check(/export\s*\{[^}]*\bcreateShinjukuSeller\b[^}]*\}/.test(sellerFile?.toString("utf8") ?? ""),
+      "the seller library exports createShinjukuSeller", "the seller library does not export createShinjukuSeller");
   } else {
     info("This release carries no seller library.");
   }
@@ -215,6 +222,8 @@ await step("website", async () => {
   if (sellerSha) {
     check(m.seller?.sha256 === sellerSha, "website manifest has the same seller library sha256",
       `website manifest seller library sha256 ${m.seller?.sha256} differs from the tarball's ${sellerSha}`);
+  } else if (m.seller) {
+    fail(`website manifest names a seller library (sha256 ${m.seller.sha256}), and the tarball has none`);
   }
 });
 await step("website release", async () => {

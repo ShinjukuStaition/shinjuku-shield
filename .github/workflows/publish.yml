@@ -176,7 +176,10 @@ jobs:
           try="$RUNNER_TEMP/try-exports"
           mkdir -p "$try/node_modules/shinjuku-shield"
           cp package.json shinjuku-wallet.mjs seller.mjs shinjuku-seller.mjs "$try/node_modules/shinjuku-shield/"
-          (cd "$try" && node --input-type=commonjs -e 'for (const [name, file] of [["shinjuku-shield/seller", "seller.mjs"], ["shinjuku-shield/shinjuku-wallet.mjs", "shinjuku-wallet.mjs"]]) { if (!require.resolve(name, { paths: [process.cwd()] }).endsWith(file)) throw new Error(name); }')
+          (cd "$try" && node --input-type=commonjs -e 'for (const [name, file] of [["shinjuku-shield/seller", "seller.mjs"], ["shinjuku-shield/shinjuku-wallet.mjs", "shinjuku-wallet.mjs"]]) { if (require("path").basename(require.resolve(name, { paths: [process.cwd()] })) !== file) throw new Error(name); }')
+          [[ "$(jq -r '.exports["./seller"]' package.json)" == "./seller.mjs" ]] || { echo "::error::exports ./seller is not ./seller.mjs"; exit 1; }
+          # A text check: loading the library needs the x402 packages, which this job does not install.
+          node --input-type=commonjs -e 'const fs = require("fs"); if (!/export\s*\{[^}]*\bcreateShinjukuSeller\b[^}]*\}/.test(fs.readFileSync("shinjuku-seller.mjs", "utf8"))) throw new Error("the seller library does not export createShinjukuSeller"); const loader = fs.readFileSync("seller.mjs", "utf8"); if (!/export async function createShinjukuSeller\b/.test(loader) || !/library\.createShinjukuSeller\(/.test(loader)) throw new Error("seller.mjs does not call createShinjukuSeller");'
           npm pack --dry-run --json > "$RUNNER_TEMP/pack.json"
           for f in shinjuku-wallet.mjs seller.mjs shinjuku-seller.mjs SELLER_THIRD_PARTY_NOTICES.txt manifest.json; do
             jq -e --arg f "$f" '.[0].files | any(.path == $f)' "$RUNNER_TEMP/pack.json" > /dev/null || { echo "::error::the package does not hold $f"; exit 1; }
