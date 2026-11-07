@@ -121,7 +121,7 @@ jobs:
           BYTES: ${{ steps.hash.outputs.bytes }}
         run: |
           set -euo pipefail
-          for f in shinjuku-wallet.mjs LICENSE.txt THIRD_PARTY_NOTICES.txt manifest.json; do
+          for f in shinjuku-wallet.mjs shinjuku-seller.mjs LICENSE.txt THIRD_PARTY_NOTICES.txt SELLER_THIRD_PARTY_NOTICES.txt manifest.json; do
             curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 60 --retry 3 --retry-all-errors \
               "$SITE/wallet/$RELEASE/$f" -o "$f"
           done
@@ -130,6 +130,12 @@ jobs:
           [[ "$(jq -r '.sha256' manifest.json)" == "$SHA256" ]] || { echo "::error::manifest.json sha256 differs"; exit 1; }
           [[ "$(jq -r '.license' manifest.json)" == "LicenseRef-Shinjuku-Shielded-Wallet" ]] || { echo "::error::manifest.json license changed"; exit 1; }
           echo "$(jq -r '.notices.sha256' manifest.json)  THIRD_PARTY_NOTICES.txt" | sha256sum -c -
+          # The seller library (shinjuku-shield/seller) and its notices, against the manifest of this release.
+          [[ "$(jq -r '.seller.file' manifest.json)" == "shinjuku-seller.mjs" ]] || { echo "::error::manifest.json names no seller library"; exit 1; }
+          [[ "$(jq -r '.seller.notices.file' manifest.json)" == "SELLER_THIRD_PARTY_NOTICES.txt" ]] || { echo "::error::manifest.json names no seller notices"; exit 1; }
+          echo "$(jq -r '.seller.sha256' manifest.json)  shinjuku-seller.mjs" | sha256sum -c -
+          echo "$(jq -r '.seller.notices.sha256' manifest.json)  SELLER_THIRD_PARTY_NOTICES.txt" | sha256sum -c -
+          [[ "$(stat -c %s shinjuku-seller.mjs)" == "$(jq -r '.seller.bytes' manifest.json)" ]] || { echo "::error::seller library size differs from the manifest"; exit 1; }
           head -n 1 shinjuku-wallet.mjs | grep -qx '#!/usr/bin/env node' || { echo "::error::wallet file has no node shebang"; exit 1; }
 
       # Fails closed: without the secret, with any match, or when grep cannot run the check (a bad pattern, a file it
@@ -164,6 +170,17 @@ jobs:
         run: |
           set -euo pipefail
           node shinjuku-wallet.mjs help mcp > /dev/null
+          node --check seller.mjs
+          node --check shinjuku-seller.mjs
+          # The name a seller's server imports resolves to the checked file, and the name the two pointers resolve still does.
+          try="$RUNNER_TEMP/try-exports"
+          mkdir -p "$try/node_modules/shinjuku-shield"
+          cp package.json shinjuku-wallet.mjs seller.mjs shinjuku-seller.mjs "$try/node_modules/shinjuku-shield/"
+          (cd "$try" && node --input-type=commonjs -e 'for (const [name, file] of [["shinjuku-shield/seller", "seller.mjs"], ["shinjuku-shield/shinjuku-wallet.mjs", "shinjuku-wallet.mjs"]]) { if (!require.resolve(name, { paths: [process.cwd()] }).endsWith(file)) throw new Error(name); }')
+          npm pack --dry-run --json > "$RUNNER_TEMP/pack.json"
+          for f in shinjuku-wallet.mjs seller.mjs shinjuku-seller.mjs SELLER_THIRD_PARTY_NOTICES.txt manifest.json; do
+            jq -e --arg f "$f" '.[0].files | any(.path == $f)' "$RUNNER_TEMP/pack.json" > /dev/null || { echo "::error::the package does not hold $f"; exit 1; }
+          done
           npm pack --dry-run
 
       # --loglevel verbose: a refused trusted publisher shows only as E404 on the PUT; the verbose "oidc" line gives

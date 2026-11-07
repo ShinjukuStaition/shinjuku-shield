@@ -156,7 +156,7 @@ async function npmPackage(name) {
 }
 
 // ---- 1. the wallet package: registry, tarball, provenance, the wallet file ----
-let wallet, walletSha, sha8;
+let wallet, walletSha, sha8, sellerSha;
 try {
   if (!version) {
     version = (await getJson(`${REGISTRY}/${PKG}/latest`)).version;
@@ -178,6 +178,16 @@ try {
     `wallet sha256 differs from shinjukuSha256 ${pkgJson.shinjukuSha256}`);
   check(sha8 === pkgJson.shinjukuRelease, `wallet release is ${sha8} (shinjukuRelease)`,
     `wallet sha256 starts with ${sha8}, but shinjukuRelease is ${pkgJson.shinjukuRelease}`);
+  // The seller library, in releases that carry one (shinjuku-shield/seller): the tarball's file against its manifest.
+  const shippedManifest = JSON.parse(main.files["package/manifest.json"]?.toString("utf8") ?? "null");
+  const sellerFile = main.files["package/shinjuku-seller.mjs"];
+  if (shippedManifest?.seller || sellerFile) {
+    sellerSha = sellerFile ? sha("sha256", sellerFile) : "(no file)";
+    check(sellerSha === shippedManifest?.seller?.sha256, `seller library sha256 equals the tarball's manifest (${sellerSha})`,
+      `seller library sha256 ${sellerSha} differs from the tarball's manifest ${shippedManifest?.seller?.sha256}`);
+  } else {
+    info("This release carries no seller library.");
+  }
   info("This script does not check the Sigstore signature of the provenance.");
   info(`To check it, run "npm audit signatures" in a folder where ${PKG}@${version} is installed.`);
 } catch (e) {
@@ -202,6 +212,10 @@ await step("website", async () => {
   check(m.sha256 === walletSha && Number(m.bytes) === wallet.length,
     `website manifest for ${sha8} has the same sha256 and bytes (source commit ${m.sourceCommit})`,
     `website manifest differs: sha256 ${m.sha256}, bytes ${m.bytes}`);
+  if (sellerSha) {
+    check(m.seller?.sha256 === sellerSha, "website manifest has the same seller library sha256",
+      `website manifest seller library sha256 ${m.seller?.sha256} differs from the tarball's ${sellerSha}`);
+  }
 });
 await step("website release", async () => {
   const r = await getJson(`${SITE}/api/wallet/release`, { site: true });

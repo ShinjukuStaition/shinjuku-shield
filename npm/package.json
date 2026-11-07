@@ -31,10 +31,19 @@
     "shinjuku-shielded": "shinjuku-wallet.mjs",
     "shinjuku-wallet": "shinjuku-wallet.mjs"
   },
+  "exports": {
+    "./seller": "./seller.mjs",
+    "./shinjuku-wallet.mjs": "./shinjuku-wallet.mjs",
+    "./manifest.json": "./manifest.json",
+    "./package.json": "./package.json"
+  },
   "files": [
     "shinjuku-wallet.mjs",
+    "seller.mjs",
+    "shinjuku-seller.mjs",
     "LICENSE.txt",
     "THIRD_PARTY_NOTICES.txt",
+    "SELLER_THIRD_PARTY_NOTICES.txt",
     "manifest.json"
   ],
   "engines": {
