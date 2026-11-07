@@ -563,20 +563,83 @@ USDC that is already on the wallet's own address (`ownAddress` in
 `wallet_balance`) goes in with `wallet_shield`. The steps are in
 [First 10 minutes](examples/README.md#first-10-minutes).
 
-### Advanced: download the file and check it
+### Verify a release
 
-Download the release file and check its SHA-256 before you run it. The
-current file and hash are also in the
-[Releases table](#releases)
-and in section 7b of https://shinjukustaition.com/skill.md.
+The wallet is one file, `shinjuku-wallet.mjs`. The same file, with the same
+SHA-256, is in three places: the npm package `shinjuku-shield`, our website,
+and the [Releases table](#releases) of this repository. The steps below check
+the stable version 0.3.131 (wallet release `3c8b302d`). Its SHA-256 in the
+Releases table is
+`3c8b302d8f0616edc98cc277f1b41b5cc47d121efb77a7b1cba3214ab60fb8b8`.
 
-```sh
-curl -fsSLO https://shinjukustaition.com/wallet/b650bf06/shinjuku-wallet.mjs
-echo "b650bf0682830e05207f52bad2ba426ec7f8fa1bbbfdb7e028057865e3d83d24  shinjuku-wallet.mjs" | sha256sum -c -
-node shinjuku-wallet.mjs setup
-```
+1. Install the npm package into a new, empty folder. Type each line alone:
 
-With the file, replace `shinjuku` with `node /abs/path/shinjuku-wallet.mjs`.
+   ```sh
+   mkdir shinjuku-check
+   cd shinjuku-check
+   npm init -y
+   npm install --ignore-scripts shinjuku-shield@0.3.131
+   ```
+
+2. The npm copy. Hash the wallet file inside the installed package. The hash
+   must equal the SHA-256 above.
+
+   Linux: `sha256sum node_modules/shinjuku-shield/shinjuku-wallet.mjs`
+
+   macOS: `shasum -a 256 node_modules/shinjuku-shield/shinjuku-wallet.mjs`
+
+   Windows (PowerShell):
+
+   ```powershell
+   (Get-FileHash .\node_modules\shinjuku-shield\shinjuku-wallet.mjs -Algorithm SHA256).Hash
+   ```
+
+   PowerShell prints the hash in capital letters; the letters are the same.
+
+3. The npm signatures. In the same folder:
+
+   ```sh
+   npm audit signatures
+   ```
+
+   It checks the registry signatures and the provenance attestations of the
+   installed package. It must print "1 package has a verified registry
+   signature" and "1 package has a verified attestation". It does not print
+   who built the package.
+
+4. Who built it. The provenance attestation is a statement, signed through
+   Sigstore during the build, of where the package was built. To read it, open
+   https://www.npmjs.com/package/shinjuku-shield/v/0.3.131, select the green
+   check mark next to the version, then "View more details". "Source Commit"
+   must be a commit of `ShinjukuStaition/shinjuku-shield`, and "Build File"
+   must be `.github/workflows/publish.yml`.
+
+5. The website copy. Download the file and check it. Go on only when the
+   check prints `OK`:
+
+   ```sh
+   curl -fsSLO https://shinjukustaition.com/wallet/3c8b302d/shinjuku-wallet.mjs
+   echo "3c8b302d8f0616edc98cc277f1b41b5cc47d121efb77a7b1cba3214ab60fb8b8  shinjuku-wallet.mjs" | sha256sum -c -
+   ```
+
+   On macOS, end the second line with `shasum -a 256 -c -` in place of
+   `sha256sum -c -`.
+
+   On Windows (PowerShell), type `curl.exe` in place of `curl`, then:
+
+   ```powershell
+   if ((Get-FileHash .\shinjuku-wallet.mjs -Algorithm SHA256).Hash -eq "3c8b302d8f0616edc98cc277f1b41b5cc47d121efb77a7b1cba3214ab60fb8b8") { "OK" } else { "MISMATCH" }
+   ```
+
+   The file and its hash are also in section 7b of
+   https://shinjukustaition.com/skill.md. To run the file itself, replace
+   `shinjuku` with `node /abs/path/shinjuku-wallet.mjs` in the commands.
+
+What these steps show: the npm copy, the website copy and the Releases table
+have the same hash; npm's signatures on the package are valid; and the
+provenance names the repository and workflow that built the package. They do
+not show the wallet's source code, which is not public. As npm says,
+provenance does not guarantee that a package has no malicious code.
 
 ### Advanced: flags instead of config.json
 
@@ -1239,7 +1302,7 @@ You do not need this part: `shinjuku setup` does all of it. It is for a
 machine without npm, or to get and check each file yourself.
 
 The wallet needs Node.js 22.21 or later (or Node.js 24 or later) and nothing
-else. The stable release is `b650bf06`: put it in place of `<sha8>` below.
+else. The stable release is `3c8b302d`: put it in place of `<sha8>` below.
 
 ### 1. Download
 
