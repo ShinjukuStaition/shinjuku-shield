@@ -69,6 +69,14 @@ shinjuku seller status
 It lists each sale: on its way, or paid into your private balance. Your balance shows the money that has arrived. A sale
 moves into your private balance after the buyer's payment is final. We have not measured that time yet, so this page names none.
 
+## Use your money
+
+Your sales reach your private balance as separate received payments. Today:
+
+- To send money to a Solana wallet address, use `shinjuku unshield`. One send takes one received payment.
+- To pay for something from this balance, your wallet first needs one of two things: add funds once (from 0.01 USDC), or send
+  part of one received payment out.
+
 ## What others can see
 
 - **Anyone** can see each buyer's payment on the chain: who paid, and how much. It goes to Shinjuku's one shared account,
