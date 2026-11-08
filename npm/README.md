@@ -1,17 +1,11 @@
 # Shinjuku Shield
 
-The Shinjuku Shield wallet: a self-custody wallet that pays x402 URLs
-privately from a shielded USDC balance on Solana. It also pays for AI
-answers privately, in a terminal chat or for your agent app. Its `mcp`
-command runs a local MCP server (stdio) for your agent. Your keys never
-leave your machine.
+Shinjuku Shield is a private wallet on your own computer. It pays for paid
+web services and AI answers from your private balance, so the payment does
+not show who paid. It works inside your AI app (Claude, Cursor, Codex) and in
+a terminal. Only you hold the keys: they never leave your computer.
 
-This is version {{VERSION}}. The command is `shinjuku`. `shinjuku-shield`
-is the one package that holds the wallet. `shinjuku-shielded` {{VERSION}},
-its older npm name, is a small package that runs this package at the same
-version, so wallets installed under it keep updating (0.3.186 and earlier
-versions of `shinjuku-shielded` hold the same files as this package). New
-installs use `shinjuku`.
+This is version {{VERSION}}. The command is `shinjuku`.
 
 ## Set up
 
@@ -19,22 +13,96 @@ installs use `shinjuku`.
 npx -y shinjuku@{{VERSION}} setup
 ```
 
-Setup offers to install the `shinjuku` command and, on Windows, adds npm's
-folder to your PATH when it is missing: open a new window after setup to
-type `shinjuku`.
+Setup does every step for you:
 
-Setup makes the wallet on this machine, a private passphrase file, and the
-checked proof tools (about 191 MB), and writes `config.json`. It also writes
-a recovery file: copy it to two offline places, then delete it from this
-machine. `--add-to claude-code` (or `claude-desktop`, `cursor`, `codex`) also
-adds the wallet to that app.
+- It makes your wallet on this computer, with a passphrase file that only you
+  can read.
+- It asks "Use Tor?" (Tor hides your internet address; on by default). With
+  Tor, start Tor yourself before you use the wallet, with an HTTP tunnel port
+  (add `HTTPTunnelPort 127.0.0.1:9080` to your torrc); the wallet prints the
+  steps when Tor is not running.
+- It downloads and checks the files the wallet needs (about 200 MB), so later
+  payments do not wait for them.
+- It offers to install the `shinjuku` command. On Windows it also puts that
+  command on your PATH: open a new window after setup to type `shinjuku`.
+- It writes a recovery file. Copy it to two offline places (for example two
+  USB drives), then delete it from this computer. It is the only way to get
+  your wallet back if this computer is lost.
+
+Run setup again at any time: it never changes a wallet that exists.
+
+## Add it to your AI app
+
+Claude Code: run this line once. Setup then adds the wallet to Claude Code:
+
+```sh
+shinjuku setup --add-to claude-code
+```
+
+Then reconnect the wallet in Claude Code: type `/mcp`, pick `shinjuku`, and
+choose Reconnect.
+
+> **In this test version (not offered yet):**
+> - On Windows, the wallet downloads and starts Tor by itself, and starts it
+>   again after a restart.
+> - `setup --add-to claude-desktop`, `--add-to cursor` and `--add-to codex` add
+>   the wallet to Claude Desktop, Cursor and Codex. At the end of setup, the
+>   wallet prints this line for every app it knows.
+
+## Add money
+
+Ask your AI app: "Add 0.50 USDC to my private balance." It gives you a
+one-time address. Send USDC on Solana to it from any wallet or exchange. Any
+amount from 0.01 USDC works, and you need no SOL. The USDC becomes private by
+itself.
+
+In a terminal: `shinjuku add-funds`.
+
+## Pay
+
+Ask your AI app in plain words, for example:
+
+- "Find a paid weather service."
+- "What does this link cost?" (nothing is paid)
+- "Pay for this link."
+
+Each answer says what happened and what to do next. A payment that the seller
+does not take comes back to your private balance by itself.
+
+Spending limits are off by default: only your balance limits a payment. To
+set limits, run setup again with `--max-payment` (the most one payment may
+cost) and `--max-session` (the most in any 24 hours), in USDC: `0.05` is 5
+cents.
+
+## Private AI
+
+Each AI answer is paid from your private balance, through Tor. The AI service
+sees your words, but not your internet address, and the payment does not show
+who paid. The wallet keeps no copy of a conversation.
+
+- `shinjuku chat`: chat with an AI in this terminal. Each answer costs at most
+  0.05 USDC and each chat at most 1 USDC, unless you change these limits.
+- `shinjuku infer start`: a private AI address for another app on this
+  computer (an app that uses the OpenAI format). It prints the address and a
+  key to put in that app. It keeps running after you close the terminal.
+  `shinjuku infer status` shows it, and `shinjuku infer stop` stops it.
+- In your AI app, ask "Ask a private AI: ..." for one private answer.
 
 ## The `shinjuku` command
 
-Every wallet command works after `shinjuku`, for example `shinjuku balance`,
-`shinjuku chat` or `shinjuku infer start`. `shinjuku help` lists them.
+Every wallet command starts with `shinjuku`, for example `shinjuku balance`,
+`shinjuku add-funds` or `shinjuku chat`. `shinjuku help` lists them all.
 
-## Add it to your agent host
+## What you need
+
+- Windows (x64) or Linux. macOS is not supported yet: setup says so before it
+  asks anything.
+- Node.js 22.21 or later, or Node.js 24 or later (not Node.js 23).
+  `node --version` shows yours.
+
+## If setup cannot add the wallet to your app
+
+Add it yourself. The name of the wallet in your app is `shinjuku`.
 
 Claude Code:
 
@@ -42,18 +110,18 @@ Claude Code:
 claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@{{VERSION}} mcp
 ```
 
-Claude Desktop (`claude_desktop_config.json`) or Cursor (`~/.cursor/mcp.json`):
+In this test version only (not offered yet), the same entry for Claude Desktop
+(`claude_desktop_config.json`) or Cursor (`~/.cursor/mcp.json`):
 
 ```json
 { "mcpServers": { "shinjuku": { "command": "npx", "args": ["-y", "--no-audit", "--no-fund", "shinjuku-shield@{{VERSION}}", "mcp"] } } }
 ```
 
-On native Windows, if the host cannot find `npx`, use `"command": "cmd"` and
-put `"/c", "npx"` at the start of `args`. The server's name in host
-configs is `shinjuku`.
+On Windows, if the app cannot find `npx`, use `"command": "cmd"` and put
+`"/c", "npx"` at the start of `args`.
 
-Codex (the Codex app and Codex CLI read the same file, `~/.codex/config.toml`):
-`shinjuku setup --add-to codex` adds these lines; or add them yourself:
+In this test version only (not offered yet), Codex (the Codex app and Codex
+CLI read `~/.codex/config.toml`):
 
 ```toml
 [mcp_servers.shinjuku]
@@ -63,57 +131,21 @@ startup_timeout_sec = 120
 tool_timeout_sec = 300
 ```
 
-## Add funds
+## For builders: check what you install
 
-Ask your agent "Add 0.50 USDC to my shielded balance". It calls
-`wallet_add_funds` and gives a one-time address. Send USDC on Solana to it
-from any wallet or exchange. Cents work (from 0.01 USDC), and you need no
-SOL. The USDC becomes private by itself.
-
-## Pay
-
-Spending limits are optional and off by default: only the balance bounds a
-payment. To set them, give setup `--max-payment`, `--max-session`, or
-`--max-cumulative`, in USDC (`0.05` = 5 cents).
-
-`x402_discover` finds sellers in public x402 listings, `x402_preview` shows
-the price, and `x402_pay` pays.
-
-## Private AI
-
-Each answer is paid from your shielded balance, through Tor: the AI
-provider sees your words, not your IP address, and the chain does not show
-which wallet paid. The wallet keeps no copy of a conversation.
-
-- `shinjuku chat`: a chat in this terminal. Each answer has a cap (0.05 USDC
-  by default) and each chat has a cap (1 USDC by default).
-- `shinjuku infer start`: a local AI address for an agent app that speaks
-  the OpenAI API. It prints the `base_url` (`http://127.0.0.1:11402/v1`) and
-  an api key. It keeps running in the background after the terminal closes;
-  `shinjuku infer status` shows it, and `shinjuku infer stop` stops it. Your
-  agent can also start it with the MCP tool `inference_server`. It serves
-  the OpenAI Chat Completions API (`/v1/chat/completions`, streaming and
-  function tools too), the OpenAI Responses API (`/v1/responses`, which
-  Codex uses) and `/v1/models`. `shinjuku infer status --verbose` prints
-  the lines that run a whole Codex session on it.
-- `inference_chat` (MCP): one answer for your agent.
-
-## Needs
-
-- Node.js 22.21 or later, or Node.js 24 or later (`node --version` shows yours; a `--tor` run needs `NODE_USE_ENV_PROXY`, which Node.js 23 does not have).
-- Windows x64 or Linux. macOS is not supported yet: setup says so before it
-  asks anything.
-- Tor, for private AI (and for `--tor`).
-
-The package has no install scripts. `node_modules/.bin` and the global npm
-folder must not be writable by other users: the MCP server holds your wallet
-keys.
+The package has no install scripts. Do not let other users write to the npm
+folders (`node_modules/.bin` and the global npm folder): the wallet in them
+holds your keys.
 
 This package holds one wallet release, unchanged. The `shinjukuRelease` and
 `shinjukuSha256` fields in `package.json` name that release. Compare the hash
 with the Releases table in
 [ShinjukuStaition/shinjuku-shield](https://github.com/ShinjukuStaition/shinjuku-shield#releases).
 Versions are published from GitHub Actions with npm provenance.
+
+`shinjuku-shield` is the package that holds the wallet. `shinjuku-shielded`
+{{VERSION}}, its older name, runs this package at the same version, so wallets
+installed under that name keep updating. New installs use `shinjuku`.
 
 The full guide is
 [ShinjukuStaition/shinjuku-shield](https://github.com/ShinjukuStaition/shinjuku-shield).
