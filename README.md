@@ -121,7 +121,7 @@ you also want to hide your IP address.
    `npx -y shinjuku@0.3.131 setup`. On a Windows computer with more than one
    account, `shinjuku` can say "'shinjuku' is not recognized": Node.js puts
    npm's folder on the PATH of the account that installed it only. Then type `npx -y shinjuku@0.3.131` in
-   place of `shinjuku` in the lines below. The candidate 0.3.197 adds npm's
+   place of `shinjuku` in the lines below. The candidate 0.3.198 adds npm's
    folder to your PATH by itself.
 
    Setup asks whether to use Tor and for your own wallet address (optional;
@@ -138,7 +138,7 @@ you also want to hide your IP address.
    there) and choose Exit, then open it again. On a Mac, press Command+Q. Your
    agent app then starts the wallet by itself.
 
-   With the candidate 0.3.197 (`npx -y shinjuku@0.3.197 setup`), setup also adds
+   With the candidate 0.3.198 (`npx -y shinjuku@0.3.198 setup`), setup also adds
    the wallet for you: `--add-to codex` for the ChatGPT desktop app (its Codex
    side) and Codex CLI, `--add-to claude-desktop` for Claude Desktop, also
    the Microsoft Store version, `--add-to grok` for Grok Build, `--add-to hermes`
@@ -440,7 +440,7 @@ yet.
 
 The stable version is 0.3.131 (wallet release `3c8b302d`, pinned 2026-10-30).
 Every command here names it. Setup prints host lines that name this exact version.
-It uses npm tag `latest`. A candidate, 0.3.197, is out for testing (npm tag `next`, 2026-11-08).
+It uses npm tag `latest`. A candidate, 0.3.198, is out for testing (npm tag `next`, 2026-11-09).
 [Status](#status) and the [changelog](CHANGELOG.md) list its changes.
 
 A later stable version gets its own row in the
@@ -690,7 +690,7 @@ question each, with curl, TypeScript, Python and LangChain.
 ### 1. Start the address
 
 ```
-npx -y shinjuku@0.3.197 infer start
+npx -y shinjuku@0.3.198 infer start
 ```
 
 It prints the address, an API key and the model. You need the first two:
@@ -703,7 +703,7 @@ model    qwen3-8-flash (others: ...)
 
 The address keeps running in the background. It stops when your computer
 restarts: then run the line again (the key stays the same). To stop it:
-`npx -y shinjuku@0.3.197 infer stop`.
+`npx -y shinjuku@0.3.198 infer stop`.
 
 ### 2. Put your key where your program can find it
 
@@ -964,9 +964,9 @@ our first customer and our live demo.
   [0.3.131 release notes](#release-03131).
   Hash: the `3c8b302d` row of [Releases](#releases).
 - The stable version before it: wallet release `b650bf06` (npm 0.3.86).
-- Candidate (2026-11-08, not the stable version): wallet release `a7aadb54`, npm
-  `shinjuku-shield@0.3.197` under the tag `next`. The wallet runs Tor for you,
-  Windows needs no WSL (on Windows type `npx -y shinjuku@0.3.197 setup` in
+- Candidate (2026-11-09, not the stable version): wallet release `30be98b7`, npm
+  `shinjuku-shield@0.3.198` under the tag `next`. The wallet runs Tor for you,
+  Windows needs no WSL (on Windows type `npx -y shinjuku@0.3.198 setup` in
   Command Prompt), the `shinjuku` screen runs every job, setup offers a backup
   before the first deposit, and a wallet from an older version updates with no
   new setup. The [changelog](CHANGELOG.md) lists the rest.
@@ -1099,7 +1099,7 @@ Our website serves the files and their SHA-256 hashes at
 second, separate place for those hashes: each release adds its row here.
 
 The stable version is `3c8b302d`, on npm as `shinjuku-shield@0.3.131`
-(pinned 2026-10-30). Use it for a new install. A candidate, `a7aadb54` (npm 0.3.197, tag `next`), is out for testing.
+(pinned 2026-10-30). Use it for a new install. A candidate, `30be98b7` (npm 0.3.198, tag `next`), is out for testing.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
@@ -1318,6 +1318,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-11-08 (candidate, npm `next`) | [`2e69a649`](https://shinjukustaition.com/wallet/2e69a649/shinjuku-wallet.mjs) | `2e69a649217c7f9c78c5cab9d748fd478e50b0752c0b769e5be6533b65c717bd` | 9,406,056 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 | 2026-11-08 (candidate, npm `next`) | [`9f713df2`](https://shinjukustaition.com/wallet/9f713df2/shinjuku-wallet.mjs) | `9f713df26eed69219dcf8555afe39ba224a2606edd8ba970e79786a4de4a79b9` | 9,433,979 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 | 2026-11-08 (candidate, npm `next`) | [`a7aadb54`](https://shinjukustaition.com/wallet/a7aadb54/shinjuku-wallet.mjs) | `a7aadb545214ada4d5c61433b62539a78559d35e2ae00106e9a0516eff2ad256` | 9,445,994 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
+| 2026-11-09 (candidate, npm `next`) | [`30be98b7`](https://shinjukustaition.com/wallet/30be98b7/shinjuku-wallet.mjs) | `30be98b75cc5bfe572442c64facdc78894536998dfbea14c4693f43d62c1c5f1` | 9,454,034 | [`29a6a9c7`](https://shinjukustaition.com/proof-tools/29a6a9c7/SHA256SUMS) | `29a6a9c77ae04a76abf29670f580759df450e7e393e803d7756f21beabbf4838` | 30 (191,114,154 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
