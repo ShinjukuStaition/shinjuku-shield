@@ -4,6 +4,20 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-09: wallet release `571f1b88`, npm `shinjuku@0.3.201` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- No more 5 USDC limit on your private balance. One deposit can still be at
+  most 100 USDC; a larger amount goes in as more deposits.
+- When you add money, the wallet's answers now say plainly what happens next.
+- After a refund lands, the wallet says so as soon as Shinjuku confirms it,
+  and it gives no time when it does not know the time.
+
 ## 2026-11-09: wallet release `373e47b0`, npm `shinjuku@0.3.200` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
