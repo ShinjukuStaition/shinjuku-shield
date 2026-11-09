@@ -273,9 +273,6 @@ one. To try the candidate, install its exact version.
 
 - The wallet can pay a seller that uses x402 version 1. This has not passed a
   run by a new user yet.
-- The package holds the seller library `shinjuku-shield/seller`, for the path
-  [Get paid by any AI agent or app](docs/get-paid-by-any-agent.md). That path is
-  not offered yet: `seller setup` refuses it until Shinjuku turns it on.
 
 ### Changed
 
