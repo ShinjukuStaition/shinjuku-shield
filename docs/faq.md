@@ -121,9 +121,7 @@ price, and paid answer. A local model removes that observer.
 Yes. Keep your standard x402 `exact` middleware on your current
 facilitator (Coinbase CDP, PayAI, or any other). Shinjuku Shield buyers
 pay you through float pay, and you change nothing:
-[sell-with-shinjuku.md](sell-with-shinjuku.md). Selling `shielded-exact`
-needs our source repository, which is not public yet. Hidden-amount selling
-(scheme `confidential`) is retired.
+[sell-with-shinjuku.md](sell-with-shinjuku.md).
 
 ### How do I know the wallet file is ours?
 

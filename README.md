@@ -82,7 +82,6 @@ This repository holds the setup guide, the [examples](examples/), the [docs](#do
   facilitator, the RPC, and the MCP host see, with each limit.
 - [Sell with Shinjuku Shielded](docs/sell-with-shinjuku.md): get paid by
   Shinjuku Shielded buyers with stock x402 middleware, and get listed.
-- [Get paid by any AI agent or app](docs/get-paid-by-any-agent.md): not offered yet.
 - [Proof](docs/proof.md): live mainnet transactions, and what each one shows
   and hides.
 - [FAQ](docs/faq.md): custody, cost, networks, Tor, recovery, and audits.
@@ -176,12 +175,6 @@ of its own on 0.3.131: one question with `shinjuku infer`.
   wallet's own public address moves into the shielded balance. The
   facilitator pays the network fee. Ask: "Make the USDC on my address
   private."
-- **Sell a token** (`wallet_transfer_token`, `wallet_transfer_token_status`; in
-  0.3.131 to 0.3.180 only: the candidates from 0.3.181 remove this tool).
-  The wallet sells your token for USDC from your public address (anyone can
-  see that sale), then sends the USDC privately in one payment. The receiver
-  gets USDC, not the token. Ask: "Sell my JUP for USDC and send it privately
-  to my main wallet."
 
 **Pay**
 
@@ -323,7 +316,6 @@ Ask your agent the way you would ask a person:
 | "pay this URL" | `x402_preview`, then `x402_pay` |
 | "ask an AI model privately" | `inference_chat` |
 | "send 2 USDC privately to <address>" | `wallet_unshield` |
-| "sell my JUP and send the value privately to <address>" | `wallet_transfer_token` (0.3.131 to 0.3.180; not in 0.3.181 and later) |
 
 Each answer tells the agent the exact next call. The wallet reads the chain
 and writes an encrypted backup by itself, so you never run a command for
@@ -373,24 +365,9 @@ nothing.
 | `wallet_receipts` | Your most recent paid receipts: `{ok, count, total, facilitatorNote, receipts}`. Each receipt has `kind` (`x402`, `inference`, or a move), the host (never the full URL), `amountAtomic`, and `transaction`. |
 | `wallet_cancel` | Closes one unfinished payment (its reserved balance comes back), the pieces of a private send that did not start, or an add-funds link that no USDC reached. |
 
-### RECEIVE AND TRADE
-
-| Tool | What it does |
-|---|---|
-| `wallet_receive_shielded` | Gives a new one-time private (shielded) address of this wallet, for a Shinjuku Shielded payer in the same pool. It stores, signs, and moves nothing. A wallet that never shielded can spend what it receives only after one shield; the answer says so in `notice`. |
-| `wallet_transfer_token` | In 0.3.131 to 0.3.180 only (the candidates from 0.3.181 remove it). Sells a Solana token for USDC (on Jupiter) from the wallet's public address (anyone can see that sale), makes the USDC private, and sends it privately to an address. The address gets USDC, not the token. It takes minutes. The stages are `selling`, `shielding`, `sending`, and `done`. |
-| `wallet_transfer_token_status` | In 0.3.131 to 0.3.180 only. Shows the stage of one transfer by `request_id`, or the list of transfers. |
-
 `wallet_shield` and `wallet_unshield` always appear in the tool list. When
 one is off, it answers `"error": "mcp_tool_disabled"` and tells the agent
 what to ask you.
-
-The tool list shows 12 of the tools above: `wallet_receive_shielded` is not
-in the list from 0.3.54 (it comes back with private escrow deals), but it
-still answers when an agent calls it by name. Some older tools are not in
-the list either, and they also answer by name:
-`wallet_shield_from_elsewhere`, `wallet_pay_me`, `wallet_pay_me_status`,
-`wallet_unshield_cancel`, `wallet_move_status`, and `inference_models`.
 
 What it pays:
 
