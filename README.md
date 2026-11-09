@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/banner.png" alt="Shinjuku Shield: private x402 payments on Solana" width="100%"></p>
+<p align="center"><img src="assets/banner.png" alt="Shinjuku Shield. The privacy suite for AI. Shield once. Pay anywhere." width="100%"></p>
 
 <p align="center">
 <img alt="Solana mainnet" src="https://img.shields.io/badge/Solana-mainnet-D22B23?style=flat-square&labelColor=0C0707">
