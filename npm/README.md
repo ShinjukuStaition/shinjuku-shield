@@ -42,13 +42,6 @@ shinjuku setup --add-to claude-code
 Then reconnect the wallet in Claude Code: type `/mcp`, pick `shinjuku`, and
 choose Reconnect.
 
-> **In this test version (not offered yet):**
-> - On Windows, the wallet downloads and starts Tor by itself, and starts it
->   again after a restart.
-> - `setup --add-to claude-desktop`, `--add-to cursor` and `--add-to codex` add
->   the wallet to Claude Desktop, Cursor and Codex. At the end of setup, the
->   wallet prints this line for every app it knows.
-
 ## Add money
 
 Ask your AI app: "Add 0.50 USDC to my private balance." It gives you a
@@ -108,27 +101,6 @@ Claude Code:
 
 ```sh
 claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@{{VERSION}} mcp
-```
-
-In this test version only (not offered yet), the same entry for Claude Desktop
-(`claude_desktop_config.json`) or Cursor (`~/.cursor/mcp.json`):
-
-```json
-{ "mcpServers": { "shinjuku": { "command": "npx", "args": ["-y", "--no-audit", "--no-fund", "shinjuku-shield@{{VERSION}}", "mcp"] } } }
-```
-
-On Windows, if the app cannot find `npx`, use `"command": "cmd"` and put
-`"/c", "npx"` at the start of `args`.
-
-In this test version only (not offered yet), Codex (the Codex app and Codex
-CLI read `~/.codex/config.toml`):
-
-```toml
-[mcp_servers.shinjuku]
-command = "npx"
-args = ["-y", "--no-audit", "--no-fund", "shinjuku-shield@{{VERSION}}", "mcp"]
-startup_timeout_sec = 120
-tool_timeout_sec = 300
 ```
 
 ## For builders: check what you install
