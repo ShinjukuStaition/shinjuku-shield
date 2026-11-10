@@ -10,6 +10,23 @@
 
 # Shinjuku Shield
 
+**The privacy suite for AI. Shield once. Pay anywhere.**
+
+Install it once. Take your privacy everywhere you and your AI go.
+
+- **Private payments.** Your AI pays for services online from your shielded balance: a private
+  balance that stays in your own wallet. The chain does not show who paid.
+- **Private AI.** Each AI answer is paid privately, and the AI service does not see who asked.
+  More is coming.
+- **Your keys stay with you.** The wallet makes your keys on your computer. We never hold them,
+  and only they can spend your balance.
+- **No SOL needed.** Add USDC from any wallet or exchange. We pay the network fees.
+
+It works today in Claude Code and in a terminal. To start, follow the two lines in
+[Get started](#get-started).
+
+### For builders
+
 Shinjuku Shield is a privacy-only x402 payment facilitator on Solana.
 An agent pays an x402 endpoint from a balance that it holds itself. The
 chain does not show who paid.
