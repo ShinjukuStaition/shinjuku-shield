@@ -4,6 +4,27 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-11: wallet release `16c37be1`, npm `shinjuku@0.3.211` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.210` (wallet release `2b7c138c`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- Every deposit uses the newer private deposit proof. If the service cannot
+  take a deposit for a moment, the wallet says to ask again later; your
+  money stays where it is.
+
+### Fixed
+
+- While a send of yours is still going, the balance says that the send holds
+  that money, instead of showing an empty balance.
+- A spending limit change changes only the limit you named.
+- The text before a send to your own wallet is clearer.
+- An SVG image answer comes back as an image, not as a file of unknown type.
+- The wallet does not start a second shield while one is still going.
+
 ## 2026-11-11: npm `shinjuku@0.3.210` is the stable version (npm tag `latest`)
 
 The stable version is now 0.3.210. It is the same wallet file as 0.3.209
