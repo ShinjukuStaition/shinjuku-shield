@@ -4,6 +4,24 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-11: wallet release `2b7c138c`, npm `shinjuku@0.3.209` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.131` (wallet release `3c8b302d`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- The wallet works on Node 26, the Node version the Hermes app runs it on.
+  Before, it stopped every request there (nothing left without Tor).
+- Cancel answers at once while a payment is being made, and says plainly
+  that the payment cannot be stopped.
+- The receipts list your own deposit once, not also as a payment you
+  received.
+- `shinjuku funds-status` in a terminal lists the deposits your agent app
+  made.
+- A search for paid services with no search words asks for a few words.
+
 ## 2026-11-11: wallet release `bf8c2b52`, npm `shinjuku@0.3.208` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
