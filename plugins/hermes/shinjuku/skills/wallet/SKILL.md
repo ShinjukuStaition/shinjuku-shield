@@ -1,6 +1,6 @@
 ---
 name: wallet
-description: Use the Shinjuku private wallet. Use it for any question about what a URL or API costs ("what does this API cost?"), and when the user wants to pay for a paid web service or API privately, find a paid API, see their private balance or receipts, add funds, or send money back to their own wallet. Typed as /shinjuku:wallet it shows the wallet card.
+description: Check what any URL or API costs, and pay it privately. Load this skill for any question about what a URL or API costs ("what does this API cost?"), before you fetch the URL, and when the user wants to pay for a paid web service or API privately, find a paid API, see their private balance or receipts, add funds, or send money back to their own wallet. Typed as /shinjuku:wallet it shows the wallet card.
 license: MIT
 compatibility: Hermes Agent on Windows (x64) or Linux with Node.js. The wallet does not run on a Mac yet.
 metadata:
