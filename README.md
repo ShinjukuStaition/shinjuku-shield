@@ -845,7 +845,7 @@ for 4096. `infer start` says the most it pays for one answer and for one run.
   works.
 - [Claude Desktop](examples/claude-desktop.json) and
   [Cursor](examples/cursor.json): complete JSON configs.
-- [Hermes Agent](examples/hermes.md): the `config.yaml` entry.
+- [Hermes Agent](examples/hermes.md): the Hermes plugin ([plugins/hermes/shinjuku](plugins/hermes/shinjuku/README.md)) or the `config.yaml` entry.
 - [Vercel AI SDK](examples/vercel-ai-sdk.md): the server's tools in
   `generateText` through `@ai-sdk/mcp`, with no other package.
 - [Solana Agent Kit](https://github.com/ShinjukuStaition/shinjuku-sak-plugin):

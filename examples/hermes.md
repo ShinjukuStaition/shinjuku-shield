@@ -3,6 +3,19 @@
 Shinjuku works inside Hermes Agent. Hermes gets tools to pay for paid web services from your private balance,
 check a price first, read web pages over Tor, and add or send money. Only you hold the keys.
 
+## The Hermes plugin (one install)
+
+The Shinjuku plugin adds the wallet to Hermes and teaches Hermes how to use it, including the
+`/shinjuku:wallet` card. Set up the wallet first (step 1 below), then install the plugin from this repository:
+
+```sh
+hermes plugins install ShinjukuStaition/shinjuku-shield/plugins/hermes/shinjuku
+hermes plugins enable shinjuku
+```
+
+Its README lists every step and what the plugin does on your computer:
+[plugins/hermes/shinjuku](../plugins/hermes/shinjuku/README.md). Step 2 below adds the wallet by hand instead.
+
 ## The stable version (0.3.210)
 
 You need:

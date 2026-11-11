@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "shinjuku": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${PLUGIN_ROOT}/launch.mjs", "0.3.210"],
+      "env": {
+        "npm_config_offline": "true",
+        "npm_config_cache": "${npm_config_cache}",
+        "npm_config_prefix": "${npm_config_prefix}",
+        "SHIELDED_WALLET_HOME": "${SHIELDED_WALLET_HOME}"
+      }
+    }
+  }
+}
