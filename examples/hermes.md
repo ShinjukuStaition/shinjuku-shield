@@ -3,32 +3,30 @@
 Shinjuku works inside Hermes Agent. Hermes gets tools to pay for paid web services from your private balance,
 check a price first, read web pages over Tor, and add or send money. Only you hold the keys.
 
-## The stable version (0.3.131)
+## The stable version (0.3.210)
 
 You need:
 
 - Node.js 22.21 or later, or Node.js 24 or later.
-- Linux, or Windows with WSL (the wallet's proof programs are Linux programs; on Windows the wallet runs them
-  through WSL; if setup does not find it, install it with `wsl --install -d Ubuntu`). macOS is not supported yet.
+- Linux, or Windows x64 (no WSL needed). macOS is not supported yet.
 
 ### 1. Set up the wallet in a terminal
 
 ```sh
-npm install -g shinjuku@0.3.131
+npm install -g shinjuku@0.3.210
 shinjuku setup
 ```
 
 Or, without installing the `shinjuku` command:
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.131 setup
+npx -y --no-audit --no-fund shinjuku-shield@0.3.210 setup
 ```
 
 Setup asks two questions:
 
 - **Use Tor?** Tor hides your internet address from the sites the wallet pays and reads. With Tor, setup
-  itself runs over Tor too. Tor must be running: setup prints the command that starts it (on Windows, in
-  PowerShell; keep that window open while the wallet runs).
+  itself runs over Tor too. On Windows the wallet starts its own Tor in the background.
 - **Your own wallet address** (optional; press Enter to skip). The wallet sends money back to you there.
 
 Setup then makes the wallet and downloads the files it needs to make private payments (about 191 MB, checked
@@ -37,7 +35,16 @@ computer. It is the only way to restore the wallet.
 
 ### 2. Add the wallet to Hermes
 
-Open Hermes' `config.yaml` (on Windows `%LOCALAPPDATA%\hermes\config.yaml`, on Linux `~/.hermes/config.yaml`)
+Setup can do this for you:
+
+```sh
+npx -y shinjuku@0.3.210 setup --add-to hermes
+```
+
+It writes the `shinjuku` entry into Hermes' `config.yaml` (with `trust: untrusted` and `timeout: 600`), keeps
+every other line of the file, and saves a copy of the old file first.
+
+Or do it by hand: open Hermes' `config.yaml` (on Windows `%LOCALAPPDATA%\hermes\config.yaml`, on Linux `~/.hermes/config.yaml`)
 and add these lines at the end. If the file already has an `mcp_servers:` line, put the `shinjuku:` part under
 that line instead.
 
@@ -45,7 +52,7 @@ that line instead.
 mcp_servers:
   shinjuku:
     command: npx
-    args: ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.131", "mcp"]
+    args: ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.210", "mcp"]
     trust: untrusted
     timeout: 600
 ```
@@ -74,15 +81,3 @@ may set up a wallet on this computer, and Hermes shows an Approve button. Approv
 the sites do not see your internet address. Hermes itself still sends your chat to its AI company, and that
 company sees what the wallet tools answer (links, prices, amounts, the address you send to). A local model
 removes that observer.
-
-## The next version (0.3.209, for testing)
-
-0.3.209 is a test version beside the stable one. It adds the wallet to Hermes for you:
-
-```sh
-npx -y shinjuku@0.3.209 setup --add-to hermes
-```
-
-It writes the `shinjuku` entry into Hermes' `config.yaml` (with `trust: untrusted` and `timeout: 600`), keeps
-every other line of the file, and saves a copy of the old file first. 0.3.209 runs on Windows x64 without WSL
-and on Linux, and on Windows it starts its own Tor in the background. macOS is not supported yet.
