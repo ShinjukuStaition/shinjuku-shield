@@ -3,6 +3,9 @@
 Pay for paid web services privately, read web pages through your private wallet, and keep a private balance
 that only you control, from inside Hermes.
 
+**New (November 2026).** The plugin is new. It was checked in the Hermes desktop app 0.23.1 on Windows with
+the wallet file of 0.3.210 (the wallet card and a price check). It has not been through a full test by new users yet.
+
 What stays private: the seller and the blockchain do not see which wallet paid. If you choose Tor in setup,
 the sites and services the wallet reaches do not see your IP address. What does not change: your Hermes chat
 still goes to its AI company, and that company reads what the wallet answers in the chat.
