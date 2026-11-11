@@ -4,7 +4,7 @@
     "shinjuku": {
       "type": "stdio",
       "command": "node",
-      "args": ["${PLUGIN_ROOT}/launch.mjs", "0.3.210"],
+      "args": ["${PLUGIN_ROOT}/launch.mjs", "0.3.217"],
       "env": {
         "npm_config_offline": "true",
         "npm_config_cache": "${npm_config_cache}",
