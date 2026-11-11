@@ -85,3 +85,4 @@ So you know before you install:
 - `launch.mjs`: starts the installed wallet of that version, or tells you the setup lines when it is
   not installed yet.
 - `skills/wallet/SKILL.md`: how Hermes uses the wallet, and the `/shinjuku:wallet` card.
+- `LICENSE`: MIT, for the files of this plugin folder only. The wallet (the npm package `shinjuku`) has its own license.
