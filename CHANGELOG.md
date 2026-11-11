@@ -4,6 +4,26 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-11: wallet release `947a6309`, npm `shinjuku@0.3.218` (stable, npm tag `latest`)
+
+The new stable version. It replaces `0.3.217` (wallet release `80851766`).
+Install it with `npm install -g shinjuku@0.3.218`, then `shinjuku setup`.
+
+### Changed
+
+- A price check now asks you first in apps that ask before a tool runs, and it
+  never reaches an address on your own computer or local network unless you
+  allow local sellers in the wallet's config.
+- An update message names the exact new version. In the Hermes plugin it tells
+  you to update the plugin.
+
+### Fixed
+
+- In an app that cannot show a question with fields (Hermes), the wallet asks
+  in plain words where to save your backup, instead of asking again and again.
+- The payment link is shown as plain text, so apps that block payment links
+  still show it in full.
+
 ## 2026-11-11: wallet release `80851766`, npm `shinjuku@0.3.217` (stable, npm tag `latest`)
 
 The new stable version. It replaces `0.3.210` (wallet release `2b7c138c`).

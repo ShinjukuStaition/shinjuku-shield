@@ -3,7 +3,7 @@
   "name": "io.github.ShinjukuStaition/shinjuku-shield",
   "title": "Shinjuku Shield",
   "description": "Private x402 payments on Solana: shield, pay, and unshield USDC under caps you set.",
-  "version": "0.3.217",
+  "version": "0.3.218",
   "websiteUrl": "https://shinjukustaition.com",
   "repository": {
     "url": "https://github.com/ShinjukuStaition/shinjuku-shield",
@@ -14,7 +14,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "shinjuku-shield",
-      "version": "0.3.217",
+      "version": "0.3.218",
       "runtimeHint": "npx",
       "runtimeArguments": [
         {
