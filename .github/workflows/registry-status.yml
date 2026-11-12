@@ -1,0 +1,41 @@
+name: Set the MCP Registry status of the old server name
+
+# Manual only. The wallet's MCP Registry name changed with npm 0.3.210 (package.json mcpName
+# io.github.ShinjukuStaition/shinjuku-mcp -> io.github.ShinjukuStaition/shinjuku-shield). The old name still lists
+# 0.3.131 as its latest version, and the registry cannot take 0.3.218 under the old name (the npm package names the new
+# one). This run marks every version of the old name deprecated, with a message that names the new name and the stable
+# version. It publishes nothing and changes no entry of the new name.
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write # GitHub OIDC: the registry gives this repo's owner publish rights on io.github.ShinjukuStaition/*,
+                  # and a status change needs publish or edit rights on that server
+  contents: read
+
+jobs:
+  status:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Install mcp-publisher (one fixed version, checked by sha256)
+        env:
+          # The same pinned build as registry.yml (v1.8.7, sha256 from the vendor's checksums file of that release).
+          # v1.8.7 has the status command: mcp-publisher status --status <active|deprecated|deleted> [--all-versions]
+          MCP_PUBLISHER_VERSION: v1.8.7
+          MCP_PUBLISHER_SHA256: 00b21004149a4ce66f0782508ae4a2bce67d1bea395a8da0bd8028159fb59579
+        run: |
+          set -euo pipefail
+          curl -fsSL --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 120 --retry 3 --retry-all-errors -o mcp-publisher.tar.gz \
+            "https://github.com/modelcontextprotocol/registry/releases/download/$MCP_PUBLISHER_VERSION/mcp-publisher_linux_amd64.tar.gz"
+          echo "$MCP_PUBLISHER_SHA256  mcp-publisher.tar.gz" | sha256sum -c - || { echo "::error::mcp-publisher $MCP_PUBLISHER_VERSION does not match its pinned sha256; nothing was changed"; exit 1; }
+          tar xzf mcp-publisher.tar.gz mcp-publisher
+
+      - name: Log in with GitHub OIDC
+        run: ./mcp-publisher login github-oidc
+
+      - name: Deprecate every version of the old name
+        run: |
+          ./mcp-publisher status --status deprecated --all-versions --yes \
+            --message "Renamed: use io.github.ShinjukuStaition/shinjuku-shield (stable version 0.3.218)." \
+            io.github.ShinjukuStaition/shinjuku-mcp
