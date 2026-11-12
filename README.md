@@ -154,9 +154,11 @@ you also want to hide your IP address.
 
    The first line installs the `shinjuku` command for every folder and every
    new terminal window (`-g` means global). Or, without installing anything:
-   `npx -y shinjuku@0.3.218 setup`. Setup adds npm's folder to your PATH by
+   `npx -y shinjuku@0.3.218 setup`. Both lines download the wallet from npm
+   directly (Tor is not set up yet), so npm sees your IP address for that
+   download. Setup adds npm's folder to your PATH by
    itself. If `shinjuku` still says "'shinjuku' is not recognized" (on a
-   Windows computer with more than one account), type `npx -y shinjuku@0.3.218`
+   Windows computer with more than one account), type `npx -y --prefer-offline shinjuku@0.3.218`
    in place of `shinjuku` in the lines below.
 
    Setup asks whether to use Tor and for your own wallet address (optional;
@@ -557,12 +559,13 @@ prints these lines. Add the wallet once: one entry named `shinjuku`.
 Claude Code:
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.218 mcp
+claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp
 ```
 
 `--no-audit --no-fund` stop npx from asking npm's audit and funding
 services when it starts a new version. Once, that request held the start for
-5 minutes.
+5 minutes. `--prefer-offline` runs the copy of the wallet that npm saved. If npm has not saved it yet, that start asks
+npm once, directly, so npm sees your IP address that one time; later starts ask npm nothing.
 
 On native Windows, the line that setup prints puts `cmd /c` before `npx`.
 With a wallet folder that is not the default, it adds
@@ -576,7 +579,7 @@ and other JSON-config hosts:
   "mcpServers": {
     "shinjuku": {
       "command": "npx",
-      "args": ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp"]
+      "args": ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp"]
     }
   }
 }
@@ -700,7 +703,7 @@ To give the flags yourself (for example, for a wallet that you made with
 `init` before 0.2.0):
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.218 mcp \
+claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp \
   --max-payment 0.05 --max-session 0.2 --tor \
   --pool <pool> \
   --program 8PYPw3FSFTMbvSneXdcoH6jNoN4VD23nHwPY2A2riUy1 \
@@ -741,7 +744,7 @@ question each, with curl, TypeScript, Python and LangChain.
 ### 1. Start the address
 
 ```
-npx -y shinjuku@0.3.218 infer start
+npx -y --prefer-offline shinjuku@0.3.218 infer start
 ```
 
 It prints the address, an API key and the model. You need the first two:
@@ -754,7 +757,7 @@ model    qwen3-8-flash (others: ...)
 
 The address keeps running in the background. It stops when your computer
 restarts: then run the line again (the key stays the same). To stop it:
-`npx -y shinjuku@0.3.218 infer stop`.
+`npx -y --prefer-offline shinjuku@0.3.218 infer stop`.
 
 ### 2. Put your key where your program can find it
 

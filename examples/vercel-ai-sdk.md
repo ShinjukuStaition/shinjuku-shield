@@ -36,7 +36,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 const shinjuku = await createMCPClient({
   transport: new Experimental_StdioMCPTransport({
     command: "npx",
-    args: ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp", "--max-payment", "0.05"],
+    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp", "--max-payment", "0.05"],
   }),
 });
 

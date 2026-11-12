@@ -100,8 +100,11 @@ Add it yourself. The name of the wallet in your app is `shinjuku`.
 Claude Code:
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@{{VERSION}} mcp
+claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@{{VERSION}} mcp
 ```
+
+`--prefer-offline` runs the copy of the wallet that npm saved. If npm has not saved it yet, that start asks
+npm once, directly, so npm sees your IP address that one time; later starts ask npm nothing.
 
 ## For builders: check what you install
 

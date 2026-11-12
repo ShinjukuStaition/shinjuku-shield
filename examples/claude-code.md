@@ -19,7 +19,7 @@ Code.
 Without `--add-to`, setup prints the command. Run it once:
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.218 mcp
+claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp
 ```
 
 What each piece of the command does:
@@ -29,7 +29,7 @@ What each piece of the command does:
 | `claude mcp add shinjuku` | Adds a stdio MCP server named `shinjuku` to Claude Code. |
 | `--scope user` | Makes the server available in all your projects. Without it, the scope is `local` (this project only). |
 | `--` | Ends the Claude Code options. All after it is the server command. |
-| `npx -y --no-audit --no-fund shinjuku-shield@0.3.218` | Gets and runs the npm package `shinjuku-shield` at the stable version 0.3.218. |
+| `npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218` | Runs the npm package `shinjuku-shield` at the stable version 0.3.218 from npm's saved copy: if npm has not saved it yet, the first start asks npm once, directly (npm sees your IP address that one time); later starts ask npm nothing. |
 | `mcp` | The wallet command that runs the MCP server on stdio. |
 
 On native Windows, the printed command puts `cmd /c` before `npx`. With a
@@ -116,7 +116,7 @@ Or add a flag to the server command. A flag wins over `config.json`:
 For example:
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.218 mcp --max-per-host-day 0.5
+claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp --max-per-host-day 0.5
 ```
 
 `shinjuku help mcp` and `shinjuku help setup`
@@ -132,7 +132,7 @@ your wallet folder and your passphrase file. It keeps your wallet and writes
 SHIELDED_WALLET_HOME=/home/you/.shielded-wallet \
   shinjuku setup --passphrase-file /home/you/shinjuku/passphrase.txt
 claude mcp add --scope user -e SHIELDED_WALLET_HOME=/home/you/.shielded-wallet \
-  shinjuku -- npx -y --no-audit --no-fund shinjuku-shield@0.3.218 mcp
+  shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp
 ```
 
 Or give every flag yourself, as in the
@@ -160,7 +160,7 @@ Or give every flag yourself, as in the
    again after 60 s.
 
 If `shinjuku` shows as failed in `/mcp`, run
-`npx -y --no-audit --no-fund shinjuku-shield@0.3.218 mcp` in a terminal. The server writes every log
+`npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp` in a terminal. The server writes every log
 line to stderr, and an error names what is wrong.
 
 ## Sends to a new address

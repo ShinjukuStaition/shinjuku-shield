@@ -65,7 +65,7 @@ that line instead.
 mcp_servers:
   shinjuku:
     command: npx
-    args: ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp"]
+    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp"]
     trust: untrusted
     timeout: 600
 ```

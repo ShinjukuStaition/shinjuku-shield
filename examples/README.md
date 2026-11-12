@@ -13,9 +13,10 @@ x402 facilitator on Solana, inside your agent.
 | [Solana Agent Kit plugin](https://github.com/ShinjukuStaition/shinjuku-sak-plugin) | npm `solana-agent-kit-plugin-shinjuku`: the wallet as Solana Agent Kit v2 actions (`SHINJUKU_X402_PAY` and others). |
 | [prompts.md](prompts.md) | 13 plain requests, the tool that each one calls, and the shape of the answer. |
 
-All examples run `npx -y --no-audit --no-fund shinjuku-shield@0.3.218 mcp`: the stable version
+All examples run `npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp`: the stable version
 (pinned 2026-11-11, wallet release `947a6309`). The commands and flags come
-from `help mcp` and `help setup` of that release.
+from `help mcp` and `help setup` of that release. `--prefer-offline` runs the copy of the wallet that npm saved. If npm has not saved it yet, that start asks
+npm once, directly, so npm sees your IP address that one time; later starts ask npm nothing.
 
 ## Where it runs
 
