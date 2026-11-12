@@ -11,6 +11,13 @@ What stays private: the seller and the blockchain do not see which wallet paid. 
 the sites and services the wallet reaches do not see your IP address. What does not change: your Hermes chat
 still goes to its AI company, and that company reads what the wallet answers in the chat.
 
+## What you need first
+
+- **Hermes.** Install it from Nous Research's own page:
+  https://hermes-agent.nousresearch.com/docs/getting-started/installation
+- **Node.js 24 LTS** (or 22.21 or newer). Download the installer for your computer from
+  https://nodejs.org/en/download and run it. The wallet runs on Node.js.
+
 ## Before you start: install and set up the wallet once
 
 Do this once, in PowerShell (Windows) or a terminal (Linux), before you use the wallet in Hermes. You do not
@@ -29,10 +36,11 @@ The wallet runs with Node.js on Windows (x64) and Linux. It does not run on a Ma
 
 ## Install the plugin
 
-1. In a terminal:
+1. In the Hermes desktop app: Capabilities → Plugins → Install from Git, then paste
+   `github.com/ShinjukuStaition/hermes-shinjuku`. Or in a terminal:
 
    ```
-   hermes plugins install ShinjukuStaition/shinjuku-shield/plugins/hermes/shinjuku
+   hermes plugins install ShinjukuStaition/hermes-shinjuku
    hermes plugins enable shinjuku
    ```
 
@@ -47,10 +55,13 @@ The wallet runs with Node.js on Windows (x64) and Linux. It does not run on a Ma
 
 Ask in plain words:
 
+- "What is my balance?": shows your private balance, pays nothing.
 - "What does this API cost?" with its address: checks the price, pays nothing.
 - "Find a paid API for weather data": searches public lists on your computer, pays nothing.
 - "Pay for this service, at most 5 cents": pays privately from your balance.
 - "Show my receipts", "Send 2 USDC back to my wallet".
+- Keep the wallet backup that setup saved (the recovery file and the passphrase file) in a safe place, away
+  from this computer. Never share it: anyone with it can spend your balance.
 - "Add funds": the wallet gives you an address. Send USDC on Solana to it from any wallet or exchange (no SOL
   needed), then tell Hermes "I sent it". Hermes checks your balance and tells you when the USDC arrived and
   when it is private and ready to spend.
@@ -60,6 +71,22 @@ untrusted, so Hermes asks for your OK before each wallet call that is not a read
 a new deposit address); you can say no, and nothing happens. Your approval setting in Hermes can change
 when Hermes asks. The wallet can also ask you itself ("Allow once") before some steps. A balance check pays
 and sends nothing, but when USDC you added is waiting, it makes that USDC private.
+
+## Update the plugin
+
+When the wallet tells you a new version is out, run this in a terminal (Hermes can stay open):
+
+```
+hermes plugins update shinjuku
+```
+
+Then start a new chat in Hermes (in the Hermes desktop app: Ctrl+K, "Restart gateway", "Restart all").
+
+A plugin installed before this version (the one that starts wallet 0.3.218) keeps its folder in use while the
+wallet runs, so on Windows its first update can stop with "WinError 32" ("being used by another process").
+Nothing changed then. Run `hermes gateway stop`, then `hermes plugins update shinjuku` again, then open Hermes
+again. Later updates work while Hermes runs. We checked this with Hermes in a terminal, not yet in the Hermes
+desktop app.
 
 ## What the plugin does on your computer
 
@@ -86,4 +113,4 @@ So you know before you install:
 - `launch.mjs`: starts the installed wallet of that version, or tells you the setup lines when it is
   not installed yet.
 - `skills/wallet/SKILL.md`: how Hermes uses the wallet, and the `/shinjuku:wallet` card.
-- `LICENSE`: MIT, for the files of this plugin folder only. The wallet (the npm package `shinjuku`) has its own license.
+- `LICENSE`: MIT, for the files of this repository only. The wallet (the npm package `shinjuku`) has its own license.

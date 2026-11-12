@@ -5,6 +5,7 @@
       "type": "stdio",
       "command": "node",
       "args": ["${PLUGIN_ROOT}/launch.mjs", "0.3.218"],
+      "cwd": "${PLUGIN_DATA}",
       "env": {
         "npm_config_offline": "true",
         "npm_config_cache": "${npm_config_cache}",

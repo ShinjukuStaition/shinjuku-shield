@@ -5,7 +5,7 @@
   "description": "Shinjuku private wallet: pay for paid web services privately, read web pages without showing your IP address when Tor is on, and keep a private balance you hold yourself.",
   "author": { "name": "Shinjuku Staition" },
   "homepage": "https://shinjukustaition.com",
-  "repository": "https://github.com/ShinjukuStaition/shinjuku-shield",
+  "repository": "https://github.com/ShinjukuStaition/hermes-shinjuku",
   "license": "MIT",
   "keywords": ["wallet", "privacy", "payments", "x402", "tor"],
   "extensions": {

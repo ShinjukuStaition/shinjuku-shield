@@ -20,6 +20,12 @@
 // The wallet child gets stdin through a pipe from this process, never the launcher's own stdin handle: when Hermes
 // closes the connection or ends this launcher (even a hard kill on Windows), the pipe closes, the wallet's MCP
 // server sees the end of its input and stops. No cmd.exe or npm layer sits between them.
+//
+// The working folder is never the plugin folder. Hermes starts a plugin's server in its plugin folder when mcp.json
+// names no cwd (hermes_cli/agent_plugins.py _translate_stdio), and on Windows a folder that a running process uses as
+// its working folder cannot be moved or deleted: `hermes plugins update shinjuku` then failed with WinError 32 while the
+// wallet ran. mcp.json gives cwd ${PLUGIN_DATA}; this launcher also moves itself (and so the wallet it starts) to
+// PLUGIN_DATA, else the user's home folder, for a host or an older mcp.json that starts it in the plugin folder.
 
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -40,9 +46,17 @@ const SETUP_LINE = "shinjuku setup";
 const NPX_SETUP_LINE = `npx -y ${COMMAND_PACKAGE}@${version} setup`;
 
 // A variable that reached us as its own unexpanded placeholder (an optional variable the user did not set) is absent.
-const env = { ...process.env };
+// The wallet reads this exact value to word its update texts for a plugin install ("hermes plugins update shinjuku").
+const env = { ...process.env, SHINJUKU_WALLET_LAUNCHER: "hermes-plugin" };
 for (const [key, value] of Object.entries(env)) if (/^\$\{[A-Za-z_][A-Za-z0-9_]*\}$/.test(value ?? "")) delete env[key];
 const WINDOWS = process.platform === "win32";
+
+// Out of the plugin folder (see above), before anything else runs. A failed move keeps the folder Hermes gave.
+for (const folder of [env.PLUGIN_DATA, homedir()]) {
+  try {
+    if (folder && existsSync(folder)) { process.chdir(folder); break; }
+  } catch { /* the next one */ }
+}
 
 /** The wallet's command file in a shinjuku-shield folder when its package.json is exactly this version, else undefined. */
 function walletAt(folder) {
@@ -106,7 +120,7 @@ function findWallet() {
 }
 
 function startWallet(walletFile) {
-  const child = spawn(process.execPath, [walletFile, "mcp"], { stdio: ["pipe", "inherit", "inherit"], env, windowsHide: true });
+  const child = spawn(process.execPath, [walletFile, "mcp"], { stdio: ["pipe", "inherit", "inherit"], env, cwd: process.cwd(), windowsHide: true });
   process.stdin.pipe(child.stdin);
   child.stdin.on("error", () => {}); // the wallet ended first; its exit below ends this launcher
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) process.on(signal, () => child.kill(signal));
