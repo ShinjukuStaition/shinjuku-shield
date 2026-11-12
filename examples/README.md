@@ -13,15 +13,14 @@ x402 facilitator on Solana, inside your agent.
 | [Solana Agent Kit plugin](https://github.com/ShinjukuStaition/shinjuku-sak-plugin) | npm `solana-agent-kit-plugin-shinjuku`: the wallet as Solana Agent Kit v2 actions (`SHINJUKU_X402_PAY` and others). |
 | [prompts.md](prompts.md) | 13 plain requests, the tool that each one calls, and the shape of the answer. |
 
-All examples run `npx -y --no-audit --no-fund shinjuku-shield@0.3.210 mcp`: the stable version
-(pinned 2026-11-11, wallet release `2b7c138c`). The commands and flags come
+All examples run `npx -y --no-audit --no-fund shinjuku-shield@0.3.218 mcp`: the stable version
+(pinned 2026-11-11, wallet release `947a6309`). The commands and flags come
 from `help mcp` and `help setup` of that release.
 
 ## Where it runs
 
 - Linux: ready.
-- Windows: the wallet runs the provers through WSL. Setup checks that
-  `wsl.exe` runs; if it does not, run `wsl --install -d Ubuntu`. If the host
+- Windows x64: ready (no WSL needed). If the host
   cannot find `npx`, use `"command": "cmd"` and put `"/c", "npx"` at the
   start of `args`.
 - macOS: not supported. Setup says so and creates nothing.
@@ -42,7 +41,7 @@ The output must be `v22` or higher.
 ### 2. Set it up in a terminal
 
 ```sh
-npm install -g shinjuku@0.3.210
+npm install -g shinjuku@0.3.218
 shinjuku setup
 ```
 

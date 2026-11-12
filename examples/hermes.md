@@ -16,7 +16,7 @@ hermes plugins enable shinjuku
 Its README lists every step and what the plugin does on your computer:
 [plugins/hermes/shinjuku](../plugins/hermes/shinjuku/README.md). Step 2 below adds the wallet by hand instead.
 
-## The stable version (0.3.210)
+## The stable version (0.3.218)
 
 You need:
 
@@ -26,14 +26,14 @@ You need:
 ### 1. Set up the wallet in a terminal
 
 ```sh
-npm install -g shinjuku@0.3.210
+npm install -g shinjuku@0.3.218
 shinjuku setup
 ```
 
 Or, without installing the `shinjuku` command:
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.210 setup
+npx -y --no-audit --no-fund shinjuku-shield@0.3.218 setup
 ```
 
 Setup asks two questions:
@@ -51,7 +51,7 @@ computer. It is the only way to restore the wallet.
 Setup can do this for you:
 
 ```sh
-npx -y shinjuku@0.3.210 setup --add-to hermes
+npx -y shinjuku@0.3.218 setup --add-to hermes
 ```
 
 It writes the `shinjuku` entry into Hermes' `config.yaml` (with `trust: untrusted` and `timeout: 600`), keeps
@@ -65,7 +65,7 @@ that line instead.
 mcp_servers:
   shinjuku:
     command: npx
-    args: ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.210", "mcp"]
+    args: ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp"]
     trust: untrusted
     timeout: 600
 ```

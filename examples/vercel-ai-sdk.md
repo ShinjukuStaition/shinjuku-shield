@@ -1,13 +1,13 @@
 # Vercel AI SDK
 
 The [Vercel AI SDK](https://ai-sdk.dev) reads MCP servers through
-`@ai-sdk/mcp`. It runs the same `shinjuku-shield@0.3.210 mcp` server as the other
+`@ai-sdk/mcp`. It runs the same `shinjuku-shield@0.3.218 mcp` server as the other
 examples, so you do not need another package.
 
 ## 1. Set up the wallet in a terminal
 
 ```sh
-npm install -g shinjuku@0.3.210
+npm install -g shinjuku@0.3.218
 shinjuku setup
 ```
 
@@ -36,7 +36,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 const shinjuku = await createMCPClient({
   transport: new Experimental_StdioMCPTransport({
     command: "npx",
-    args: ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.210", "mcp", "--max-payment", "0.05"],
+    args: ["-y", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp", "--max-payment", "0.05"],
   }),
 });
 
