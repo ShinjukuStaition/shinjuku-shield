@@ -1150,11 +1150,13 @@ From npm 0.3.208 (`bf8c2b52`) on, a release pins one V2 set per platform, and
 the table names its Linux x64 set; its other sets are Windows x64 `e60caaec`
 (225,115,541 bytes) and Linux ARM64 `ce903e38` (203,798,977 bytes). The V1 set
 `eb4cbf8a` stays pinned only as the fallback for a server that serves no V2
-set. After a program upgrade the wallet also installs a V2 set that the signed
-release channel lists for the pool: since the upgrade of 2026-11-12 the website
-serves `f8ea3738` (Linux x64, 205,459,679 bytes), `0d7e1b50` (Windows x64,
-225,117,531) and `150f8bf8` (Linux ARM64, 203,800,967), and a new setup
-downloads those.
+set. From npm 0.3.212 (`2dd06d0d`) on, after a program upgrade the wallet also
+installs a V2 set that the signed release channel lists for the pool: since the
+upgrade of 2026-11-12 the website serves `f8ea3738` (Linux x64, 205,459,679
+bytes), `0d7e1b50` (Windows x64, 225,117,531) and `150f8bf8` (Linux ARM64,
+203,800,967), and a new setup with 0.3.212 or later downloads those. Releases
+0.3.208 to 0.3.211 install only their own pinned set, so their setup stops on
+these; use the current release.
 Our website serves the files and their SHA-256 hashes at
 `https://shinjukustaition.com/wallet/<sha8>/` and
 `https://shinjukustaition.com/proof-tools/<sha8>/`. This repository is a
