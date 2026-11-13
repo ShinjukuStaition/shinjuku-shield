@@ -40,7 +40,7 @@ user. Repeat it. Never tell the user a tool name, a field name or an error code.
 ## When the wallet is not set up
 
 If the only wallet tool is `setup_wallet_first`, call it and give the user its lines exactly: an
-`npm install -g shinjuku@...` line, then `shinjuku setup`, once, in PowerShell (Windows) or a terminal (Linux).
+`npm install -g shinjuku@0.3.218` line, then `shinjuku setup`, once, in PowerShell (Windows) or a terminal (Linux).
 Setup asks whether to use Tor, creates the wallet and asks the user to save the backup. The npm install goes
 directly to npm, before the Tor question. Then the user reloads the wallet: `/reload-mcp` in Hermes in a terminal;
 in the Hermes desktop app, Ctrl+K, "Restart gateway", then "Restart all", which also reconnects the user's other

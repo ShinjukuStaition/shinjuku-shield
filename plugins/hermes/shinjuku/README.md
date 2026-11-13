@@ -24,7 +24,7 @@ Do this once, in PowerShell (Windows) or a terminal (Linux), before you use the 
 need to look up the lines: after you install the plugin, ask Hermes anything about the wallet and it shows
 you the exact two lines for its version:
 
-1. `npm install -g shinjuku@<version>` installs the `shinjuku` command. This download goes directly to npm,
+1. `npm install -g shinjuku@0.3.218` installs the `shinjuku` command. This download goes directly to npm,
    before setup asks about Tor, so npm sees your IP address for it.
 2. `shinjuku setup`:
    - asks whether to use Tor (yes is the default: then the services the wallet reaches do not see your IP
@@ -94,7 +94,7 @@ So you know before you install:
 
 - **Network:** the plugin itself downloads nothing. It starts the wallet that setup installed; when that
   wallet is not in npm's usual folders, it asks npm, with npm offline, where your folders are. The wallet connects to Shinjuku's payment service and to the services you pay, over Tor when
-  you chose Tor. Before setup, `npm install -g shinjuku@<version>` downloads the wallet from npm directly,
+  you chose Tor. Before setup, `npm install -g shinjuku@0.3.218` downloads the wallet from npm directly,
   not over Tor.
 - **Background:** Hermes starts the wallet as a background program while it runs. With Tor on, the wallet
   starts its own Tor in the background on Windows, with no window: it downloads Tor once from torproject.org

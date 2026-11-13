@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Starts the Shinjuku wallet's MCP server for Hermes.
 //
-// mcp.json passes one argument, the exact wallet version (X.Y.Z): the only place this plugin names a version.
+// mcp.json passes one argument, the exact wallet version (X.Y.Z): the launcher reads the version only from there. The
+// README and the skill name the same version (0.3.218) in their setup lines; a pin moves all three together.
 //
-// The wallet must already be on this computer, put there by its setup: `npm install -g shinjuku@X.Y.Z` then
-// `shinjuku setup` (the README form), or `npx -y shinjuku@X.Y.Z setup`. That npm download goes straight to npm's
+// The wallet must already be on this computer, put there by its setup: `npm install -g shinjuku@0.3.218` then
+// `shinjuku setup` (the README form), or `npx -y shinjuku@0.3.218 setup`. That npm download goes straight to npm's
 // registry, before setup asks whether to use Tor (docs/mcp/TOR.md, "What setup does with Tor"). This launcher never
 // downloads anything and never runs npm or npx: it finds that exact installed copy of the wallet package
 // (shinjuku-shield, also the dependency of the shinjuku package) and starts its own command file with this Node.
