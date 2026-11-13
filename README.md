@@ -168,7 +168,8 @@ you also want to hide your IP address.
    `npx -y shinjuku setup` (Windows: `npx.cmd -y shinjuku setup`). Both lines download the wallet from npm
    directly (Tor is not set up yet), so npm sees your IP address for that
    download. On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or
-   `shinjuku` (they run in Command Prompt and in PowerShell).
+   `shinjuku` (they run in Command Prompt and in PowerShell). App start lines, app configs and
+   `claude mcp add ... npx ...` lines stay as they are.
    Setup adds npm's folder to your PATH by
    itself. If Windows still says `shinjuku.cmd` "is not recognized" (on a
    computer with more than one account), type `npx.cmd -y --prefer-offline shinjuku@0.3.218`
@@ -255,7 +256,7 @@ production, with real USDC: the check of the stable version, from
 2026-10-30 23:51 UTC to 2026-10-31 00:33 UTC, in Claude Code and in a
 terminal. No other agent app was run on 0.3.131. One feature has no run
 of its own on 0.3.131: one question with `shinjuku infer`. On Windows, type
-`shinjuku.cmd` where a line below says `shinjuku`.
+`shinjuku.cmd` where a line below says `shinjuku` (app start lines and app configs stay as they are).
 
 **Add money**
 
@@ -769,7 +770,7 @@ question each, with curl, TypeScript, Python and LangChain.
 npx -y --prefer-offline shinjuku@0.3.218 infer start
 ```
 
-On Windows, type `npx.cmd` in place of `npx` (it runs in Command Prompt and PowerShell).
+On Windows, type `npx.cmd` in place of `npx` in this step's lines (it runs in Command Prompt and PowerShell).
 
 It prints the address, an API key and the model. You need the first two:
 

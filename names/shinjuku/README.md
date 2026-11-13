@@ -19,7 +19,7 @@ npx.cmd -y shinjuku setup
 ```
 
 Every wallet command works the same way after `shinjuku`, for example
-`shinjuku balance`, `shinjuku chat` or `shinjuku help` (on Windows `shinjuku.cmd balance`).
+`shinjuku balance`, `shinjuku chat` or `shinjuku help` (on Windows `shinjuku.cmd balance`, `shinjuku.cmd chat` or `shinjuku.cmd help`).
 
 Docs, host configs and the release table:
 https://github.com/ShinjukuStaition/shinjuku-shield

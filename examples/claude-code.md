@@ -1,7 +1,7 @@
 # Claude Code
 
 On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or `shinjuku`
-(they run in Command Prompt and in PowerShell).
+(they run in Command Prompt and in PowerShell). App start lines, app configs and `claude mcp add ... npx ...` lines stay as they are.
 
 Set up Shinjuku Shield and add it to Claude Code with two commands. You
 need Node.js 22.21 or later (or Node.js 24 or later), on Linux or on Windows with WSL. macOS is not

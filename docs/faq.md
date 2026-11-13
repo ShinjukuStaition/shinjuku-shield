@@ -1,7 +1,7 @@
 # FAQ
 
 On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or `shinjuku`
-(they run in Command Prompt and in PowerShell).
+(they run in Command Prompt and in PowerShell). App start lines, app configs and `claude mcp add ... npx ...` lines stay as they are.
 
 ### Is it custodial?
 
