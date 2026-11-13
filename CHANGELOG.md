@@ -4,6 +4,21 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-13: wallet release `85d42668`, npm `shinjuku@0.3.231` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- With Tor on, the first contact to Shinjuku's server is faster and fails less
+  often: when one Tor directory does not answer within 10 seconds, the wallet
+  lets Tor ask the next one.
+- In the Claude app (Code), setup adds the wallet by itself, with no other
+  program to install. It asks you to quit the Claude app first.
+- A send to this wallet's own address now says so, and offers your main wallet.
+
 ## 2026-11-13: wallet release `2fc5d766`, npm `shinjuku@0.3.230` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
