@@ -4,6 +4,21 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-13: wallet release `2fc5d766`, npm `shinjuku@0.3.230` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- On Windows, every line the wallet tells you to type names `npm.cmd`,
+  `npx.cmd` or `shinjuku.cmd` (for example `shinjuku.cmd setup`). These lines
+  run in Command Prompt and in PowerShell. The lines that setup writes into
+  your AI app stay as they are.
+- Setup saves the exact copy that your AI app starts, so the first start does
+  not wait for a download. When you chose Tor, this download goes over Tor.
+
 ## 2026-11-13: wallet release `d1859cda`, npm `shinjuku@0.3.229` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
