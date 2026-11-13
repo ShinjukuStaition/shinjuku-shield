@@ -10,7 +10,7 @@ This is version {{VERSION}}. The command is `shinjuku`.
 ## Set up
 
 ```sh
-npx -y shinjuku@{{VERSION}} setup
+npx -y shinjuku setup
 ```
 
 Setup does every step for you:

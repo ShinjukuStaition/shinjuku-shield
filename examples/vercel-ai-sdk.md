@@ -7,7 +7,7 @@ examples, so you do not need another package.
 ## 1. Set up the wallet in a terminal
 
 ```sh
-npm install -g shinjuku@0.3.218
+npm install -g shinjuku
 shinjuku setup
 ```
 

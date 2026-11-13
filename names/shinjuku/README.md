@@ -7,7 +7,7 @@ the exact version it names (the same version number as this package). Your
 keys never leave your machine.
 
 ```sh
-npx -y shinjuku@{{VERSION}} setup
+npx -y shinjuku setup
 ```
 
 Every wallet command works the same way after `shinjuku`, for example

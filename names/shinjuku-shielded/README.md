@@ -10,7 +10,7 @@ keep working with it.
 New installs use the `shinjuku` command:
 
 ```sh
-npm install -g shinjuku@{{VERSION}}
+npm install -g shinjuku
 shinjuku setup
 ```
 

@@ -5,7 +5,7 @@ need Node.js 22.21 or later (or Node.js 24 or later), on Linux or on Windows wit
 supported.
 
 ```sh
-npm install -g shinjuku@0.3.218
+npm install -g shinjuku
 shinjuku setup --add-to claude-code
 ```
 

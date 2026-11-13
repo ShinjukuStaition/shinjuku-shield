@@ -42,7 +42,7 @@ The output must be `v22` or higher.
 ### 2. Set it up in a terminal
 
 ```sh
-npm install -g shinjuku@0.3.218
+npm install -g shinjuku
 shinjuku setup
 ```
 
