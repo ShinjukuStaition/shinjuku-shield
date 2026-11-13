@@ -1,5 +1,8 @@
 # Vercel AI SDK
 
+On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or `shinjuku`
+(they run in Command Prompt and in PowerShell).
+
 The [Vercel AI SDK](https://ai-sdk.dev) reads MCP servers through
 `@ai-sdk/mcp`. It runs the same `shinjuku-shield@0.3.218 mcp` server as the other
 examples, so you do not need another package.

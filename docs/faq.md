@@ -1,5 +1,8 @@
 # FAQ
 
+On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or `shinjuku`
+(they run in Command Prompt and in PowerShell).
+
 ### Is it custodial?
 
 No. `init` makes your Solana key and your shielded seed on your machine. We

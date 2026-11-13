@@ -1,5 +1,8 @@
 # Shinjuku Shield
 
+On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or `shinjuku`
+(they run in Command Prompt and in PowerShell).
+
 Shinjuku Shield is a private wallet on your own computer. It pays for paid
 web services and AI answers from your private balance, so the payment does
 not show who paid. It works inside your AI app (Claude, Cursor, Codex) and in

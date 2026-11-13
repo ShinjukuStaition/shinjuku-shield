@@ -1,5 +1,8 @@
 # Examples
 
+On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or `shinjuku`
+(they run in Command Prompt and in PowerShell).
+
 Configs and walkthroughs for the Shinjuku Shield MCP server: the private
 x402 facilitator on Solana, inside your agent.
 

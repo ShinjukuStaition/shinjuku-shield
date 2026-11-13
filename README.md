@@ -167,7 +167,8 @@ you also want to hide your IP address.
    new terminal window (`-g` means global). Or, without installing anything:
    `npx -y shinjuku setup` (Windows: `npx.cmd -y shinjuku setup`). Both lines download the wallet from npm
    directly (Tor is not set up yet), so npm sees your IP address for that
-   download. On Windows, type `shinjuku.cmd` where a line below says `shinjuku`.
+   download. On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or
+   `shinjuku` (they run in Command Prompt and in PowerShell).
    Setup adds npm's folder to your PATH by
    itself. If Windows still says `shinjuku.cmd` "is not recognized" (on a
    computer with more than one account), type `npx.cmd -y --prefer-offline shinjuku@0.3.218`

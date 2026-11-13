@@ -1,5 +1,8 @@
 # Plain requests
 
+On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or `shinjuku`
+(they run in Command Prompt and in PowerShell).
+
 Talk to your agent the way you talk to a person. The server tells the agent
 which tool fits each request. Every answer is JSON text with a `next` field
 that names the next call, or says that there is nothing to do.
