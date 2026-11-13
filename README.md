@@ -197,10 +197,11 @@ you also want to hide your IP address.
    says how to restart and check that app. In the ChatGPT desktop app, use its Codex side: ChatGPT's own chat
    cannot start a program on your computer.
 
-3. **Add money.** Ask your agent "Add 1 USDC to my private balance." It gives
-   you a one-time address. Send USDC on Solana to it from any wallet or
-   exchange. You need no SOL. A few minutes after it arrives, the money is
-   private.
+3. **Add money.** Ask your agent "Give me an address to add 1 USDC to my wallet." It gives
+   you a one-time address. Nothing moves until you send USDC on Solana to it
+   from your own wallet or an exchange. You need no SOL. A few minutes after it
+   arrives, the wallet moves it into your own private balance; it pays no one
+   and sends nothing out.
 
 4. **Use it.** Ask your agent to pay a URL, find a paid API, send money out,
    or ask an AI model. Every feature below works from a plain request.
@@ -263,7 +264,7 @@ of its own on 0.3.131: one question with `shinjuku infer`. On Windows, type
 - **Add funds** (`wallet_add_funds`, `shinjuku add-funds`). A new one-time
   address for each deposit, from 0.01 USDC. Send from any wallet or exchange;
   no SOL needed. The wallet makes it private by itself after it lands, even
-  if your agent app closed. Ask: "Add 1 USDC to my private balance."
+  if your agent app closed. Ask: "Give me an address to add 1 USDC to my wallet."
   Terminal: `shinjuku add-funds --route exchange --amount 1`
 - **Make public USDC private** (`wallet_shield`). USDC that sits on the
   wallet's own public address moves into the shielded balance. The

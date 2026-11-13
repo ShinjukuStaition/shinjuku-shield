@@ -55,7 +55,7 @@ choose Reconnect.
 
 ## Add money
 
-Ask your AI app: "Add 0.50 USDC to my private balance." It gives you a
+Ask your AI app: "Give me an address to add 0.50 USDC to my wallet." It gives you a
 one-time address. Send USDC on Solana to it from any wallet or exchange. Any
 amount from 0.01 USDC works, and you need no SOL. The USDC becomes private by
 itself.

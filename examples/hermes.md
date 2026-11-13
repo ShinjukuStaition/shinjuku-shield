@@ -105,7 +105,7 @@ Then type `/reload-mcp` in Hermes (or start Hermes again).
 Ask in plain words:
 
 - "What is my balance?"
-- "Add 0.50 USDC to my private balance." The wallet gives a one-time address for USDC on Solana. Send any
+- "Give me an address to add 0.50 USDC to my wallet." The wallet gives a one-time address for USDC on Solana. Send any
   amount from 0.01 USDC to it, from an exchange or a phone wallet.
 - "How much does this cost?" with a link, then "Pay for it, at most 0.05 USDC."
 - "Send 1 USDC back to my wallet."
