@@ -9,8 +9,16 @@ This is version {{VERSION}}. The command is `shinjuku`.
 
 ## Set up
 
+Linux:
+
 ```sh
 npx -y shinjuku setup
+```
+
+Windows (Command Prompt or PowerShell):
+
+```bat
+npx.cmd -y shinjuku setup
 ```
 
 Setup does every step for you:
@@ -24,7 +32,7 @@ Setup does every step for you:
 - It downloads and checks the files the wallet needs (about 200 MB), so later
   payments do not wait for them.
 - It offers to install the `shinjuku` command. On Windows it also puts that
-  command on your PATH: open a new window after setup to type `shinjuku`.
+  command on your PATH: open a new window after setup to type `shinjuku.cmd`.
 - It writes a recovery file. Copy it to two offline places (for example two
   USB drives), then delete it from this computer. It is the only way to get
   your wallet back if this computer is lost.
@@ -84,7 +92,8 @@ who paid. The wallet keeps no copy of a conversation.
 ## The `shinjuku` command
 
 Every wallet command starts with `shinjuku`, for example `shinjuku balance`,
-`shinjuku add-funds` or `shinjuku chat`. `shinjuku help` lists them all.
+`shinjuku add-funds` or `shinjuku chat`. `shinjuku help` lists them all. On Windows,
+type `shinjuku.cmd`, for example `shinjuku.cmd balance`.
 
 ## What you need
 

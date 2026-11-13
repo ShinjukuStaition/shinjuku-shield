@@ -5,9 +5,18 @@ a shielded USDC balance on Solana.
 
 This package installs nothing. It prints how to install the wallet:
 
+Linux:
+
 ```sh
 npm install -g shinjuku
 shinjuku setup
+```
+
+Windows (Command Prompt or PowerShell):
+
+```bat
+npm.cmd install -g shinjuku
+shinjuku.cmd setup
 ```
 
 The README of the repository below names the exact stable version.

@@ -11,6 +11,8 @@ npm install -g shinjuku
 shinjuku setup
 ```
 
+On Windows (Command Prompt or PowerShell): `npm.cmd install -g shinjuku`, then `shinjuku.cmd setup`.
+
 Setup creates the wallet only after you confirm it. An AI SDK app does not
 show that confirmation to you, so run setup once in a terminal first. If you
 call `shinjuku_setup` from the app, it answers `mcp_setup_needs_terminal` and

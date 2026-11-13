@@ -47,7 +47,8 @@ chain does not show who paid.
 
 > **Notice, 2026-11-01:** Shinjuku updated its on-chain program at 11:50 UTC.
 > If you use version 0.3.131, update to the stable version 0.3.218: run
-> `npm install -g shinjuku`, then `shinjuku setup`, in the terminal. Your balance is safe.
+> `npm install -g shinjuku`, then `shinjuku setup`, in the terminal (Windows: `npm.cmd install -g shinjuku`, then
+> `shinjuku.cmd setup`). Your balance is safe.
 > The next release follows such an update by itself.
 
 ## What your agent gets
@@ -63,7 +64,8 @@ set.
   it. We never run it, and only your keys can spend your balance.
 - **Shielded payments.** Your agent pays from a shielded balance. Add `--tor`
   and no server sees your IP.
-- **Two lines to set up.** `npm install -g shinjuku`, then `shinjuku setup`. Setup makes the wallet, a private passphrase file, and
+- **Two lines to set up.** Linux: `npm install -g shinjuku`, then `shinjuku setup`. Windows: `npm.cmd install -g shinjuku`,
+  then `shinjuku.cmd setup`. Setup makes the wallet, a private passphrase file, and
   the checked proof tools, and prints the line that adds the wallet to your
   agent host.
 - **Add funds from 0.01 USDC.** Ask your agent to add funds.
@@ -145,21 +147,31 @@ You need Node.js 22.21 or newer, or Node.js 24 (`node --version` shows
 which one your `node` command runs). Tor is optional: run it if
 you also want to hide your IP address.
 
-1. **Set up the wallet.** In a terminal, type these two lines as they are:
+1. **Set up the wallet.** In a terminal, type these two lines as they are.
+
+   Linux:
 
    ```sh
    npm install -g shinjuku
    shinjuku setup
    ```
 
+   Windows (Command Prompt or PowerShell):
+
+   ```bat
+   npm.cmd install -g shinjuku
+   shinjuku.cmd setup
+   ```
+
    The first line installs the `shinjuku` command for every folder and every
    new terminal window (`-g` means global). Or, without installing anything:
-   `npx -y shinjuku setup`. Both lines download the wallet from npm
+   `npx -y shinjuku setup` (Windows: `npx.cmd -y shinjuku setup`). Both lines download the wallet from npm
    directly (Tor is not set up yet), so npm sees your IP address for that
-   download. Setup adds npm's folder to your PATH by
-   itself. If `shinjuku` still says "'shinjuku' is not recognized" (on a
-   Windows computer with more than one account), type `npx -y --prefer-offline shinjuku@0.3.218`
-   in place of `shinjuku` in the lines below.
+   download. On Windows, type `shinjuku.cmd` where a line below says `shinjuku`.
+   Setup adds npm's folder to your PATH by
+   itself. If Windows still says `shinjuku.cmd` "is not recognized" (on a
+   computer with more than one account), type `npx.cmd -y --prefer-offline shinjuku@0.3.218`
+   in place of `shinjuku.cmd` in the lines below.
 
    Setup asks whether to use Tor and for your own wallet address (optional;
    Enter keeps the default or skips).
@@ -191,7 +203,7 @@ you also want to hide your IP address.
 4. **Use it.** Ask your agent to pay a URL, find a paid API, send money out,
    or ask an AI model. Every feature below works from a plain request.
 
-In a terminal, `shinjuku help` lists every command.
+In a terminal, `shinjuku help` lists every command (Windows: `shinjuku.cmd help`).
 
 ## Release 0.3.217
 
@@ -241,7 +253,8 @@ Each feature here passed a live run on the published 0.3.131 package, on
 production, with real USDC: the check of the stable version, from
 2026-10-30 23:51 UTC to 2026-10-31 00:33 UTC, in Claude Code and in a
 terminal. No other agent app was run on 0.3.131. One feature has no run
-of its own on 0.3.131: one question with `shinjuku infer`.
+of its own on 0.3.131: one question with `shinjuku infer`. On Windows, type
+`shinjuku.cmd` where a line below says `shinjuku`.
 
 **Add money**
 
@@ -505,8 +518,16 @@ put its version in your host's config. Your wallet, its address, and its balance
 
 ### 1. Run the setup in a terminal
 
+Linux:
+
 ```sh
 npx -y shinjuku setup
+```
+
+Windows (Command Prompt or PowerShell):
+
+```bat
+npx.cmd -y shinjuku setup
 ```
 
 It asks whether to use Tor and for your own wallet address (optional: your
@@ -746,6 +767,8 @@ question each, with curl, TypeScript, Python and LangChain.
 ```
 npx -y --prefer-offline shinjuku@0.3.218 infer start
 ```
+
+On Windows, type `npx.cmd` in place of `npx` (it runs in Command Prompt and PowerShell).
 
 It prints the address, an API key and the model. You need the first two:
 
@@ -1013,8 +1036,8 @@ our first customer and our live demo.
 - Stable version (pinned 2026-11-11): wallet release `947a6309`, npm
   `shinjuku-shield@0.3.218`.
   Install that exact version. The wallet runs Tor for you,
-  Windows needs no WSL (on Windows type `npx -y shinjuku setup` in
-  Command Prompt), the `shinjuku` screen runs every job, setup offers a backup
+  Windows needs no WSL (on Windows type `npx.cmd -y shinjuku setup` in
+  Command Prompt or PowerShell), the `shinjuku` screen runs every job, setup offers a backup
   before the first deposit, and a wallet from an older version updates with no
   new setup. The [changelog](CHANGELOG.md) lists the rest.
   How to start: the [0.3.218 release notes](#release-03218).

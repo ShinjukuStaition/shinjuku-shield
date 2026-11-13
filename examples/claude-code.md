@@ -9,6 +9,9 @@ npm install -g shinjuku
 shinjuku setup --add-to claude-code
 ```
 
+On Windows (Command Prompt or PowerShell): `npm.cmd install -g shinjuku`, then
+`shinjuku.cmd setup --add-to claude-code`.
+
 Setup makes the wallet, a random passphrase file, the checked proof tools
 (about 191 MB), and `config.json` in `~/.carbon-shielded-wallet`. In our
 runs it took about 10-16 s on a fast line. It also writes a recovery file

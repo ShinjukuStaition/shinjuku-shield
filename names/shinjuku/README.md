@@ -6,12 +6,20 @@ answers privately. This package runs the wallet package `shinjuku-shield` at
 the exact version it names (the same version number as this package). Your
 keys never leave your machine.
 
+Linux:
+
 ```sh
 npx -y shinjuku setup
 ```
 
+Windows (Command Prompt or PowerShell):
+
+```bat
+npx.cmd -y shinjuku setup
+```
+
 Every wallet command works the same way after `shinjuku`, for example
-`shinjuku balance`, `shinjuku chat` or `shinjuku help`.
+`shinjuku balance`, `shinjuku chat` or `shinjuku help` (on Windows `shinjuku.cmd balance`).
 
 Docs, host configs and the release table:
 https://github.com/ShinjukuStaition/shinjuku-shield

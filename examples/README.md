@@ -46,6 +46,8 @@ npm install -g shinjuku
 shinjuku setup
 ```
 
+On Windows (Command Prompt or PowerShell): `npm.cmd install -g shinjuku`, then `shinjuku.cmd setup`.
+
 In our runs, setup took about 10-16 s on a fast line, with the proof-tool
 download of about 191 MB. Add `--add-to claude-code` (or `claude-desktop`,
 `cursor`) to also add the server to that host's config.

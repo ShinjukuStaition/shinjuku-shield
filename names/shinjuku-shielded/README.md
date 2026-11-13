@@ -9,9 +9,18 @@ keep working with it.
 
 New installs use the `shinjuku` command:
 
+Linux:
+
 ```sh
 npm install -g shinjuku
 shinjuku setup
+```
+
+Windows (Command Prompt or PowerShell):
+
+```bat
+npm.cmd install -g shinjuku
+shinjuku.cmd setup
 ```
 
 Docs, host configs and the release table:
