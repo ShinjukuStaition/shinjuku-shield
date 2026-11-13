@@ -17,35 +17,41 @@ still goes to its AI company, and that company reads what the wallet answers in 
   https://hermes-agent.nousresearch.com/docs/getting-started/installation
 - **Node.js 24 LTS** (or 22.21 or newer). Download the installer for your computer from
   https://nodejs.org/en/download and run it. The wallet runs on Node.js.
+- **Git.** The Hermes app needs Git to install a plugin: without it, the install stops with "spawn git ENOENT".
+  On Windows, download Git for Windows from https://git-scm.com/download/win, run it with its default choices,
+  then close Hermes and open it again. On Linux, install Git from your system's packages.
 
 ## Before you start: install and set up the wallet once
 
-Do this once, in PowerShell (Windows) or a terminal (Linux), before you use the wallet in Hermes. You do not
-need to look up the lines: after you install the plugin, ask Hermes anything about the wallet and it shows
-you the exact two lines for its version:
+Do this once, before you use the wallet in Hermes. You do not need to look up the lines: after you install
+the plugin, ask Hermes anything about the wallet and it shows you the exact two lines for your computer:
 
-1. `npm install -g shinjuku@0.3.218` installs the `shinjuku` command. This download goes directly to npm,
-   before setup asks about Tor, so npm sees your IP address for it.
-2. `shinjuku setup`:
-   - asks whether to use Tor (yes is the default: then the services the wallet reaches do not see your IP
-     address, and setup's own downloads go over Tor),
-   - creates your private wallet and asks you to save its backup,
-   - downloads the wallet's proof programs, and Tor when you chose Tor.
+- Linux, in a terminal: `npm install -g shinjuku@0.3.218`, then `shinjuku setup`.
+- Windows, in PowerShell or Command Prompt: `npm.cmd install -g shinjuku@0.3.218`, then `shinjuku.cmd setup`.
+
+The first line installs the `shinjuku` command. This download goes directly to npm, before setup asks about
+Tor, so npm sees your IP address for it. The second line, setup:
+
+- asks whether to use Tor (yes is the default: then the services the wallet reaches do not see your IP
+  address, and setup's own downloads go over Tor),
+- creates your private wallet and asks you to save its backup,
+- downloads the wallet's proof programs, and Tor when you chose Tor.
 
 The wallet runs with Node.js on Windows (x64) and Linux. It does not run on a Mac yet.
 
 ## Install the plugin
 
-1. In the Hermes desktop app: Capabilities → Plugins → Install from Git, then paste
-   `github.com/ShinjukuStaition/hermes-shinjuku`. Or in a terminal:
+1. In the Hermes desktop app: Capabilities → Plugins, search "Shinjuku", open the "shinjuku" card and choose
+   Install. Or Capabilities → Plugins → Install from Git, then paste `github.com/ShinjukuStaition/hermes-shinjuku`.
+   Or in a terminal:
 
    ```
    hermes plugins install ShinjukuStaition/hermes-shinjuku
    hermes plugins enable shinjuku
    ```
 
-2. Start Hermes and ask "set up my Shinjuku wallet". Hermes shows the two setup lines above for the right
-   version. Run them. Then reload the wallet in Hermes: in a terminal, type `/reload-mcp`; in the Hermes
+2. Start Hermes and ask "set up my Shinjuku wallet". Hermes shows the two setup lines above for your
+   computer. Run them. Then reload the wallet in Hermes: in a terminal, type `/reload-mcp`; in the Hermes
    desktop app, press Ctrl+K, choose "Restart gateway", then "Restart all"; this also reconnects every other
    Hermes bot on the computer. (Closing the app window does not restart the wallet.)
 
@@ -94,8 +100,7 @@ So you know before you install:
 
 - **Network:** the plugin itself downloads nothing. It starts the wallet that setup installed; when that
   wallet is not in npm's usual folders, it asks npm, with npm offline, where your folders are. The wallet connects to Shinjuku's payment service and to the services you pay, over Tor when
-  you chose Tor. Before setup, `npm install -g shinjuku@0.3.218` downloads the wallet from npm directly,
-  not over Tor.
+  you chose Tor. Before setup, the first setup line downloads the wallet from npm directly, not over Tor.
 - **Background:** Hermes starts the wallet as a background program while it runs. With Tor on, the wallet
   starts its own Tor in the background on Windows, with no window: it downloads Tor once from torproject.org
   and checks its pinned checksum. On Linux, or if that Tor cannot start, the wallet pays and sends nothing and shows the one command that starts Tor; after it, reload the wallet: `/reload-mcp` in a

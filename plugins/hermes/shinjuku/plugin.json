@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "shinjuku",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shinjuku private wallet: pay for paid web services privately, read web pages without showing your IP address when Tor is on, and keep a private balance you hold yourself.",
   "author": { "name": "Shinjuku Staition" },
   "homepage": "https://shinjukustaition.com",

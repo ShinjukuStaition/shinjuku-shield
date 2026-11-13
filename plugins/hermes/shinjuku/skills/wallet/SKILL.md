@@ -39,9 +39,11 @@ user. Repeat it. Never tell the user a tool name, a field name or an error code.
 
 ## When the wallet is not set up
 
-If the only wallet tool is `setup_wallet_first`, call it and give the user its lines exactly: an
-`npm install -g shinjuku@0.3.218` line, then `shinjuku setup`, once, in PowerShell (Windows) or a terminal (Linux).
-Setup asks whether to use Tor, creates the wallet and asks the user to save the backup. The npm install goes
+If the only wallet tool is `setup_wallet_first`, call it and give the user its lines exactly, once. Its answer
+already has the lines for the user's computer. On Linux, in a terminal: `npm install -g shinjuku@0.3.218`, then
+`shinjuku setup`. On Windows, in PowerShell or Command Prompt: `npm.cmd install -g shinjuku@0.3.218`, then
+`shinjuku.cmd setup`. On Windows never drop the `.cmd`: Windows PowerShell stops the lines without it. Setup
+asks whether to use Tor, creates the wallet and asks the user to save the backup. The install (the first line) goes
 directly to npm, before the Tor question. Then the user reloads the wallet: `/reload-mcp` in Hermes in a terminal;
 in the Hermes desktop app, Ctrl+K, "Restart gateway", then "Restart all", which also reconnects the user's other
 Hermes bots (the app has no `/reload-mcp`, and closing the app window does not restart the wallet).
@@ -54,7 +56,8 @@ user first) and follow its answer. Do not try to pay or guess another command un
 On Windows, with Tor on, the wallet starts its own Tor in the background, with no window. The user does nothing.
 
 If an answer still says Tor is not running, nothing was paid or sent. Give the user the command from that
-answer exactly, to run once in PowerShell (Windows) or a terminal (Linux). Never offer to turn Tor off.
+answer exactly, to run once: on Windows in PowerShell or Command Prompt, on Linux in a terminal. Never offer to
+turn Tor off.
 
 If an answer says Tor runs now and the wallet must reconnect, tell the user to reload the wallet, then ask
 again: `/reload-mcp` in Hermes in a terminal; in the Hermes desktop app, Ctrl+K, "Restart gateway", then

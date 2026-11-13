@@ -5,7 +5,8 @@
 // README and the skill name the same version (0.3.218) in their setup lines; a pin moves all three together.
 //
 // The wallet must already be on this computer, put there by its setup: `npm install -g shinjuku@0.3.218` then
-// `shinjuku setup` (the README form), or `npx -y shinjuku@0.3.218 setup`. That npm download goes straight to npm's
+// `shinjuku setup` (the README form; on Windows `npm.cmd` and `shinjuku.cmd`, because Windows PowerShell refuses npm's
+// own command files by default), or `npx -y shinjuku@0.3.218 setup`. That npm download goes straight to npm's
 // registry, before setup asks whether to use Tor (docs/mcp/TOR.md, "What setup does with Tor"). This launcher never
 // downloads anything and never runs npm or npx: it finds that exact installed copy of the wallet package
 // (shinjuku-shield, also the dependency of the shinjuku package) and starts its own command file with this Node.
@@ -42,15 +43,22 @@ if (!VERSION.test(version)) {
 }
 const WALLET_PACKAGE = "shinjuku-shield";
 const COMMAND_PACKAGE = "shinjuku";
-const INSTALL_LINE = `npm install -g --no-audit --no-fund ${COMMAND_PACKAGE}@${version}`;
-const SETUP_LINE = "shinjuku setup";
-const NPX_SETUP_LINE = `npx -y ${COMMAND_PACKAGE}@${version} setup`;
+const WINDOWS = process.platform === "win32";
+// The lines the user types, for this computer. On Windows they name the .cmd files (npm.cmd, npx.cmd, shinjuku.cmd):
+// Windows PowerShell refuses npm's other command files by default, and the .cmd forms work in PowerShell and in
+// Command Prompt alike.
+const NPM_WORD = WINDOWS ? "npm.cmd" : "npm";
+const NPX_WORD = WINDOWS ? "npx.cmd" : "npx";
+const SHINJUKU_WORD = WINDOWS ? "shinjuku.cmd" : "shinjuku";
+const WHERE_TO_TYPE = WINDOWS ? "in PowerShell or Command Prompt (Windows)" : "in a terminal (Linux)";
+const INSTALL_LINE = `${NPM_WORD} install -g --no-audit --no-fund ${COMMAND_PACKAGE}@${version}`;
+const SETUP_LINE = `${SHINJUKU_WORD} setup`;
+const NPX_SETUP_LINE = `${NPX_WORD} -y ${COMMAND_PACKAGE}@${version} setup`;
 
 // A variable that reached us as its own unexpanded placeholder (an optional variable the user did not set) is absent.
 // The wallet reads this exact value to word its update texts for a plugin install ("hermes plugins update shinjuku").
 const env = { ...process.env, SHINJUKU_WALLET_LAUNCHER: "hermes-plugin" };
 for (const [key, value] of Object.entries(env)) if (/^\$\{[A-Za-z_][A-Za-z0-9_]*\}$/.test(value ?? "")) delete env[key];
-const WINDOWS = process.platform === "win32";
 
 // Out of the plugin folder (see above), before anything else runs. A failed move keeps the folder Hermes gave.
 for (const folder of [env.PLUGIN_DATA, homedir()]) {
@@ -137,7 +145,7 @@ const NOT_READY = MAC
   ? "The Shinjuku private wallet does not run on a Mac yet: its proof programs run on Windows and Linux only. Nothing was paid or read. "
     + "Tell the user: Shinjuku works in Hermes on Windows or Linux."
   : "The Shinjuku private wallet is not set up on this computer yet, so it cannot pay or read anything yet. Nothing was paid. "
-    + "Tell the user to do this once, in PowerShell (Windows) or a terminal (Linux):\n"
+    + `Tell the user to do this once, ${WHERE_TO_TYPE}, and to type the lines exactly as they are here:\n`
     + `1. Install the wallet:\n   ${INSTALL_LINE}\n`
     + `2. Set it up:\n   ${SETUP_LINE}\n`
     + "   Setup asks whether to use Tor (yes is the default: then the sites and services the wallet reaches do not see "

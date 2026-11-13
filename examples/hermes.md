@@ -22,18 +22,35 @@ You need:
 
 - Node.js 22.21 or later, or Node.js 24 or later.
 - Linux, or Windows x64 (no WSL needed). macOS is not supported yet.
+- Git, for the plugin: Hermes installs every plugin with Git. On Windows, Git for Windows from
+  https://git-scm.com/download/win (then open Hermes again); on Linux, Git from your system's packages.
 
-### 1. Set up the wallet in a terminal
+### 1. Set up the wallet
+
+Linux, in a terminal:
 
 ```sh
 npm install -g shinjuku@0.3.218
 shinjuku setup
 ```
 
-Or, without installing the `shinjuku` command:
+Windows, in PowerShell or Command Prompt:
+
+```bat
+npm.cmd install -g shinjuku@0.3.218
+shinjuku.cmd setup
+```
+
+Or, without installing the `shinjuku` command. Linux:
 
 ```sh
 npx -y --no-audit --no-fund shinjuku-shield@0.3.218 setup
+```
+
+Windows:
+
+```bat
+npx.cmd -y --no-audit --no-fund shinjuku-shield@0.3.218 setup
 ```
 
 Setup asks two questions:
@@ -48,10 +65,16 @@ computer. It is the only way to restore the wallet.
 
 ### 2. Add the wallet to Hermes
 
-Setup can do this for you:
+Setup can do this for you. Linux:
 
 ```sh
 npx -y shinjuku@0.3.218 setup --add-to hermes
+```
+
+Windows:
+
+```bat
+npx.cmd -y shinjuku@0.3.218 setup --add-to hermes
 ```
 
 It writes the `shinjuku` entry into Hermes' `config.yaml` (with `trust: untrusted` and `timeout: 600`), keeps
