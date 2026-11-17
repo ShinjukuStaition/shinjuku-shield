@@ -1201,10 +1201,7 @@ The stable version is `947a6309`, on npm as `shinjuku-shield@0.3.218`
 (pinned 2026-11-11). Use it for a new install.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
-tag `next`, not `latest`; it becomes the stable version only when we say so here.
-To try the newest candidate instead of the stable version, install it with
-`npm install -g shinjuku@next` (Windows: `npm.cmd install -g shinjuku@next`), then
-`shinjuku setup` as above. Rows
+tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
 marked "no longer served" are gone from the website; the other older rows
 stay for the record. Some short-lived releases served between 2026-10-05 and
 2026-10-07 have no row here. What changed in each release after `08a4b56f`
