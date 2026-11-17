@@ -4,6 +4,21 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-17: wallet release `fb00d7e7`, npm `shinjuku@0.3.235` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- In Hermes, one thing you ask for needs one approval: checking whether the
+  private AI address runs, or whether an add-funds address is closed, no
+  longer asks again.
+- Money that arrives late at an add-funds address you closed shows up when
+  you ask for your balance.
+- Plainer words on the wallet card and when a send starts.
+
 ## 2026-11-17: wallet release `a58340f4`, npm `shinjuku@0.3.234` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
