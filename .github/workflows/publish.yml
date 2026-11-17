@@ -140,50 +140,89 @@ jobs:
 
       # The Tor files the wallet pins (manifest.json `tor`, the wallet's net/proxy.mjs TOR_PACKAGED): with them in the
       # package, setup with Tor makes no direct request to the Tor Project (the npm registry already serves this package).
-      # Each archive must match its pinned sha256 (its line in the Tor Project's signed sha256sums-signed-build.txt), and
-      # each file taken from it must match its own pinned sha256 and size; the wallet checks the same pins before it runs
-      # them. Layout: tor/<platform>/tor/<file>, and the license texts in tor/docs. A release built before this has no
-      # `tor` field: its package carries no Tor files, and the wallet downloads Tor as before.
+      # Every release from this one on must carry them: a manifest without `tor` stops the run, except the releases in
+      # TOR_LEGACY (published before the Tor files went into the package). The platforms and the file list of each are
+      # fixed here, not taken from the manifest; the manifest gives only the version, the archive sha256 (its line in the
+      # Tor Project's signed sha256sums-signed-build.txt) and each file's sha256 and size, which the wallet also pins.
+      # Layout: tor/<platform>/tor/<file>, and the license texts in tor/docs. The pack check below requires exactly
+      # these files (the list goes to $RUNNER_TEMP/tor-files.txt).
       - name: Add the Tor files the wallet pins
+        env:
+          TOR_LEGACY: "947a6309 11630ede a3799770"
         run: |
           set -euo pipefail
-          if ! jq -e '.tor' manifest.json > /dev/null; then echo "this release names no Tor files"; exit 0; fi
+          export LC_ALL=C
+          # Read into a variable first: a jq failure inside [[ ]] would not stop the step.
+          hastor=$(jq -r 'has("tor")' manifest.json)
+          if [[ "$hastor" != "true" ]]; then
+            for legacy in $TOR_LEGACY; do
+              if [[ "$RELEASE" == "$legacy" ]]; then echo "release $RELEASE predates the Tor files in the package: none added"; exit 0; fi
+            done
+            echo "::error::manifest.json of release $RELEASE names no Tor files, and the release is not in TOR_LEGACY"; exit 1
+          fi
+          # platform key -> archive platform | the files the wallet runs (sorted)
+          declare -A EXPECT=(
+            [win32-x64]="windows-x86_64|tor/tor.exe"
+            [darwin-arm64]="macos-aarch64|tor/libevent-2.1.7.dylib tor/tor"
+            [darwin-x64]="macos-x86_64|tor/libevent-2.1.7.dylib tor/tor"
+            [linux-x64]="linux-x86_64|tor/libcrypto.so.3 tor/libevent-2.1.so.7 tor/libssl.so.3 tor/tor"
+          )
+          EXPECT_KEYS="darwin-arm64 darwin-x64 linux-x64 win32-x64"
+          EXPECT_DOCS="docs/libevent.txt docs/openssl.txt docs/tor.txt docs/zlib.txt"
+          DOCS_FROM=win32-x64
+          # Every jq result is read into a variable first, so a jq failure stops the step (set -e).
           version=$(jq -r '.tor.version' manifest.json)
           [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::manifest.json names no Tor version"; exit 1; }
+          keys=$(jq -r '.tor.platforms | keys | join(" ")' manifest.json)
+          [[ "$keys" == "$EXPECT_KEYS" ]] || { echo "::error::manifest.json Tor platforms are '$keys', expected '$EXPECT_KEYS'"; exit 1; }
           work="$RUNNER_TEMP/tor-files"
           rm -rf tor "$work"
           mkdir -p tor/docs "$work"
-          for key in $(jq -r '.tor.platforms | keys[]' manifest.json); do
-            [[ "$key" =~ ^(win32-x64|darwin-arm64|darwin-x64|linux-x64)$ ]] || { echo "::error::unknown Tor platform $key"; exit 1; }
+          : > "$RUNNER_TEMP/tor-files.txt"
+          for key in $EXPECT_KEYS; do
+            platform=${EXPECT[$key]%%|*}
+            want=${EXPECT[$key]#*|}
             name=$(jq -r --arg k "$key" '.tor.platforms[$k].archive.name' manifest.json)
             url=$(jq -r --arg k "$key" '.tor.platforms[$k].archive.url' manifest.json)
             sha=$(jq -r --arg k "$key" '.tor.platforms[$k].archive.sha256' manifest.json)
-            [[ "$name" =~ ^tor-expert-bundle-[a-z0-9_-]+-[0-9.]+\.tar\.gz$ ]] || { echo "::error::archive name $name"; exit 1; }
-            [[ "$url" == "https://archive.torproject.org/tor-package-archive/torbrowser/$version/$name" ]] || { echo "::error::archive url $url"; exit 1; }
-            [[ "$sha" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::archive sha256 $sha"; exit 1; }
+            [[ "$name" == "tor-expert-bundle-$platform-$version.tar.gz" ]] || { echo "::error::$key archive name $name"; exit 1; }
+            [[ "$url" == "https://archive.torproject.org/tor-package-archive/torbrowser/$version/$name" ]] || { echo "::error::$key archive url $url"; exit 1; }
+            [[ "$sha" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::$key archive sha256 $sha"; exit 1; }
+            list=$(jq -r --arg k "$key" '.tor.platforms[$k].files[] | "\(.path)|\(.sha256)|\(.bytes)"' manifest.json)
+            have=$(printf '%s\n' "$list" | cut -d'|' -f1 | sort | paste -sd' ' -)
+            [[ "$have" == "$want" ]] || { echo "::error::$key files are '$have', expected '$want'"; exit 1; }
             curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 300 --retry 3 --retry-all-errors "$url" -o "$work/$name"
             echo "$sha  $work/$name" | sha256sum -c -
-            mkdir -p "$work/$key"
+            mkdir -p "$work/$key" "tor/$key/tor"
             tar -xzf "$work/$name" -C "$work/$key" --no-same-owner tor docs
             while IFS='|' read -r path fsha fbytes; do
-              [[ "$path" =~ ^tor/[A-Za-z0-9._-]+$ ]] || { echo "::error::file path $path"; exit 1; }
+              [[ "$fsha" =~ ^[0-9a-f]{64}$ && "$fbytes" =~ ^[0-9]+$ ]] || { echo "::error::$key $path pin is not a sha256 and a size"; exit 1; }
+              [[ -f "$work/$key/$path" && ! -L "$work/$key/$path" ]] || { echo "::error::$key $path is not a plain file in the archive"; exit 1; }
               echo "$fsha  $work/$key/$path" | sha256sum -c -
               [[ "$(stat -c %s "$work/$key/$path")" == "$fbytes" ]] || { echo "::error::$key $path size differs from the manifest"; exit 1; }
-              mkdir -p "tor/$key/tor"
               cp "$work/$key/$path" "tor/$key/$path"
-            done < <(jq -r --arg k "$key" '.tor.platforms[$k].files[] | "\(.path)|\(.sha256)|\(.bytes)"' manifest.json)
+              echo "tor/$key/$path" >> "$RUNNER_TEMP/tor-files.txt"
+            done <<< "$list"
           done
-          from=$(jq -r '.tor.docs[0].from' manifest.json)
-          key=$(jq -r --arg a "-$from-" '.tor.platforms | to_entries[] | select(.value.archive.name | contains($a)) | .key' manifest.json)
-          [[ -n "$key" ]] || { echo "::error::the docs name an archive that is not listed"; exit 1; }
+          from=$(jq -r '[.tor.docs[].from] | unique | join(" ")' manifest.json)
+          [[ "$from" == "${EXPECT[$DOCS_FROM]%%|*}" ]] || { echo "::error::the docs come from '$from', expected ${EXPECT[$DOCS_FROM]%%|*}"; exit 1; }
+          docs=$(jq -r '.tor.docs[] | "\(.path)|\(.sha256)|\(.bytes)"' manifest.json)
+          have=$(printf '%s\n' "$docs" | cut -d'|' -f1 | sort | paste -sd' ' -)
+          [[ "$have" == "$EXPECT_DOCS" ]] || { echo "::error::Tor docs are '$have', expected '$EXPECT_DOCS'"; exit 1; }
           while IFS='|' read -r path fsha fbytes; do
-            [[ "$path" =~ ^docs/[A-Za-z0-9._-]+$ ]] || { echo "::error::doc path $path"; exit 1; }
-            echo "$fsha  $work/$key/$path" | sha256sum -c -
-            [[ "$(stat -c %s "$work/$key/$path")" == "$fbytes" ]] || { echo "::error::doc $path size differs from the manifest"; exit 1; }
-            cp "$work/$key/$path" "tor/$path"
-          done < <(jq -r '.tor.docs[] | "\(.path)|\(.sha256)|\(.bytes)"' manifest.json)
+            [[ "$fsha" =~ ^[0-9a-f]{64}$ && "$fbytes" =~ ^[0-9]+$ ]] || { echo "::error::doc $path pin is not a sha256 and a size"; exit 1; }
+            [[ -f "$work/$DOCS_FROM/$path" && ! -L "$work/$DOCS_FROM/$path" ]] || { echo "::error::doc $path is not a plain file in the archive"; exit 1; }
+            echo "$fsha  $work/$DOCS_FROM/$path" | sha256sum -c -
+            [[ "$(stat -c %s "$work/$DOCS_FROM/$path")" == "$fbytes" ]] || { echo "::error::doc $path size differs from the manifest"; exit 1; }
+            cp "$work/$DOCS_FROM/$path" "tor/$path"
+            echo "tor/$path" >> "$RUNNER_TEMP/tor-files.txt"
+          done <<< "$docs"
           rm -rf "$work"
-          find tor -type f | sort
+          sort -o "$RUNNER_TEMP/tor-files.txt" "$RUNNER_TEMP/tor-files.txt"
+          laid=$(find tor -type f | sort)
+          [[ "$laid" == "$(cat "$RUNNER_TEMP/tor-files.txt")" ]] || { echo "::error::the tor folder holds other files than the list"; exit 1; }
+          [[ "$(wc -l < "$RUNNER_TEMP/tor-files.txt")" == "13" ]] || { echo "::error::expected 13 Tor files"; exit 1; }
+          cat "$RUNNER_TEMP/tor-files.txt"
 
       # Fails closed: without the secret, with any match, or when grep cannot run the check (a bad pattern, a file it
       # cannot read: exit 2), nothing is published; only grep's "no match" (exit 1) lets the run go on. The names live
@@ -231,11 +270,15 @@ jobs:
           for f in shinjuku-wallet.mjs seller.mjs shinjuku-seller.mjs SELLER_THIRD_PARTY_NOTICES.txt manifest.json; do
             jq -e --arg f "$f" '.[0].files | any(.path == $f)' "$RUNNER_TEMP/pack.json" > /dev/null || { echo "::error::the package does not hold $f"; exit 1; }
           done
-          # Every Tor file the manifest names is in the package (the step above laid them out).
-          if jq -e '.tor' manifest.json > /dev/null; then
-            for f in $(jq -r '.tor.platforms | to_entries[] | .key as $k | .value.files[] | "tor/\($k)/\(.path)"' manifest.json) $(jq -r '.tor.docs[] | "tor/\(.path)"' manifest.json); do
-              jq -e --arg f "$f" '.[0].files | any(.path == $f)' "$RUNNER_TEMP/pack.json" > /dev/null || { echo "::error::the package does not hold $f"; exit 1; }
-            done
+          # The package holds exactly the Tor files the step above laid out from its fixed list (a release in TOR_LEGACY:
+          # none). A manifest with `tor` and no list, or Tor files in a release without `tor`, stops the run.
+          packed=$(jq -r '.[0].files[].path | select(startswith("tor/"))' "$RUNNER_TEMP/pack.json" | LC_ALL=C sort)
+          hastor=$(jq -r 'has("tor")' manifest.json)
+          if [[ "$hastor" == "true" ]]; then
+            [[ -s "$RUNNER_TEMP/tor-files.txt" ]] || { echo "::error::the Tor step wrote no file list"; exit 1; }
+            [[ "$packed" == "$(cat "$RUNNER_TEMP/tor-files.txt")" ]] || { echo "::error::the package's Tor files differ from the list"; exit 1; }
+          else
+            [[ -z "$packed" ]] || { echo "::error::a release without Tor in its manifest packs Tor files"; exit 1; }
           fi
           npm pack --dry-run
 

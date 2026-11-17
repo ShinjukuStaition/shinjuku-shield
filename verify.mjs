@@ -156,7 +156,7 @@ async function npmPackage(name) {
 }
 
 // ---- 1. the wallet package: registry, tarball, provenance, the wallet file ----
-let wallet, walletSha, sha8, sellerSha;
+let wallet, walletSha, sha8, sellerSha, shippedTor;
 try {
   if (!version) {
     version = (await getJson(`${REGISTRY}/${PKG}/latest`)).version;
@@ -195,6 +195,47 @@ try {
   } else {
     info("This release carries no seller library.");
   }
+  // The Tor files, in releases that carry them (the tarball's manifest names `tor`): the four platforms and the fixed file
+  // list of each, each file with the sha256 and size of the manifest, each sha256 also inside the wallet file (the wallet
+  // checks the same pins before it runs them), and no other file under tor/.
+  const torFiles = Object.keys(main.files).filter((k) => k.startsWith("package/tor/")).sort();
+  shippedTor = shippedManifest?.tor;
+  if (shippedTor || torFiles.length) {
+    const expect = {
+      "darwin-arm64": ["tor/libevent-2.1.7.dylib", "tor/tor"],
+      "darwin-x64": ["tor/libevent-2.1.7.dylib", "tor/tor"],
+      "linux-x64": ["tor/libcrypto.so.3", "tor/libevent-2.1.so.7", "tor/libssl.so.3", "tor/tor"],
+      "win32-x64": ["tor/tor.exe"],
+    };
+    const expectDocs = ["docs/libevent.txt", "docs/openssl.txt", "docs/tor.txt", "docs/zlib.txt"];
+    const walletText = wallet.toString("latin1");
+    const problems = [];
+    const want = [];
+    const one = (entry, at) => {
+      want.push(at);
+      const buf = main.files[at];
+      if (!buf) problems.push(`${at} is missing`);
+      else if (buf.length !== entry.bytes || sha("sha256", buf) !== entry.sha256) problems.push(`${at} differs from the manifest`);
+      if (!/^[0-9a-f]{64}$/.test(String(entry.sha256)) || !walletText.includes(entry.sha256)) problems.push(`${at}: its sha256 is not pinned in the wallet file`);
+    };
+    const platforms = Object.keys(shippedTor?.platforms ?? {}).sort();
+    if (JSON.stringify(platforms) !== JSON.stringify(Object.keys(expect))) problems.push(`the manifest lists the platforms ${platforms.join(", ") || "none"}`);
+    for (const [key, paths] of Object.entries(expect)) {
+      const files = shippedTor?.platforms?.[key]?.files ?? [];
+      const names = files.map((f) => f.path).sort();
+      if (JSON.stringify(names) !== JSON.stringify(paths)) problems.push(`${key} lists ${names.join(", ") || "no file"}`);
+      for (const f of files) one(f, `package/tor/${key}/${f.path}`);
+    }
+    const docs = shippedTor?.docs ?? [];
+    if (JSON.stringify(docs.map((d) => d.path).sort()) !== JSON.stringify(expectDocs)) problems.push("the manifest's Tor license texts differ from the list");
+    for (const d of docs) one(d, `package/tor/${d.path}`);
+    const extra = torFiles.filter((k) => !want.includes(k));
+    if (extra.length) problems.push(`other files under tor/: ${extra.join(", ")}`);
+    check(problems.length === 0, `the ${want.length} Tor files match the tarball's manifest and the wallet's pins (Tor ${shippedTor?.version})`,
+      `Tor files: ${problems.join("; ")}`);
+  } else {
+    info("This release carries no Tor files.");
+  }
   info("This script does not check the Sigstore signature of the provenance.");
   info(`To check it, run "npm audit signatures" in a folder where ${PKG}@${version} is installed.`);
 } catch (e) {
@@ -224,6 +265,10 @@ await step("website", async () => {
       `website manifest seller library sha256 ${m.seller?.sha256} differs from the tarball's ${sellerSha}`);
   } else if (m.seller) {
     fail(`website manifest names a seller library (sha256 ${m.seller.sha256}), and the tarball has none`);
+  }
+  if (shippedTor || m.tor) {
+    check(JSON.stringify(m.tor) === JSON.stringify(shippedTor), "website manifest names the same Tor files",
+      "website manifest's Tor files differ from the tarball's manifest");
   }
 });
 await step("website release", async () => {
