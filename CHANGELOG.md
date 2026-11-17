@@ -4,6 +4,28 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-17: wallet release `a58340f4`, npm `shinjuku@0.3.234` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- In the Claude app, the add-funds and wallet cards show a real address or
+  balance, or say plainly why not. They never show an empty or old address.
+- The Pay button on a price card works in every app.
+- Each wallet action starts with one plain sentence on the app's approval
+  card. Checking on money you made private needs no second approval.
+- Setup asks you to quit Claude Desktop or the ChatGPT app before it adds the
+  wallet, so the app cannot overwrite the change.
+- The list of AI models shows only the models the AI service takes right now.
+- The private AI address keeps its key out of the chat. Asking for its state
+  no longer starts it.
+- In the terminal chat, pasted text never sends a paid question, never runs a
+  command and never confirms a send. Only your own Enter does.
+- A payment shows as done sooner after it lands on the chain.
+
 ## 2026-11-17: wallet release `f57e91f4`, npm `shinjuku@0.3.233` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
