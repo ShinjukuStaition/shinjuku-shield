@@ -4,6 +4,20 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-17: wallet release `c3499a14`, npm `shinjuku@0.3.240` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- USDC sent straight to your wallet's own address can now be made private
+  in the terminal too: open Shinjuku and press m. Shinjuku pays the network
+  fee.
+- When your AI checks on a send, it names only the request, never the
+  address again.
+
 ## 2026-11-17: wallet release `dd60a30f`, npm `shinjuku@0.3.239` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
