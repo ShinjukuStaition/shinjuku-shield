@@ -757,13 +757,15 @@ you the confirmation). With a host that does not, name each address with
 
 ## Use your private AI from your own code
 
-Your wallet can run a private AI address on your computer. Any program that
-talks to OpenAI can use it. Each answer is paid from your private balance.
+Your wallet can run a private AI address on your computer. A program that
+asks OpenAI's chat API text questions can use it, with tool calls too. It
+does not take images or a reference to an earlier answer (send the whole
+conversation each time), and it gives one answer per request. Each answer is
+paid from your private balance.
 The address always runs through Tor, so the AI company does not see your IP
 address.
 
-These steps ran on the candidate 0.3.179 on a new Windows account, one short
-question each, with curl, TypeScript, Python and LangChain.
+Below: one short question each, with curl, TypeScript, Python and LangChain.
 
 ### 1. Start the address
 
@@ -802,7 +804,7 @@ computer that has it can spend from your balance.
 In Command Prompt (one line; copy it as it is):
 
 ```
-curl http://127.0.0.1:11402/v1/chat/completions -H "Authorization: Bearer %OPENAI_API_KEY%" -H "Content-Type: application/json" -d "{\"model\":\"qwen3-8-flash\",\"max_tokens\":256,\"messages\":[{\"role\":\"user\",\"content\":\"What is the capital of Japan?\"}]}"
+curl http://127.0.0.1:11402/v1/chat/completions -H "Authorization: Bearer %OPENAI_API_KEY%" -H "Content-Type: application/json" -d "{\"model\":\"qwen3-8-flash\",\"max_tokens\":4096,\"messages\":[{\"role\":\"user\",\"content\":\"What is the capital of Japan?\"}]}"
 ```
 
 The answer is the text after `"content":`. The reply's `"paid_atomic"` is what
@@ -830,7 +832,7 @@ const client = new OpenAI({
 async function main() {
   const answer = await client.chat.completions.create({
     model: "qwen3-8-flash",
-    max_tokens: 256,
+    max_tokens: 4096,
     messages: [{ role: "user", content: "What is the capital of Japan?" }],
   });
   console.log(answer.choices[0].message.content);
@@ -867,7 +869,7 @@ client = OpenAI(
 
 answer = client.chat.completions.create(
     model="qwen3-8-flash",
-    max_tokens=256,
+    max_tokens=4096,
     messages=[{"role": "user", "content": "What is the capital of Japan?"}],
 )
 print(answer.choices[0].message.content)
@@ -893,7 +895,7 @@ llm = ChatOpenAI(
     base_url="http://127.0.0.1:11402/v1",
     api_key=os.environ["OPENAI_API_KEY"],
     model="qwen3-8-flash",
-    max_tokens=256,
+    max_tokens=4096,
 )
 print(llm.invoke("What is the capital of Japan?").content)
 ```
@@ -903,11 +905,15 @@ Run it: `python ask_langchain.py`
 ### What it costs
 
 Each answer is paid before it runs, for the longest reply you allow
-(`max_tokens`). A part you do not use is not paid back, so a small
-`max_tokens` keeps each answer cheap. 256 is the smallest: a smaller value is
-raised to 256, so the answer is not empty. A request with no `max_tokens` pays
-for 4096. `infer start` says the most it pays for one answer and for one run.
+(`max_tokens`). A part you do not use is not paid back.
 
+`qwen3-8-flash` thinks before it answers, so it needs a `max_tokens` of at
+least 4096: with less, it can use every token to think and give no answer,
+and you still pay. The address refuses a smaller value before anything is
+paid. A short question at 4096 costs about 0.003 USDC, at most 0.011 USDC.
+For the other models, 256 is the smallest. A request with no `max_tokens`
+pays for 4096 (512 for `claude-opus-5`). `infer start` says the most it pays
+for one answer and for one run.
 ## Examples
 
 [examples/](examples/) has complete configs and a walkthrough:
