@@ -138,6 +138,53 @@ jobs:
           [[ "$(stat -c %s shinjuku-seller.mjs)" == "$(jq -r '.seller.bytes' manifest.json)" ]] || { echo "::error::seller library size differs from the manifest"; exit 1; }
           head -n 1 shinjuku-wallet.mjs | grep -qx '#!/usr/bin/env node' || { echo "::error::wallet file has no node shebang"; exit 1; }
 
+      # The Tor files the wallet pins (manifest.json `tor`, the wallet's net/proxy.mjs TOR_PACKAGED): with them in the
+      # package, setup with Tor makes no direct request to the Tor Project (the npm registry already serves this package).
+      # Each archive must match its pinned sha256 (its line in the Tor Project's signed sha256sums-signed-build.txt), and
+      # each file taken from it must match its own pinned sha256 and size; the wallet checks the same pins before it runs
+      # them. Layout: tor/<platform>/tor/<file>, and the license texts in tor/docs. A release built before this has no
+      # `tor` field: its package carries no Tor files, and the wallet downloads Tor as before.
+      - name: Add the Tor files the wallet pins
+        run: |
+          set -euo pipefail
+          if ! jq -e '.tor' manifest.json > /dev/null; then echo "this release names no Tor files"; exit 0; fi
+          version=$(jq -r '.tor.version' manifest.json)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::manifest.json names no Tor version"; exit 1; }
+          work="$RUNNER_TEMP/tor-files"
+          rm -rf tor "$work"
+          mkdir -p tor/docs "$work"
+          for key in $(jq -r '.tor.platforms | keys[]' manifest.json); do
+            [[ "$key" =~ ^(win32-x64|darwin-arm64|darwin-x64|linux-x64)$ ]] || { echo "::error::unknown Tor platform $key"; exit 1; }
+            name=$(jq -r --arg k "$key" '.tor.platforms[$k].archive.name' manifest.json)
+            url=$(jq -r --arg k "$key" '.tor.platforms[$k].archive.url' manifest.json)
+            sha=$(jq -r --arg k "$key" '.tor.platforms[$k].archive.sha256' manifest.json)
+            [[ "$name" =~ ^tor-expert-bundle-[a-z0-9_-]+-[0-9.]+\.tar\.gz$ ]] || { echo "::error::archive name $name"; exit 1; }
+            [[ "$url" == "https://archive.torproject.org/tor-package-archive/torbrowser/$version/$name" ]] || { echo "::error::archive url $url"; exit 1; }
+            [[ "$sha" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::archive sha256 $sha"; exit 1; }
+            curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 300 --retry 3 --retry-all-errors "$url" -o "$work/$name"
+            echo "$sha  $work/$name" | sha256sum -c -
+            mkdir -p "$work/$key"
+            tar -xzf "$work/$name" -C "$work/$key" --no-same-owner tor docs
+            while IFS='|' read -r path fsha fbytes; do
+              [[ "$path" =~ ^tor/[A-Za-z0-9._-]+$ ]] || { echo "::error::file path $path"; exit 1; }
+              echo "$fsha  $work/$key/$path" | sha256sum -c -
+              [[ "$(stat -c %s "$work/$key/$path")" == "$fbytes" ]] || { echo "::error::$key $path size differs from the manifest"; exit 1; }
+              mkdir -p "tor/$key/tor"
+              cp "$work/$key/$path" "tor/$key/$path"
+            done < <(jq -r --arg k "$key" '.tor.platforms[$k].files[] | "\(.path)|\(.sha256)|\(.bytes)"' manifest.json)
+          done
+          from=$(jq -r '.tor.docs[0].from' manifest.json)
+          key=$(jq -r --arg a "-$from-" '.tor.platforms | to_entries[] | select(.value.archive.name | contains($a)) | .key' manifest.json)
+          [[ -n "$key" ]] || { echo "::error::the docs name an archive that is not listed"; exit 1; }
+          while IFS='|' read -r path fsha fbytes; do
+            [[ "$path" =~ ^docs/[A-Za-z0-9._-]+$ ]] || { echo "::error::doc path $path"; exit 1; }
+            echo "$fsha  $work/$key/$path" | sha256sum -c -
+            [[ "$(stat -c %s "$work/$key/$path")" == "$fbytes" ]] || { echo "::error::doc $path size differs from the manifest"; exit 1; }
+            cp "$work/$key/$path" "tor/$path"
+          done < <(jq -r '.tor.docs[] | "\(.path)|\(.sha256)|\(.bytes)"' manifest.json)
+          rm -rf "$work"
+          find tor -type f | sort
+
       # Fails closed: without the secret, with any match, or when grep cannot run the check (a bad pattern, a file it
       # cannot read: exit 2), nothing is published; only grep's "no match" (exit 1) lets the run go on. The names live
       # only in the secret, so this public file does not list them; grep -l prints file names, never the matched text.
@@ -184,6 +231,12 @@ jobs:
           for f in shinjuku-wallet.mjs seller.mjs shinjuku-seller.mjs SELLER_THIRD_PARTY_NOTICES.txt manifest.json; do
             jq -e --arg f "$f" '.[0].files | any(.path == $f)' "$RUNNER_TEMP/pack.json" > /dev/null || { echo "::error::the package does not hold $f"; exit 1; }
           done
+          # Every Tor file the manifest names is in the package (the step above laid them out).
+          if jq -e '.tor' manifest.json > /dev/null; then
+            for f in $(jq -r '.tor.platforms | to_entries[] | .key as $k | .value.files[] | "tor/\($k)/\(.path)"' manifest.json) $(jq -r '.tor.docs[] | "tor/\(.path)"' manifest.json); do
+              jq -e --arg f "$f" '.[0].files | any(.path == $f)' "$RUNNER_TEMP/pack.json" > /dev/null || { echo "::error::the package does not hold $f"; exit 1; }
+            done
+          fi
           npm pack --dry-run
 
       # --loglevel verbose: a refused trusted publisher shows only as E404 on the PUT; the verbose "oidc" line gives

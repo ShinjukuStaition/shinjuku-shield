@@ -44,7 +44,8 @@
     "LICENSE.txt",
     "THIRD_PARTY_NOTICES.txt",
     "SELLER_THIRD_PARTY_NOTICES.txt",
-    "manifest.json"
+    "manifest.json",
+    "tor/"
   ],
   "engines": {
     "node": "^22.21.0 || >=24.0.0"
