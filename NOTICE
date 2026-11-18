@@ -1,0 +1,10 @@
+Shinjuku Shield
+Copyright 2026 Shinjuku StAItion
+
+The files in this repository are licensed under the Apache License,
+Version 2.0. See the LICENSE file.
+
+The Shinjuku Shield wallet program that npm installs (the packages
+shinjuku, shinjuku-shield and shinjuku-shielded) is not in this
+repository. It keeps its own terms: see the LICENSE.txt file inside
+each package.
