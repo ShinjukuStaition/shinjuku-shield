@@ -4,6 +4,24 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-19: wallet release `4bd16a47`, npm `shinjuku@0.3.248` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Added
+
+- Sell with a product link: press `g` on the home screen and choose the product
+  link. Each customer who opens the link gets an own one-time payment address
+  and pays from any Solana wallet; the wallet shows the paid orders and makes
+  each payment private. Your computer can be off while customers pay.
+
+### Changed
+
+- The pay page tells a Shinjuku payer to press `p` and paste the link.
+- After someone pays your pay-me link privately, the balance says so at once.
+
 ## 2026-11-19: wallet release `9407457d`, npm `shinjuku@0.3.247` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
