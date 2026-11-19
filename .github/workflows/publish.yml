@@ -25,6 +25,12 @@ on:
         options:
           - next
           - latest
+          - sizetest
+      proof_sets:
+        description: "Only with dist_tag sizetest (PLAN AB295 size test): platform=dir pairs of the proof sets to pack, for example linux-x64=ce2b7def win32-x64=e60caaec. Empty for every real release"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -48,6 +54,7 @@ jobs:
       VERSION: ${{ inputs.version }}
       SITE: https://shinjukustaition.com
       DIST_TAG: ${{ inputs.dist_tag }}
+      PROOF_SETS: ${{ inputs.proof_sets }}
       HASH_README_API: https://api.github.com/repos/ShinjukuStaition/shinjuku-shield/readme
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -66,7 +73,17 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$RELEASE" =~ ^[0-9a-f]{8}$ ]] || { echo "::error::release must be 8 lowercase hex characters"; exit 1; }
-          [[ "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || { echo "::error::version must be x.y.z"; exit 1; }
+          # The AB295 size test (dist-tag sizetest): a pre-release version x.y.z-sizetest.N, so no real release number is used
+          # (a real x.y.z that shinjuku-shield had would make a later real run skip it and publish the shinjuku command
+          # pointing at the test build); only shinjuku-shield is published, and only with proof sets. Every other run: x.y.z
+          # and no proof sets.
+          if [[ "$DIST_TAG" == "sizetest" ]]; then
+            [[ "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-sizetest\.[1-9][0-9]*$ ]] || { echo "::error::a sizetest version must be x.y.z-sizetest.N"; exit 1; }
+            [[ "$PROOF_SETS" =~ ^([a-z0-9-]+=[0-9a-f]{8})( [a-z0-9-]+=[0-9a-f]{8})*$ ]] || { echo "::error::sizetest needs proof_sets as platform=dir pairs"; exit 1; }
+          else
+            [[ "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || { echo "::error::version must be x.y.z"; exit 1; }
+            [[ -z "$PROOF_SETS" ]] || { echo "::error::proof_sets is only for dist_tag sizetest"; exit 1; }
+          fi
           # A rerun after a partial run publishes only the packages still missing (each publish step skips one that is
           # there); a version that both names already have is refused.
           have=0
@@ -227,6 +244,39 @@ jobs:
       # Fails closed: without the secret, with any match, or when grep cannot run the check (a bad pattern, a file it
       # cannot read: exit 2), nothing is published; only grep's "no match" (exit 1) lets the run go on. The names live
       # only in the secret, so this public file does not list them; grep -l prints file names, never the matched text.
+      # AB295 size test only: the proof sets named in proof_sets, from the site's /proof-tools/<dir>/, each file checked
+      # against its SHA256SUMS, whose own sha256 must start with <dir> (the wallet's pin, proofTools.mjs sumsSha256). The
+      # bundle/ folder is the same in every set: it is packed once (proof/shared/bundle; a differing file stops the run);
+      # each platform's other files go to proof/<platform>/.
+      - name: Add the proof sets (sizetest only)
+        if: inputs.dist_tag == 'sizetest'
+        run: |
+          set -euo pipefail
+          for pair in $PROOF_SETS; do
+            platform=${pair%%=*}; dir=${pair#*=}
+            work="$RUNNER_TEMP/proof-$dir"; mkdir -p "$work"
+            curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 60 --retry 3 --retry-all-errors \
+              "$SITE/proof-tools/$dir/SHA256SUMS" -o "$work/SHA256SUMS"
+            [[ "$(sha256sum "$work/SHA256SUMS" | cut -c1-8)" == "$dir" ]] || { echo "::error::SHA256SUMS of $dir does not hash to $dir"; exit 1; }
+            while read -r hash file; do
+              file=${file#\*}
+              [[ "$file" =~ ^[A-Za-z0-9._/-]+$ && "$file" != *..* ]] || { echo "::error::$dir lists a path setup would refuse: $file"; exit 1; }
+              mkdir -p "$work/$(dirname "$file")"
+              curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 600 --retry 3 --retry-all-errors \
+                "$SITE/proof-tools/$dir/$file" -o "$work/$file"
+            done < "$work/SHA256SUMS"
+            (cd "$work" && sha256sum -c --quiet SHA256SUMS)
+            if [[ -d proof/shared/bundle ]]; then
+              diff -r proof/shared/bundle "$work/bundle" > /dev/null || { echo "::error::$dir has another bundle/ than the sets before it"; exit 1; }
+            else
+              mkdir -p proof/shared && cp -r "$work/bundle" proof/shared/bundle
+            fi
+            mkdir -p "proof/$platform"
+            (cd "$work" && tar -cf - --exclude=./bundle .) | (cd "proof/$platform" && tar -xf -)
+          done
+          jq '.files += ["proof/"]' package.json > "$RUNNER_TEMP/package.json" && mv "$RUNNER_TEMP/package.json" package.json
+          du -sb proof proof/* | sort -k2
+
       - name: Refuse private names in the files to publish
         env:
           PRIVATE_NAMES_RE: ${{ secrets.PRIVATE_NAMES_RE }}
@@ -281,6 +331,8 @@ jobs:
             [[ -z "$packed" ]] || { echo "::error::a release without Tor in its manifest packs Tor files"; exit 1; }
           fi
           npm pack --dry-run
+          # AB295 size test: the packed and unpacked sizes, for the report.
+          jq -r '.[0] | "packed \(.size) bytes, unpacked \(.unpackedSize) bytes, \(.entryCount) files"' "$RUNNER_TEMP/pack.json"
 
       # --loglevel verbose: a refused trusted publisher shows only as E404 on the PUT; the verbose "oidc" line gives
       # npm's reason. npm redacts tokens in its logs.
@@ -299,6 +351,7 @@ jobs:
       # lists it: a pointer listed first cannot be installed until then (0.3.88: shinjuku listed 23:44:52 UTC,
       # shinjuku-shield 23:45:58 UTC).
       - name: Wait until npm lists shinjuku-shield at this version
+        if: inputs.dist_tag != 'sizetest'
         # A backstop only: the loop ends itself after 15 minutes with the error below.
         timeout-minutes: 17
         run: |
@@ -313,6 +366,7 @@ jobs:
           done
 
       - name: Publish the shinjuku command at the same version, last (it runs shinjuku-shield exactly)
+        if: inputs.dist_tag != 'sizetest'
         working-directory: names/shinjuku
         run: |
           set -euo pipefail
