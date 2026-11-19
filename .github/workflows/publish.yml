@@ -247,7 +247,7 @@ jobs:
       # AB295 size test only: the proof sets named in proof_sets, from the site's /proof-tools/<dir>/, each file checked
       # against its SHA256SUMS, whose own sha256 must start with <dir> (the wallet's pin, proofTools.mjs sumsSha256). The
       # bundle/ folder is the same in every set: it is packed once (proof/shared/bundle; a differing file stops the run);
-      # each platform's other files go to proof/<platform>/.
+      # each platform's other files go to proof/<platform>/. A pair shared=<dir> packs only that set's bundle/.
       - name: Add the proof sets (sizetest only)
         if: inputs.dist_tag == 'sizetest'
         run: |
@@ -271,8 +271,11 @@ jobs:
             else
               mkdir -p proof/shared && cp -r "$work/bundle" proof/shared/bundle
             fi
-            mkdir -p "proof/$platform"
-            (cd "$work" && tar -cf - --exclude=./bundle .) | (cd "proof/$platform" && tar -xf -)
+            # shared=<dir>: only the shared bundle/ of that set (the largest package of a one-package-per-platform layout).
+            if [[ "$platform" != "shared" ]]; then
+              mkdir -p "proof/$platform"
+              (cd "$work" && tar -cf - --exclude=./bundle .) | (cd "proof/$platform" && tar -xf -)
+            fi
           done
           jq '.files += ["proof/"]' package.json > "$RUNNER_TEMP/package.json" && mv "$RUNNER_TEMP/package.json" package.json
           du -sb proof proof/* | sort -k2
