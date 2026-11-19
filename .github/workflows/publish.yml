@@ -1,10 +1,10 @@
 name: Publish shinjuku-shield and shinjuku to npm
 
-# One wallet release goes out as shinjuku-shield (npm/package.json), the only package that holds the wallet. Two small
-# pointer packages at the same version depend on it at that exact version and run it: the shinjuku command
-# (names/shinjuku) and the older name shinjuku-shielded (names/shinjuku-shielded), so apps and installs that name the
-# older name keep working and updating. shinjuku-shielded has no `shinjuku` bin, so a machine with both installed
-# globally has one `shinjuku` command file. Each name has its npm Trusted Publisher on this file.
+# One wallet release goes out as shinjuku-shield (npm/package.json), the only package that holds the wallet. A small
+# pointer package at the same version depends on it at that exact version and runs it: the shinjuku command
+# (names/shinjuku). The older name shinjuku-shielded gets no new versions (owner, 2026-11-19): its published versions
+# stay on npm, marked deprecated, and a wallet setup moves an app line that names it to shinjuku-shield. Each name has
+# its npm Trusted Publisher on this file.
 
 on:
   workflow_dispatch:
@@ -68,12 +68,12 @@ jobs:
           [[ "$RELEASE" =~ ^[0-9a-f]{8}$ ]] || { echo "::error::release must be 8 lowercase hex characters"; exit 1; }
           [[ "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || { echo "::error::version must be x.y.z"; exit 1; }
           # A rerun after a partial run publishes only the packages still missing (each publish step skips one that is
-          # there); a version that all three names already have is refused.
+          # there); a version that both names already have is refused.
           have=0
-          for pkg in shinjuku-shielded shinjuku-shield shinjuku; do
+          for pkg in shinjuku-shield shinjuku; do
             if npm view "$pkg@$VERSION" version >/dev/null 2>&1; then echo "$pkg@$VERSION is already published"; have=$((have + 1)); fi
           done
-          [[ "$have" -lt 3 ]] || { echo "::error::all three packages already have $VERSION"; exit 1; }
+          [[ "$have" -lt 2 ]] || { echo "::error::both packages already have $VERSION"; exit 1; }
 
       - name: Read the hash from the facilitator and from the GitHub Releases table
         id: hash
@@ -234,7 +234,7 @@ jobs:
           set -euo pipefail
           [[ -n "${PRIVATE_NAMES_RE:-}" ]] || { echo "::error::the secret PRIVATE_NAMES_RE is not set, so the private-name check cannot run; nothing was published"; exit 1; }
           status=0
-          grep -rIilE -- "$PRIVATE_NAMES_RE" . ../names/shinjuku ../names/shinjuku-shielded || status=$?
+          grep -rIilE -- "$PRIVATE_NAMES_RE" . ../names/shinjuku || status=$?
           case "$status" in
             1) echo "no private names in the files to publish" ;;
             0) echo "::error::the files above name a private account, machine or user; nothing was published"; exit 1 ;;
@@ -295,7 +295,7 @@ jobs:
           if npm view "shinjuku-shield@$VERSION" version >/dev/null 2>&1; then echo "already published"; exit 0; fi
           npm publish --provenance --access public --tag "$DIST_TAG" --loglevel verbose
 
-      # Both pointer packages below depend on shinjuku-shield at this exact version, so each is published only once npm
+      # The pointer package below depends on shinjuku-shield at this exact version, so it is published only once npm
       # lists it: a pointer listed first cannot be installed until then (0.3.88: shinjuku listed 23:44:52 UTC,
       # shinjuku-shield 23:45:58 UTC).
       - name: Wait until npm lists shinjuku-shield at this version
@@ -308,36 +308,9 @@ jobs:
           while :; do
             try=$((try + 1))
             if timeout 30 npm view "shinjuku-shield@$VERSION" version --prefer-online >/dev/null 2>&1; then echo "npm lists shinjuku-shield@$VERSION (check $try)"; exit 0; fi
-            [ "$SECONDS" -lt "$deadline" ] || { echo "::error::npm does not list shinjuku-shield@$VERSION after 15 minutes ($try checks), so shinjuku-shielded and shinjuku were not published; run this workflow again"; exit 1; }
+            [ "$SECONDS" -lt "$deadline" ] || { echo "::error::npm does not list shinjuku-shield@$VERSION after 15 minutes ($try checks), so shinjuku was not published; run this workflow again"; exit 1; }
             sleep 10
           done
-
-      - name: Publish the older name shinjuku-shielded at the same version (a pointer that runs shinjuku-shield exactly)
-        working-directory: names/shinjuku-shielded
-        run: |
-          set -euo pipefail
-          # Before the smoke test, as in the shinjuku step below (a rerun for a version already on npm).
-          if npm view "shinjuku-shielded@$VERSION" version >/dev/null 2>&1; then echo "already published"; exit 0; fi
-          npm pkg set "version=$VERSION"
-          jq --arg v "$VERSION" '.dependencies = {"shinjuku-shield": $v}' package.json > "$RUNNER_TEMP/shinjuku-shielded.json"
-          mv "$RUNNER_TEMP/shinjuku-shielded.json" package.json
-          jq '{name, version, dependencies, bin}' package.json
-          # The bins of the older name (old app configs and global installs run them), all to the pointer file; never
-          # `shinjuku`, which only the shinjuku package has.
-          [[ "$(jq -c '.bin' package.json)" == '{"shinjuku-shield":"shinjuku-shielded.mjs","shinjuku-shielded":"shinjuku-shielded.mjs","shinjuku-wallet":"shinjuku-shielded.mjs"}' ]] \
-            || { echo "::error::shinjuku-shielded must have exactly the bins shinjuku-shield, shinjuku-shielded and shinjuku-wallet"; exit 1; }
-          sed -i "s/{{VERSION}}/$VERSION/g" README.md
-          ! grep -n '{{' README.md || { echo "::error::README.md still has a {{ }} token"; exit 1; }
-          # The smoke test lays out both packages by hand: the packed pointer and the wallet files of this run as
-          # shinjuku-shield (the files checked above, not a second download).
-          npm pack --pack-destination "$RUNNER_TEMP"
-          try="$RUNNER_TEMP/try-shielded/node_modules"
-          mkdir -p "$try/shinjuku-shielded" "$try/shinjuku-shield"
-          tar -xzf "$RUNNER_TEMP/shinjuku-shielded-$VERSION.tgz" -C "$try/shinjuku-shielded" --strip-components=1
-          cp ../../npm/package.json ../../npm/shinjuku-wallet.mjs ../../npm/manifest.json "$try/shinjuku-shield/"
-          node "$try/shinjuku-shielded/shinjuku-shielded.mjs" version | tee "$RUNNER_TEMP/version-shielded.txt"
-          grep -q "$VERSION" "$RUNNER_TEMP/version-shielded.txt" || { echo "::error::shinjuku-shielded did not run the wallet at $VERSION"; exit 1; }
-          npm publish --provenance --access public --tag "$DIST_TAG" --loglevel verbose
 
       - name: Publish the shinjuku command at the same version, last (it runs shinjuku-shield exactly)
         working-directory: names/shinjuku

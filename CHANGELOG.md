@@ -4,6 +4,31 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-19: wallet release `9407457d`, npm `shinjuku@0.3.247` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Added
+
+- Pay-me links: ask for a set amount, share the link, and the money arrives in
+  your private balance. Anyone can pay from a normal wallet; another Shinjuku
+  wallet pays it privately. In the terminal, press `g` on the home screen.
+  The wallet tells you when a link was paid.
+
+### Changed
+
+- The wallet trusts only Node.js's own certificate list: a computer setting that
+  adds certificates or turns the check off is ignored.
+- Node.js older than 22.23.4, 24.22.1 or 26.12.1 gets a plain notice to update.
+- The wallet's own Tor moves to the Tor Expert Bundle 16.0.1 (Tor 0.4.9.16).
+- After you answer a send question, the answer no longer says it is waiting.
+- The approval card for an AI answer shows the most it can cost, and receipts
+  name the AI model.
+- New versions publish as `shinjuku-shield` and `shinjuku`; the old name
+  `shinjuku-shielded` gets no new versions.
+
 ## 2026-11-19: wallet release `e6713b6a`, npm `shinjuku@0.3.246` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
