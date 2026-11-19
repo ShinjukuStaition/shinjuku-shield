@@ -4,6 +4,20 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-19: wallet release `3d051c04`, npm `shinjuku@0.3.251` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- Hermes on Windows starts the wallet again (it showed "Access is denied").
+- The `shinjuku` command works in Windows PowerShell.
+- "Ask Kimi Private" or "Ask DeepSeek Private" in an agent app now reaches
+  the private AI models, also in apps that look for a tool by the model name.
+- The vendor payment portal: clearer words and links on its home screen.
+
 ## 2026-11-19: wallet release `4fa25c69`, npm `shinjuku@0.3.250` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
