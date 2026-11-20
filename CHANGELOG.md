@@ -4,6 +4,24 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-20: wallet release `a1a6fcee`, npm `shinjuku@0.3.254` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Added
+
+- Private AI: two tools ask the private DeepSeek and Kimi models by name, so
+  an agent app that hides general tools still finds them.
+
+### Fixed
+
+- Linux setup names the Tor it starts and prints the `shinjuku` command after
+  the install.
+- The terminal home screen: its questions, its job lines and its text in a
+  small window use the Shinjuku terminal design.
+
 ## 2026-11-19: wallet release `0593a173`, npm `shinjuku@0.3.253` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
