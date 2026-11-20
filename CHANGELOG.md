@@ -4,6 +4,25 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-20: wallet release `82657f55`, npm `shinjuku@0.3.255` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Fixed
+
+- The terminal keeps the Shinjuku line at the bottom of the window during every
+  job and during setup, so a pay-me link stays in the scroll history above its
+  QR code, also in a small window.
+- Linux setup: when this window does not know the `shinjuku` command yet, the
+  last lines give the full command that works here.
+- The balance card shows when it was updated, and a paid answer shows the
+  balance after the payment.
+- The agent app list lines up, and a skipped app says nothing was changed.
+- A wallet that stays open keeps up with new payments in the background, so
+  its next payment is fast.
+
 ## 2026-11-20: wallet release `a1a6fcee`, npm `shinjuku@0.3.254` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
