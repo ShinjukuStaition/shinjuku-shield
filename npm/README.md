@@ -31,8 +31,8 @@ Setup does every step for you:
 - It makes your wallet on this computer, with a passphrase file that only you
   can read.
 - It asks "Use Tor?" (Tor hides your internet address; on by default). With
-  Tor, on Windows and on Linux x64 the wallet gets Tor and runs it in the
-  background for you: you start nothing yourself. On another system, setup
+  Tor, on Windows the wallet gets Tor and runs it in the
+  background for you: you start nothing yourself. On another system (Linux too), setup
   gives the command that starts Tor.
 - It downloads and checks the files the wallet needs (about 200 MB), so later
   payments do not wait for them.

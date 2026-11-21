@@ -62,8 +62,8 @@ set.
 
 - **Self-custody.** The server runs on your machine. Your keys never leave
   it. We never run it, and only your keys can spend your balance.
-- **Shielded payments.** Your agent pays from a shielded balance. Add `--tor`
-  and no server sees your IP.
+- **Shielded payments.** Your agent pays from a shielded balance. With Tor
+  (setup asks; on by default), no server sees your IP address.
 - **Two lines to set up.** Linux: `npm install -g shinjuku`, then `shinjuku setup`. Windows: `npm.cmd install -g shinjuku`,
   then `shinjuku.cmd setup`. Setup makes the wallet, a private passphrase file, and
   the checked proof tools, and prints the line that adds the wallet to your
@@ -144,8 +144,8 @@ The [changelog](CHANGELOG.md) lists every change.
 ### Get started
 
 You need Node.js 22.21 or newer, or Node.js 24 (`node --version` shows
-which one your `node` command runs). Tor is optional: run it if
-you also want to hide your IP address.
+which one your `node` command runs). Tor is optional: setup asks whether to use
+it. On Windows the wallet runs its own Tor in the background: you start nothing.
 
 1. **Set up the wallet.** In a terminal, type these two lines as they are.
 
@@ -355,7 +355,9 @@ of its own on 0.3.131: one question with `shinjuku infer`. On Windows, type
 - **Tor** (`setup --tor`, `--tor`, `--no-tor`). With Tor, every request goes
   through Tor and reaches the facilitator through its onion service, so no
   server sees your IP address. After a Tor setup, every command uses Tor by
-  itself. Run Tor with `HTTPTunnelPort 127.0.0.1:9080`, then `setup --tor`.
+  itself. On Windows the wallet runs its own Tor in the background: you start nothing. On another system (Linux too),
+  run your own Tor with `HTTPTunnelPort 127.0.0.1:9080` in its `torrc`, then
+  `setup --tor`.
 - **Self-custody** (`shinjuku setup`, `backup-export`). The keys are made and
   kept on your machine. Only your keys move your balance. The facilitator
   settles and pays network fees; only your keys can spend your balance. Back up after
@@ -502,7 +504,7 @@ to pay again.
 | Your IP | Payments go to `pay.shinjukustaition.com`, with no CDN in the path. Our server sees your IP. It keeps no access logs. | Hidden from everyone, us included. |
 | The seller | Sees your IP. | Does not see your IP. |
 | Speed | Faster. | About 1-2 s slower per request. |
-| Needs | Nothing extra. | Tor with `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr` in `torrc`. |
+| Needs | Nothing extra. | Nothing extra on Windows: the wallet runs its own Tor. On another system (Linux too), your own Tor with `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr` in its `torrc`. |
 | When a path is slow | - | The wallet races our onion addresses and keeps the first that answers. A facilitator onion that gives no answer in 15 s brings in two spare onions. A history request with no answer moves to the next history onion, and a history source that is silent for 60 s ends with a plain error instead of a long wait. A stalled Tor circuit is replaced. A facilitator request never falls back to our clearnet address. |
 
 ## Setup
@@ -954,7 +956,7 @@ these flags to the `mcp` command. A flag wins over `config.json`.
 | `--no-auto-pockets` | Accepted for older configs. It also stops the idle return of old pockets to the shielded balance. |
 | `--max-unshield <usdc>` | Optional. The most one unshield call may move, and the most this wallet may unshield in any 24 hours, in USDC. Without it, a send you confirm can move the whole shielded balance. |
 | `--no-tor` | Optional. This run does not use the Tor that setup recorded. |
-| `--tor` | Optional. Every request goes through Tor; our facilitator is reached over its onion service. Needs Tor with `HTTPTunnelPort 127.0.0.1:9080` in `torrc`. See Privacy modes. |
+| `--tor` | Optional. Every request goes through Tor; our facilitator is reached over its onion service. On Windows the wallet runs its own Tor; on another system (Linux too) it needs your own Tor with `HTTPTunnelPort 127.0.0.1:9080` in its `torrc`. See Privacy modes. |
 | `--rpc-file <file>` | Optional. Your own Solana RPC URL. Without it, reads go to our relay, which sees which addresses the wallet reads. |
 
 The passphrase comes from `--passphrase-file` or `SHIELDED_WALLET_PASSPHRASE`
@@ -1572,13 +1574,11 @@ Linux x86-64 provers, and the signed proving parameters (36 files, about
 205 MB: the Linux x64 set that `/api/wallet/release` lists under
 `proofToolsV2`, today `f8ea3738`).
 
-The provers are Linux programs.
+Each system has its own set of provers (`proofToolsV2` lists them by platform).
 
 - **Linux:** run the steps below as written.
-- **Windows:** install WSL (Ubuntu). Run the steps in a WSL shell, in a folder
-  on a Windows drive (for example `/mnt/c/Users/<you>/shinjuku-proof-tools`).
-  Then run the wallet from Windows with the `C:\` paths. The wallet runs each
-  prover through `wsl.exe`.
+- **Windows (x64):** run `shinjuku setup`: it downloads and checks the Windows
+  x64 set (`win32-x64`) and runs those provers itself, with no WSL.
 - **macOS:** not supported. Use a Linux machine or a Linux container.
 
 ```sh
@@ -1626,7 +1626,8 @@ Keep the same passphrase in `passphrase.txt` and your RPC URL in `rpc.txt`.
 
 #### Hide your IP
 
-Add `--tor` to any command. Start Tor with one line in `torrc`:
+Add `--tor` to any command. On Windows the wallet runs its own Tor in the background: you start nothing. On
+another system (Linux too), run your own Tor with one line in its `torrc`:
 `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr`. The wallet checks that it
 reaches the network through Tor before it sends any other request, and it
 refuses any connection that does not go through the proxy.

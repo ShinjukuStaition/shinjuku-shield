@@ -64,8 +64,8 @@ shinjuku setup --prefer-tor
 
 `--prefer-tor` records Tor in `config.json`. The server then sends every
 request through Tor, and the seller and our facilitator do not see your IP.
-It adds about 1-2 s per request. It needs a running Tor with this line in
-`torrc`:
+It adds about 1-2 s per request. On Windows the wallet runs its own Tor in the background: you start nothing. On another
+system (Linux too), it needs your own running Tor with this line in its `torrc`:
 
 ```
 HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr

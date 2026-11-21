@@ -87,8 +87,9 @@ deposit from the pool's small crowd.
 | A VPN or `--proxy` | The VPN company. We and the seller see the VPN's address. | The VPN company sees every request (which seller, which addresses). We and the seller see them too. |
 | `--tor` | No single party sees both who you are and what you request. | Our onion service and the seller, without your IP. |
 
-- `--tor` needs one line in `torrc`:
-  `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr`. The wallet checks that it
+- With `--tor`, on Windows the wallet runs its own Tor in the
+  background. On another system (Linux too), `--tor` needs your own Tor with one line in
+  its `torrc`: `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr`. The wallet checks that it
   reaches the network through Tor before it sends any other request.
 - With `--tor`, every request to our facilitator goes to its onion service.
   It adds about 1 to 2 seconds per request.
