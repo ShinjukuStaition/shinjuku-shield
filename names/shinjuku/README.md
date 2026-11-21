@@ -9,13 +9,15 @@ keys never leave your machine.
 Linux:
 
 ```sh
-npx -y shinjuku setup
+npm install -g shinjuku
+shinjuku setup
 ```
 
 Windows (Command Prompt or PowerShell):
 
 ```bat
-npx.cmd -y shinjuku setup
+npm.cmd install -g shinjuku
+shinjuku.cmd setup
 ```
 
 Every wallet command works the same way after `shinjuku`, for example

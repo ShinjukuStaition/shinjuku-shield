@@ -15,13 +15,15 @@ This is version {{VERSION}}. The command is `shinjuku`.
 Linux:
 
 ```sh
-npx -y shinjuku setup
+npm install -g shinjuku
+shinjuku setup
 ```
 
 Windows (Command Prompt or PowerShell):
 
 ```bat
-npx.cmd -y shinjuku setup
+npm.cmd install -g shinjuku
+shinjuku.cmd setup
 ```
 
 Setup does every step for you:
@@ -29,13 +31,13 @@ Setup does every step for you:
 - It makes your wallet on this computer, with a passphrase file that only you
   can read.
 - It asks "Use Tor?" (Tor hides your internet address; on by default). With
-  Tor, start Tor yourself before you use the wallet, with an HTTP tunnel port
-  (add `HTTPTunnelPort 127.0.0.1:9080` to your torrc); the wallet prints the
-  steps when Tor is not running.
+  Tor, on Windows and on Linux x64 the wallet gets Tor and runs it in the
+  background for you: you start nothing yourself. On another system, setup
+  gives the command that starts Tor.
 - It downloads and checks the files the wallet needs (about 200 MB), so later
   payments do not wait for them.
-- It offers to install the `shinjuku` command. On Windows it also puts that
-  command on your PATH: open a new window after setup to type `shinjuku.cmd`.
+- On Windows it puts the `shinjuku` command on your PATH: open a new window
+  after setup to type `shinjuku.cmd`.
 - It writes a recovery file. Copy it to two offline places (for example two
   USB drives), then delete it from this computer. It is the only way to get
   your wallet back if this computer is lost.
@@ -74,9 +76,7 @@ Each answer says what happened and what to do next. A payment that the seller
 does not take comes back to your private balance by itself.
 
 Spending limits are off by default: only your balance limits a payment. To
-set limits, run setup again with `--max-payment` (the most one payment may
-cost) and `--max-session` (the most in any 24 hours), in USDC: `0.05` is 5
-cents.
+set limits, run `shinjuku limits` (on Windows `shinjuku.cmd limits`).
 
 ## Private AI
 
@@ -84,8 +84,7 @@ Each AI answer is paid from your private balance, through Tor. The AI service
 sees your words, but not your internet address, and the payment does not show
 who paid. The wallet keeps no copy of a conversation.
 
-- `shinjuku chat`: chat with an AI in this terminal. Each answer costs at most
-  0.05 USDC and each chat at most 1 USDC, unless you change these limits.
+- `shinjuku chat`: chat with an AI in this terminal.
 - `shinjuku infer start`: a private AI address for another app on this
   computer (an app that uses the OpenAI format). It prints the address and a
   key to put in that app. It keeps running after you close the terminal.
@@ -100,8 +99,7 @@ type `shinjuku.cmd`, for example `shinjuku.cmd balance`.
 
 ## What you need
 
-- Windows (x64) or Linux. macOS is not supported yet: setup says so before it
-  asks anything.
+- Windows (x64) or Linux. macOS is not offered yet.
 - Node.js 22.21 or later, or Node.js 24 or later (not Node.js 23).
   `node --version` shows yours.
 
@@ -112,10 +110,11 @@ Add it yourself. The name of the wallet in your app is `shinjuku`.
 Claude Code:
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@{{VERSION}} mcp
+claude mcp add --scope user shinjuku -- npx -y --offline --no-audit --no-fund shinjuku-shield@{{VERSION}} mcp
 ```
 
-`--prefer-offline` runs the copy of the wallet that npm saved. If npm has not saved it yet, that start asks
+With Tor on, keep `--offline`: the app starts the copy of the wallet that setup saved over Tor, and asks npm
+nothing. With Tor off, type `--prefer-offline` in its place: if npm has not saved the wallet yet, that start asks
 npm once, directly, so npm sees your IP address that one time; later starts ask npm nothing.
 
 ## For builders: check what you install
