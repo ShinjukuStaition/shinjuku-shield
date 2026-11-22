@@ -4,6 +4,40 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-22: wallet release `ef26aca4`, npm `shinjuku@0.3.266` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.218` (wallet release `947a6309`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- Setup on a new computer is faster. Each release checks the proof files in
+  full once, so setup no longer spends more than a minute on that check. A set
+  of proof files that you trust by hand still gets the full check at setup.
+- With Tor on, your agent app starts the copy of the wallet that setup saved
+  in the wallet's own folder, and npm sends nothing, not even its own check
+  for a newer npm. Cleaning npm's cache no longer stops the wallet.
+- The balance and payment history answers say first that reading them moves
+  no money.
+
+### Fixed
+
+- A send whose network dropped goes on by itself and never sends more than you
+  asked. A send that gets no answer says "not confirmed", not "failed", and
+  names the one next step.
+- When your agent app starts two copies of the wallet, a payment or a send
+  waits a few seconds for the other copy instead of stopping at once.
+- A payment that a seller turned down no longer holds up your other payments.
+- No wallet call waits on one slow Tor read: each answer comes inside the
+  agent app's time limit.
+- You can leave every question in the terminal with Esc or q. You can ask for
+  a new add-money address while an older one is still open, and an unfunded
+  address no longer holds up a funded one.
+- After a balance that finishes an open send, the balance shows once.
+- No approval box shows an internal id.
+- A saved wallet file can no longer be left half-written.
+
 ## 2026-11-20: wallet release `01fc3dba`, npm `shinjuku@0.3.265` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
