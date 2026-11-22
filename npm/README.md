@@ -110,12 +110,13 @@ Add it yourself. The name of the wallet in your app is `shinjuku`.
 Claude Code:
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --offline --no-audit --no-fund shinjuku-shield@{{VERSION}} mcp
+claude mcp add --scope user shinjuku -- npx --offline --no-update-notifier -y --no-audit --no-fund shinjuku-shield@{{VERSION}} mcp
 ```
 
-With Tor on, keep `--offline`: the app starts the copy of the wallet that setup saved over Tor, and asks npm
-nothing. With Tor off, type `--prefer-offline` in its place: if npm has not saved the wallet yet, that start asks
-npm once, directly, so npm sees your IP address that one time; later starts ask npm nothing.
+With Tor on, keep `--offline --no-update-notifier`: the app starts the copy of the wallet that setup saved over Tor,
+and npm sends nothing, not even its own check for a newer npm. With Tor off, type `--prefer-offline` in place of
+both: if npm has not saved the wallet yet, that start asks npm once, directly, so npm sees your IP address that one
+time; later starts ask npm nothing.
 
 ## For builders: check what you install
 
