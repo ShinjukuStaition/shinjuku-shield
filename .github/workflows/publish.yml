@@ -31,6 +31,14 @@ on:
         required: false
         default: ""
         type: string
+      mode:
+        description: "publish = publish a new version (every other input as above). promote = publish nothing: move the npm dist-tag latest of shinjuku-shield and shinjuku to a version npm already holds (the owner-confirmed pin); needs dist_tag latest, and release must be the release /api/wallet/release serves now"
+        required: true
+        default: publish
+        type: choice
+        options:
+          - publish
+          - promote
 
 permissions:
   contents: read
@@ -41,7 +49,72 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # mode promote: the pin is a version that went out earlier under the tag next. npm dist-tag through trusted publishing
+  # (no token) needs npm 11.21.0 or later and "Allow npm dist-tag" on the trusted publisher of each package
+  # (docs.npmjs.com/trusted-publishers). The job moves latest only when the version's wallet file, read from the npm
+  # tarball itself, has the sha256 of the release the site serves as its current one, and shinjuku at that version
+  # depends on shinjuku-shield at that exact version. shinjuku-shield moves first, shinjuku last, as in a publish.
+  promote:
+    if: inputs.mode == 'promote'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    env:
+      RELEASE: ${{ inputs.release }}
+      VERSION: ${{ inputs.version }}
+      SITE: https://shinjukustaition.com
+      DIST_TAG: ${{ inputs.dist_tag }}
+    steps:
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: npm that can change a dist-tag through trusted publishing (11.21.0 or later)
+        run: npm install -g npm@11.21.3 && npm --version
+
+      - name: Check the version against the pin the site serves
+        run: |
+          set -euo pipefail
+          [[ "$DIST_TAG" == "latest" ]] || { echo "::error::promote moves only the tag latest (dist_tag must be latest)"; exit 1; }
+          [[ "$RELEASE" =~ ^[0-9a-f]{8}$ ]] || { echo "::error::release must be 8 lowercase hex characters"; exit 1; }
+          [[ "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || { echo "::error::version must be x.y.z"; exit 1; }
+          curl -fsS --proto '=https' --tlsv1.2 --connect-timeout 20 --max-time 60 --retry 3 --retry-all-errors \
+            "$SITE/api/wallet/release" -o "$RUNNER_TEMP/release.json"
+          served_dir=$(jq -r '.wallet.dir' "$RUNNER_TEMP/release.json")
+          served_sha=$(jq -r '.wallet.sha256' "$RUNNER_TEMP/release.json")
+          [[ "$served_dir" == "$RELEASE" ]] || { echo "::error::the site serves release $served_dir, not $RELEASE"; exit 1; }
+          [[ "$served_sha" =~ ^[0-9a-f]{64}$ && "$served_sha" == "$RELEASE"* ]] || { echo "::error::site sha256 $served_sha does not start with $RELEASE"; exit 1; }
+          # The wallet file in the published tarball, not only the stamped fields.
+          mkdir -p "$RUNNER_TEMP/pack" && cd "$RUNNER_TEMP/pack"
+          npm pack "shinjuku-shield@$VERSION" --silent > name.txt
+          tar -xzf "$(cat name.txt)" package/shinjuku-wallet.mjs package/package.json
+          echo "$served_sha  package/shinjuku-wallet.mjs" | sha256sum -c -
+          [[ "$(jq -r '.shinjukuRelease' package/package.json)" == "$RELEASE" ]] || { echo "::error::shinjuku-shield@$VERSION names another release"; exit 1; }
+          dep=$(npm view "shinjuku@$VERSION" dependencies.shinjuku-shield)
+          [[ "$dep" == "$VERSION" ]] || { echo "::error::shinjuku@$VERSION depends on shinjuku-shield '$dep', not $VERSION"; exit 1; }
+          for pkg in shinjuku-shield shinjuku; do echo "$pkg now: $(npm view "$pkg" dist-tags --json | jq -c .)"; done
+
+      - name: Move latest (shinjuku-shield, then shinjuku)
+        run: |
+          set -euo pipefail
+          for pkg in shinjuku-shield shinjuku; do
+            npm dist-tag add "$pkg@$VERSION" latest --loglevel verbose
+          done
+
+      - name: Read the tags back
+        run: |
+          set -euo pipefail
+          for pkg in shinjuku-shield shinjuku; do
+            now=$(npm view "$pkg" dist-tags.latest --prefer-online)
+            echo "$pkg latest = $now"
+            [[ "$now" == "$VERSION" ]] || { echo "::error::$pkg latest reads $now, not $VERSION"; exit 1; }
+          done
+
   publish:
+    if: inputs.mode == 'publish'
     runs-on: ubuntu-24.04
     # The npm listing wait below may take up to 15 minutes by itself (its own step limit is 17).
     timeout-minutes: 35
