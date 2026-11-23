@@ -37,5 +37,5 @@ jobs:
       - name: Deprecate every version of the old name
         run: |
           ./mcp-publisher status --status deprecated --all-versions --yes \
-            --message "Renamed: use io.github.ShinjukuStaition/shinjuku-shield (stable version 0.3.218)." \
+            --message "Renamed: use io.github.ShinjukuStaition/shinjuku-shield." \
             io.github.ShinjukuStaition/shinjuku-mcp
