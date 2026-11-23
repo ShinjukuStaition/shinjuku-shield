@@ -5,7 +5,7 @@ that only you control, from inside Hermes.
 
 **New (November 2026).** The plugin is new. It was checked in the Hermes desktop app 0.23.1 on Windows with
 wallet 0.3.217 (the wallet card, a price check, a paid search, a private AI answer and the receipts). This version
-starts wallet 0.3.218, which asks you before each price check. It has not been through a full test by new users yet.
+starts wallet 0.3.266, which asks you before each price check. It has not been through a full test by new users yet.
 
 What stays private: the seller and the blockchain do not see which wallet paid. If you choose Tor in setup,
 the sites and services the wallet reaches do not see your IP address. What does not change: your Hermes chat
@@ -26,8 +26,8 @@ still goes to its AI company, and that company reads what the wallet answers in 
 Do this once, before you use the wallet in Hermes. You do not need to look up the lines: after you install
 the plugin, ask Hermes anything about the wallet and it shows you the exact two lines for your computer:
 
-- Linux, in a terminal: `npm install -g shinjuku@0.3.218`, then `shinjuku setup`.
-- Windows, in PowerShell or Command Prompt: `npm.cmd install -g shinjuku@0.3.218`, then `shinjuku.cmd setup`.
+- Linux, in a terminal: `npm install -g shinjuku@0.3.266`, then `shinjuku setup`.
+- Windows, in PowerShell or Command Prompt: `npm.cmd install -g shinjuku@0.3.266`, then `shinjuku.cmd setup`.
 
 The first line installs the `shinjuku` command. This download goes directly to npm, before setup asks about
 Tor, so npm sees your IP address for it. The second line, setup:

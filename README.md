@@ -46,7 +46,7 @@ chain does not show who paid.
   seller, never your wallet.
 
 > **Notice, 2026-11-01:** Shinjuku updated its on-chain program at 11:50 UTC.
-> If you use version 0.3.131, update to the stable version 0.3.218: run
+> If you use version 0.3.131, update to the stable version 0.3.266: run
 > `npm install -g shinjuku`, then `shinjuku setup`, in the terminal (Windows: `npm.cmd install -g shinjuku`, then
 > `shinjuku.cmd setup`). Your balance is safe.
 > The next release follows such an update by itself.
@@ -107,39 +107,39 @@ This repository holds the setup guide, the [examples](examples/), the [docs](#do
   changelog of the wallet file, up to `08a4b56f` (npm 0.3.8):
   [changelog-to-0.3.8.md](docs/changelog-to-0.3.8.md).
 
-## Release 0.3.218
+## Release 0.3.266
 
-Stable version, pinned 2026-11-11. A self-custody wallet for AI agents. It
+Stable version, pinned 2026-11-23. A self-custody wallet for AI agents. It
 pays any x402 endpoint from a shielded balance, so the chain does not show
 which wallet paid. Two commands set it up. Your agent does the rest from
 plain requests.
 
 | | |
 |---|---|
-| Pinned version | `shinjuku-shield@0.3.218` |
-| Wallet release | 947a6309 ([its hash](#releases)) |
+| Pinned version | `shinjuku-shield@0.3.266` |
+| Wallet release | ef26aca4 ([its hash](#releases)) |
 | Network | Solana, USDC |
 
-0.3.218 is the 0.3.217 code plus these fixes; its live runs are in progress.
+0.3.266 replaces 0.3.218. The [changelog](CHANGELOG.md) entries from 0.3.219
+to 0.3.266 list each change.
 
-### What changed since 0.3.217
+### What changed since 0.3.218
 
-- **Price checks.** Apps such as Hermes now ask you before your agent checks
-  what a URL costs, because the check sends a request your agent wrote. The
-  price check never reaches your own computer or your home network, unless
-  you turn on local sellers (`"privateSellerHosts": true` in the wallet's
-  config.json).
-- **Update messages.** When a new version is out, the message names the
-  exact version to use. In the Hermes app it says to update the Shinjuku
-  plugin: `hermes plugins update shinjuku`, then start a new chat.
-- **Backup in Hermes.** In an app that shows a question with no fields to
-  fill in, the wallet asks in plain words where to save your backup (a USB
-  stick, the Desktop or the Documents folder), and the answer names the
-  backup files first.
-- **Payment links.** The add-money and pay-me answers show the payment link
-  as plain text, so an app that blocks such links still shows it.
-
-The [changelog](CHANGELOG.md) lists every change.
+- **Tor comes with the package.** The npm package carries the Tor program,
+  each file checked by its pinned hash, so setup with Tor makes no separate
+  download of it. The npm download is larger: about 20 MB.
+- **Setup is faster.** Each release checks its proof files in full once, so
+  setup no longer spends more than a minute on that check.
+- **Sends.** A send whose network dropped goes on by itself and never sends
+  more than you asked. A send that gets no answer says "not confirmed", not
+  "failed", and names the one next step.
+- **Payments.** A payment that a seller turned down no longer holds up your
+  other payments. When your agent app starts two copies of the wallet, a
+  payment or a send waits a few seconds for the other copy.
+- **Add money.** You can ask for a new add-money address while an older one
+  is still open, and an unfunded address no longer holds up a funded one.
+- **Shinjuku's fee.** Each payment through Shinjuku has its own fee, from
+  0.0005 to 0.0015 USDC. A price check shows the most a payment can cost.
 
 ### Get started
 
@@ -172,7 +172,7 @@ it. On Windows the wallet runs its own Tor in the background: you start nothing.
    `claude mcp add ... npx ...` lines stay as they are.
    Setup adds npm's folder to your PATH by
    itself. If Windows still says `shinjuku.cmd` "is not recognized" (on a
-   computer with more than one account), type `npx.cmd -y --prefer-offline shinjuku@0.3.218`
+   computer with more than one account), type `npx.cmd -y --prefer-offline shinjuku@0.3.266`
    in place of `shinjuku.cmd` in the lines below.
 
    Setup asks whether to use Tor and for your own wallet address (optional;
@@ -208,9 +208,23 @@ it. On Windows the wallet runs its own Tor in the background: you start nothing.
 
 In a terminal, `shinjuku help` lists every command (Windows: `shinjuku.cmd help`).
 
+## Release 0.3.218
+
+The previous stable version, pinned 2026-11-11 and replaced by 0.3.266 on
+2026-11-23.
+
+| | |
+|---|---|
+| Pinned version | `shinjuku-shield@0.3.218` |
+| Wallet release | 947a6309 ([its hash](#releases)) |
+| Network | Solana, USDC |
+
+0.3.218 was the 0.3.217 code plus fixes for price checks, update messages,
+the backup question in Hermes and payment links.
+
 ## Release 0.3.217
 
-The previous stable version, pinned 2026-11-11 and replaced by 0.3.218 on
+An older stable version, pinned 2026-11-11 and replaced by 0.3.218 on
 2026-11-11.
 
 | | |
@@ -326,7 +340,7 @@ of its own on 0.3.131: one question with `shinjuku infer`. On Windows, type
   refused before anything is paid, and the answer says how to change the
   limit. Set them in setup or in your host's MCP entry, for example
   `--max-payment 0.05`.
-- **Version pin and update notice** (`npx ... shinjuku-shield@0.3.218 mcp`).
+- **Version pin and update notice** (`npx ... shinjuku-shield@0.3.266 mcp`).
   Your host runs the exact version it names. When a new release is ready,
   the wallet tells you to restart. Nothing to ask.
 
@@ -472,8 +486,8 @@ What it pays:
   offers it.
 - **Standard Solana `exact`, through Shinjuku (float pay).** For a seller on
   any facilitator (Coinbase CDP, PayAI, or any other), `x402_pay` pays us
-  privately from your shielded balance: the seller's price plus a flat fee
-  (`feeAtomic`, 0.001 USDC on 2026-10-22). We pay the seller at once from our
+  privately from your shielded balance: the seller's price plus a fee that
+  each payment sets inside `feeRange` (0.0005 to 0.0015 USDC on 2026-11-23). We pay the seller at once from our
   own shared float. The chain shows Shinjuku paying the seller, never your
   wallet. `max_payment_atomic` must cover price plus fee. The largest price
   that one request can pay is `largestAtomic` in
@@ -512,7 +526,7 @@ to pay again.
 You need Node.js 22.21 or later (or Node.js 24 or later), on Windows or Linux. macOS is not supported
 yet.
 
-The stable version is 0.3.218 (wallet release `947a6309`, pinned 2026-11-11).
+The stable version is 0.3.266 (wallet release `ef26aca4`, pinned 2026-11-23).
 Every command here names it. Setup prints host lines that name this exact version.
 It uses npm tag `latest`.
 [Status](#status) and the [changelog](CHANGELOG.md) list its changes.
@@ -585,7 +599,7 @@ prints these lines. Add the wallet once: one entry named `shinjuku`.
 Claude Code:
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp
+claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.266 mcp
 ```
 
 `--no-audit --no-fund` stop npx from asking npm's audit and funding
@@ -605,7 +619,7 @@ and other JSON-config hosts:
   "mcpServers": {
     "shinjuku": {
       "command": "npx",
-      "args": ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.218", "mcp"]
+      "args": ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.266", "mcp"]
     }
   }
 }
@@ -649,9 +663,9 @@ USDC that is already on the wallet's own address (`ownAddress` in
 The wallet is one file, `shinjuku-wallet.mjs`. The same file, with the same
 SHA-256, is in three places: the npm package `shinjuku-shield`, our website,
 and the [Releases table](#releases) of this repository. The steps below check
-the stable version 0.3.218 (wallet release `947a6309`). Its SHA-256 in the
+the stable version 0.3.266 (wallet release `ef26aca4`). Its SHA-256 in the
 Releases table is
-`947a63099768d243c5d5c8e6cf59d0ca363c213f1e35da7860019e5ccdbb955e`.
+`ef26aca415401a6c4c3fcfe00224e7f4f3276629d5449e953336bba00c9a117b`.
 
 1. Install the npm package into a new, empty folder. Type each line alone:
 
@@ -659,7 +673,7 @@ Releases table is
    mkdir shinjuku-check
    cd shinjuku-check
    npm init -y
-   npm install --ignore-scripts shinjuku-shield@0.3.218
+   npm install --ignore-scripts shinjuku-shield@0.3.266
    ```
 
 2. The npm copy. Hash the wallet file inside the installed package. The hash
@@ -690,7 +704,7 @@ Releases table is
 
 4. Who built it. The provenance attestation is a statement, signed through
    Sigstore during the build, of where the package was built. To read it, open
-   https://www.npmjs.com/package/shinjuku-shield/v/0.3.218, select the green
+   https://www.npmjs.com/package/shinjuku-shield/v/0.3.266, select the green
    check mark next to the version, then "View more details". "Source Commit"
    must be a commit of `ShinjukuStaition/shinjuku-shield`, and "Build File"
    must be `.github/workflows/publish.yml`.
@@ -699,8 +713,8 @@ Releases table is
    check prints `OK`:
 
    ```sh
-   curl -fsSLO https://shinjukustaition.com/wallet/947a6309/shinjuku-wallet.mjs
-   echo "947a63099768d243c5d5c8e6cf59d0ca363c213f1e35da7860019e5ccdbb955e  shinjuku-wallet.mjs" | sha256sum -c -
+   curl -fsSLO https://shinjukustaition.com/wallet/ef26aca4/shinjuku-wallet.mjs
+   echo "ef26aca415401a6c4c3fcfe00224e7f4f3276629d5449e953336bba00c9a117b  shinjuku-wallet.mjs" | sha256sum -c -
    ```
 
    On macOS, end the second line with `shasum -a 256 -c -` in place of
@@ -709,7 +723,7 @@ Releases table is
    On Windows (PowerShell), type `curl.exe` in place of `curl`, then:
 
    ```powershell
-   if ((Get-FileHash .\shinjuku-wallet.mjs -Algorithm SHA256).Hash -eq "947a63099768d243c5d5c8e6cf59d0ca363c213f1e35da7860019e5ccdbb955e") { "OK" } else { "MISMATCH" }
+   if ((Get-FileHash .\shinjuku-wallet.mjs -Algorithm SHA256).Hash -eq "ef26aca415401a6c4c3fcfe00224e7f4f3276629d5449e953336bba00c9a117b") { "OK" } else { "MISMATCH" }
    ```
 
    The file and its hash are also in section 7b of
@@ -729,7 +743,7 @@ To give the flags yourself (for example, for a wallet that you made with
 `init` before 0.2.0):
 
 ```sh
-claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.218 mcp \
+claude mcp add --scope user shinjuku -- npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.266 mcp \
   --max-payment 0.05 --max-session 0.2 --tor \
   --pool <pool> \
   --program 8PYPw3FSFTMbvSneXdcoH6jNoN4VD23nHwPY2A2riUy1 \
@@ -772,7 +786,7 @@ Below: one short question each, with curl, TypeScript, Python and LangChain.
 ### 1. Start the address
 
 ```
-npx -y --prefer-offline shinjuku@0.3.218 infer start
+npx -y --prefer-offline shinjuku@0.3.266 infer start
 ```
 
 On Windows, type `npx.cmd` in place of `npx` in this step's lines (it runs in Command Prompt and PowerShell).
@@ -787,7 +801,7 @@ model    qwen3-8-flash (others: ...)
 
 The address keeps running in the background. It stops when your computer
 restarts: then run the line again (the key stays the same). To stop it:
-`npx -y --prefer-offline shinjuku@0.3.218 infer stop`.
+`npx -y --prefer-offline shinjuku@0.3.266 infer stop`.
 
 ### 2. Put your key where your program can find it
 
@@ -1019,8 +1033,8 @@ one to another place.
   your shielded balance, and our facilitator settles the payment.
 - **Any other Solana x402 `exact` endpoint that takes USDC, whichever
   facilitator settles it (float pay).** `pay` (or the MCP `x402_pay`) pays
-  us privately from your shielded balance: the seller's price plus a flat
-  fee of 0.001 USDC. We then pay the seller at once from our own shared
+  us privately from your shielded balance: the seller's price plus a fee of
+  0.0005 to 0.0015 USDC, set for each payment. We then pay the seller at once from our own shared
   float. You fill nothing and set nothing aside. If the seller does not take
   the payment, we refund price and fee to your shielded balance by ourselves.
   This path, and every other payment, needs wallet release `08a4b56f` (npm
@@ -1034,9 +1048,10 @@ largest float pocket. Read it, and the fee, before you pay:
 curl -fsS https://pay.shinjukustaition.com/api/x402/float/config
 ```
 
-`feeAtomic` is the fee and `largestAtomic` is the largest price, in atomic
-USDC (1000000 = 1 USDC). On 2026-10-22 they were `1000` (0.001 USDC) and
-`10000000` (10 USDC). A higher price is refused before anything is paid
+`feeRange` is the range of the fee (each payment draws its own fee in it) and
+`largestAtomic` is the largest price, in atomic USDC (1000000 = 1 USDC). On
+2026-11-23 they were `500` to `1500` (0.0005 to 0.0015 USDC) and `10000000`
+(10 USDC). A higher price is refused before anything is paid
 (`p03_float_price_above_capacity`).
 
 The 3D market game [Shinjuku Undermarket](https://shinjukustaition.com) is
@@ -1044,16 +1059,18 @@ our first customer and our live demo.
 
 ## Status
 
-- Stable version (pinned 2026-11-11): wallet release `947a6309`, npm
-  `shinjuku-shield@0.3.218`.
+- Stable version (pinned 2026-11-23): wallet release `ef26aca4`, npm
+  `shinjuku-shield@0.3.266`.
   Install that exact version. The wallet runs Tor for you,
   Windows needs no WSL (on Windows type `npx.cmd -y shinjuku setup` in
   Command Prompt or PowerShell), the `shinjuku` screen runs every job, setup offers a backup
   before the first deposit, and a wallet from an older version updates with no
   new setup. The [changelog](CHANGELOG.md) lists the rest.
-  How to start: the [0.3.218 release notes](#release-03218).
-  Hash: the `947a6309` row of [Releases](#releases).
-- The stable version before it: wallet release `2b7c138c` (npm 0.3.210,
+  How to start: the [0.3.266 release notes](#release-03266).
+  Hash: the `ef26aca4` row of [Releases](#releases).
+- The stable version before it: wallet release `947a6309` (npm 0.3.218,
+  pinned 2026-11-11): the [0.3.218 release notes](#release-03218).
+- An older stable version: wallet release `2b7c138c` (npm 0.3.210,
   pinned 2026-11-11): the [0.3.210 release notes](#release-03210).
 - The stable version before that: wallet release `3c8b302d` (npm 0.3.131,
   pinned 2026-10-30). Its feature list: the
@@ -1123,12 +1140,12 @@ our first customer and our live demo.
 - Key ceremonies: a multi-party ceremony: not yet.
 - Independent audit: none yet.
 
-Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.ShinjukuStaition/shinjuku-mcp)
-as `io.github.ShinjukuStaition/shinjuku-mcp`. npm: [`shinjuku-shield`](https://www.npmjs.com/package/shinjuku-shield) (the one package that holds the wallet; the older name `shinjuku-shielded` runs the same wallet at the same version, so wallets installed under it keep updating: from the release after 0.3.186 it is a small package that runs `shinjuku-shield`; 0.3.186 and earlier hold the same files),
+Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.ShinjukuStaition/shinjuku-shield)
+as `io.github.ShinjukuStaition/shinjuku-shield` (the older name `io.github.ShinjukuStaition/shinjuku-mcp` is deprecated). npm: [`shinjuku-shield`](https://www.npmjs.com/package/shinjuku-shield) (the one package that holds the wallet; the older name `shinjuku-shielded` runs the same wallet at the same version, so wallets installed under it keep updating: from the release after 0.3.186 it is a small package that runs `shinjuku-shield`; 0.3.186 and earlier hold the same files),
 published from this repository's workflow with npm provenance (from 0.1.1).
 
-Live on Solana mainnet. The current wallet release is `947a6309` (npm
-0.3.218, pinned 2026-11-11). How to start: [Release 0.3.218](#release-03218).
+Live on Solana mainnet. The current wallet release is `ef26aca4` (npm
+0.3.266, pinned 2026-11-23). How to start: [Release 0.3.266](#release-03266).
 
 Every release and its changes: [CHANGELOG.md](CHANGELOG.md).
 
@@ -1166,7 +1183,7 @@ X: [@Shin_StAItion](https://x.com/Shin_StAItion)
 ```
 git clone https://github.com/ShinjukuStaition/shinjuku-shield
 cd shinjuku-shield
-node verify.mjs 0.3.218
+node verify.mjs 0.3.266
 ```
 
 - It downloads the npm package `shinjuku-shield` and checks it against its npm sha512.
@@ -1199,8 +1216,8 @@ Our website serves the files and their SHA-256 hashes at
 `https://shinjukustaition.com/proof-tools/<sha8>/`. This repository is a
 second, separate place for those hashes: each release adds its row here.
 
-The stable version is `947a6309`, on npm as `shinjuku-shield@0.3.218`
-(pinned 2026-11-11). Use it for a new install.
+The stable version is `ef26aca4`, on npm as `shinjuku-shield@0.3.266`
+(pinned 2026-11-23). Use it for a new install.
 A row marked "candidate" records a
 release served beside the stable version and published on npm under the
 tag `next`, not `latest`; it becomes the stable version only when we say so here. Rows
@@ -1438,7 +1455,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-11-11 (candidate, npm `next`, 0.3.215) | [`167ac278`](https://shinjukustaition.com/wallet/167ac278/shinjuku-wallet.mjs) | `167ac2788a26bee55b1042f37570ce152e7748aaa35675f831057c2e0975e86b` | 9,766,852 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
 | 2026-11-11 (candidate, npm `next`, 0.3.216) | [`11be1dd0`](https://shinjukustaition.com/wallet/11be1dd0/shinjuku-wallet.mjs) | `11be1dd024a789d9353884cbe72295cf14a0f70fa09e026f060b6d259f396e26` | 10,198,212 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
 | 2026-11-11 (stable until 2026-11-11, 0.3.217) | [`80851766`](https://shinjukustaition.com/wallet/80851766/shinjuku-wallet.mjs) | `808517662304749b5963afa0417a3bc175db75431d3793f73e64378abf7b3f13` | 10,206,582 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
-| 2026-11-11 (stable, npm `latest`, 0.3.218) | [`947a6309`](https://shinjukustaition.com/wallet/947a6309/shinjuku-wallet.mjs) | `947a63099768d243c5d5c8e6cf59d0ca363c213f1e35da7860019e5ccdbb955e` | 10,214,358 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
+| 2026-11-11 (stable until 2026-11-23, 0.3.218) | [`947a6309`](https://shinjukustaition.com/wallet/947a6309/shinjuku-wallet.mjs) | `947a63099768d243c5d5c8e6cf59d0ca363c213f1e35da7860019e5ccdbb955e` | 10,214,358 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
 | 2026-11-12 (candidate, npm `next`, 0.3.219) | [`54382051`](https://shinjukustaition.com/wallet/54382051/shinjuku-wallet.mjs) | `5438205146b31ec0abaa67ff284ba82a2147b42368e57613a0f43cf12de67397` | 10,287,879 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
 | 2026-11-12 (candidate, npm `next`, 0.3.220) | [`a910db1e`](https://shinjukustaition.com/wallet/a910db1e/shinjuku-wallet.mjs) | `a910db1e1c876a207fdc040c809315913121206f32723a9d87192c8a75a7823c` | 10,294,711 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
 | 2026-11-12 (candidate, npm `next`, 0.3.221) | [`52c86335`](https://shinjukustaition.com/wallet/52c86335/shinjuku-wallet.mjs) | `52c863352dfca86ebd1266a905c55445c48cadc8b53b77d349725fd5062a2a62` | 10,298,934 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
@@ -1486,7 +1503,7 @@ is in the [changelog](CHANGELOG.md).
 | 2026-11-20 (candidate, npm `next`, 0.3.263) | [`31a97eaf`](https://shinjukustaition.com/wallet/31a97eaf/shinjuku-wallet.mjs) | `31a97eafc346c7bec1bdfbcdd51cb2c41a4de0c015b9ffe218161c4c10f7f94c` | 10,939,306 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
 | 2026-11-20 (candidate, npm `next`, 0.3.264) | [`ff45170b`](https://shinjukustaition.com/wallet/ff45170b/shinjuku-wallet.mjs) | `ff45170b7c0ae35cb0fe521742f7a6ecdd377ef439a3f0883b1d537a007f825b` | 10,960,773 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
 | 2026-11-20 (candidate, npm `next`, 0.3.265) | [`01fc3dba`](https://shinjukustaition.com/wallet/01fc3dba/shinjuku-wallet.mjs) | `01fc3dbad06e9586ce22c530a9ab59af95926f0dd3d9a7ad78ed67f4e470e616` | 10,962,419 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
-| 2026-11-22 (candidate, npm `next`, 0.3.266) | [`ef26aca4`](https://shinjukustaition.com/wallet/ef26aca4/shinjuku-wallet.mjs) | `ef26aca415401a6c4c3fcfe00224e7f4f3276629d5449e953336bba00c9a117b` | 11,152,549 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
+| 2026-11-22 (stable, npm `latest`, 0.3.266) | [`ef26aca4`](https://shinjukustaition.com/wallet/ef26aca4/shinjuku-wallet.mjs) | `ef26aca415401a6c4c3fcfe00224e7f4f3276629d5449e953336bba00c9a117b` | 11,152,549 | [`ce2b7def`](https://shinjukustaition.com/proof-tools/ce2b7def/SHA256SUMS) | `ce2b7def940c93ff2436b876aad1b2a2f1447f06f78355dad4f594111d118ff6` | 36 (205,457,689 bytes) |
 
 Beside each wallet file, the website also serves `LICENSE.txt` (the
 copyright notice), `THIRD_PARTY_NOTICES.txt` (the open-source licenses inside
@@ -1503,7 +1520,7 @@ You do not need this part: `shinjuku setup` does all of it. It is for a
 machine without npm, or to get and check each file yourself.
 
 The wallet needs Node.js 22.21 or later (or Node.js 24 or later) and nothing
-else. The stable release is `947a6309`: put it in place of `<sha8>` below.
+else. The stable release is `ef26aca4`: put it in place of `<sha8>` below.
 
 ### 1. Download
 

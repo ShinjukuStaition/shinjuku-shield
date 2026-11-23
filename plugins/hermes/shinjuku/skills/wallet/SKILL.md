@@ -40,8 +40,8 @@ user. Repeat it. Never tell the user a tool name, a field name or an error code.
 ## When the wallet is not set up
 
 If the only wallet tool is `setup_wallet_first`, call it and give the user its lines exactly, once. Its answer
-already has the lines for the user's computer. On Linux, in a terminal: `npm install -g shinjuku@0.3.218`, then
-`shinjuku setup`. On Windows, in PowerShell or Command Prompt: `npm.cmd install -g shinjuku@0.3.218`, then
+already has the lines for the user's computer. On Linux, in a terminal: `npm install -g shinjuku@0.3.266`, then
+`shinjuku setup`. On Windows, in PowerShell or Command Prompt: `npm.cmd install -g shinjuku@0.3.266`, then
 `shinjuku.cmd setup`. On Windows never drop the `.cmd`: Windows PowerShell stops the lines without it. Setup
 asks whether to use Tor, creates the wallet and asks the user to save the backup. The install (the first line) goes
 directly to npm, before the Tor question. Then the user reloads the wallet: `/reload-mcp` in Hermes in a terminal;
