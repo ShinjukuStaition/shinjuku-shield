@@ -4,6 +4,35 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-23: wallet release `1fe9065b`, npm `shinjuku@0.3.267` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.266` (wallet release `ef26aca4`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version.
+
+### Changed
+
+- Setup is shorter to read: it names one size for the setup files, gives one
+  backup step, and says once when it saved the wallet's start copy.
+- The private AI address answers a resent request (the same request body sent
+  again within 10 minutes with no `Idempotency-Key` header) with the same
+  answer, and pays nothing new. An app that wants a new answer to the same
+  question sends a new `Idempotency-Key` header.
+
+### Fixed
+
+- USDC that reaches an add-money address after it closed goes into your
+  private balance by itself.
+- A late deposit that cannot move yet is set aside, so it never holds up a new
+  deposit.
+- Before a send back to the wallet you added money from, the wallet asks you
+  each time, also when its check is slow.
+- If you stop at a send question, the answer says what is known about an
+  earlier send of the same request.
+- A backup the wallet cannot read shows as "not checked", not as "no backup".
+- Ctrl+C at setup's backup question stops setup.
+- A price check never offers to pay when your balance is below the total.
+
 ## 2026-11-23: wallet release `ef26aca4`, npm `shinjuku@0.3.266` (stable, npm tag `latest`)
 
 The new stable version. It replaces `0.3.218` (wallet release `947a6309`). It is
