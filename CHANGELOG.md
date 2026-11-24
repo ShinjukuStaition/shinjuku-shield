@@ -4,6 +4,38 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-24: wallet release `c1161b8c`, npm `shinjuku@0.3.270` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.269` (wallet release `5ad25174`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It is `0.3.269` with
+these changes.
+
+### Fixed
+
+- A wallet that holds only payments it received can send all of it out again.
+  Before, "send all" from such a wallet could stop with "could not send from
+  what it holds now".
+- A one-time request (for example a balance read from an agent app that starts
+  the wallet for each request) finishes its balance refresh before it ends, so
+  the next answer is current.
+- On Linux and macOS, in the window where setup ran, every command the wallet
+  prints is the full path of the `shinjuku` command until a new terminal knows
+  the plain name.
+- A payment or send question that closes with no answer now says so: nothing
+  was sent or paid, and you can ask again.
+
+### Changed
+
+- The local private AI address has no limit of its own. Only the spending
+  limits that you set apply to it (setup and the private AI address screen say
+  when none is set).
+- An AI answer limit (`max_tokens`) goes to the AI model as you asked. A model
+  that thinks before it answers refuses a limit that is too small before
+  anything is paid, and the answer names the smallest limit that works.
+- On a fresh Tor start, the private AI waits up to 30 seconds for the list of
+  private AI models, and says so in plain words when it cannot read it.
+
 ## 2026-11-24: wallet release `5ad25174`, npm `shinjuku@0.3.269` (stable, npm tag `latest`)
 
 The new stable version. It replaces `0.3.266` (wallet release `ef26aca4`). It is
