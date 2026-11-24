@@ -47,7 +47,7 @@ chain does not show who paid.
 
 > **Notice, 2026-11-01:** Shinjuku updated its on-chain program at 11:50 UTC.
 > If you use version 0.3.131, update to the stable version 0.3.266: run
-> `npm install -g shinjuku`, then `shinjuku setup`, in the terminal (Windows: `npm.cmd install -g shinjuku`, then
+> `npx -y shinjuku setup` in the terminal (Windows: `npx.cmd -y shinjuku setup`, or `npm.cmd install -g shinjuku`, then
 > `shinjuku.cmd setup`). Your balance is safe.
 > The next release follows such an update by itself.
 
@@ -64,7 +64,7 @@ set.
   it. We never run it, and only your keys can spend your balance.
 - **Shielded payments.** Your agent pays from a shielded balance. With Tor
   (setup asks; on by default), no server sees your IP address.
-- **Two lines to set up.** Linux: `npm install -g shinjuku`, then `shinjuku setup`. Windows: `npm.cmd install -g shinjuku`,
+- **Set up in one step.** Linux: `npx -y shinjuku setup` (Windows: `npx.cmd -y shinjuku setup`, or `npm.cmd install -g shinjuku`,
   then `shinjuku.cmd setup`. Setup makes the wallet, a private passphrase file, and
   the checked proof tools, and prints the line that adds the wallet to your
   agent host.
@@ -143,8 +143,8 @@ to 0.3.266 list each change.
 
 ### Get started
 
-You need Node.js 22.21 or newer, or Node.js 24 (`node --version` shows
-which one your `node` command runs). Tor is optional: setup asks whether to use
+You need Node.js 24.22.1 or newer, or Node.js 22.23.4 or newer (`node --version` shows
+which one your `node` command runs; older versions have known security faults, and npm and the wallet warn about them). Tor is optional: setup asks whether to use
 it. On Windows the wallet runs its own Tor in the background: you start nothing.
 
 1. **Set up the wallet.** In a terminal, type these two lines as they are.
@@ -152,8 +152,7 @@ it. On Windows the wallet runs its own Tor in the background: you start nothing.
    Linux:
 
    ```sh
-   npm install -g shinjuku
-   shinjuku setup
+   npx -y shinjuku setup
    ```
 
    Windows (Command Prompt or PowerShell):
@@ -163,9 +162,11 @@ it. On Windows the wallet runs its own Tor in the background: you start nothing.
    shinjuku.cmd setup
    ```
 
-   The first line installs the `shinjuku` command for every folder and every
-   new terminal window (`-g` means global). Or, without installing anything:
-   `npx -y shinjuku setup` (Windows: `npx.cmd -y shinjuku setup`). Both lines download the wallet from npm
+   On Linux, setup asks to install the `shinjuku` command for your user (in `~/.local/bin`; no root and no sudo):
+   press Enter. In the same window, type `~/.local/bin/shinjuku`; a new terminal window knows `shinjuku`. Do not use
+   `sudo npm install -g shinjuku` on Linux (Windows: `npm.cmd install -g shinjuku` above): where it stops with `EACCES`
+   (permission denied), the npx line above is the way. On Windows, the first line installs the `shinjuku` command for
+   every folder and every new terminal window (`-g` means global). Both ways download the wallet from npm
    directly (Tor is not set up yet), so npm sees your IP address for that
    download. On Windows, type `npm.cmd`, `npx.cmd` and `shinjuku.cmd` where a line below says `npm`, `npx` or
    `shinjuku` (they run in Command Prompt and in PowerShell). App start lines, app configs and
@@ -523,7 +524,7 @@ to pay again.
 
 ## Setup
 
-You need Node.js 22.21 or later (or Node.js 24 or later), on Windows or Linux. macOS is not supported
+You need Node.js 24.22.1 or later (or Node.js 22.23.4 or later), on Windows or Linux. macOS is not supported
 yet.
 
 The stable version is 0.3.266 (wallet release `ef26aca4`, pinned 2026-11-23).
@@ -1522,7 +1523,7 @@ from the pinned hash.
 You do not need this part: `shinjuku setup` does all of it. It is for a
 machine without npm, or to get and check each file yourself.
 
-The wallet needs Node.js 22.21 or later (or Node.js 24 or later) and nothing
+The wallet needs Node.js 24.22.1 or later (or Node.js 22.23.4 or later) and nothing
 else. The stable release is `ef26aca4`: put it in place of `<sha8>` below.
 
 ### 1. Download
@@ -1629,7 +1630,7 @@ The full guide is the wallet's own help. The steps below follow it.
 
 #### What you need
 
-- Node.js 22.21 or later, or Node.js 24 or later. (The two `privacy-cash` commands need Node.js 24 and
+- Node.js 24.22.1 or later, or Node.js 22.23.4 or later. (The two `privacy-cash` commands need Node.js 24 and
   the Privacy Cash SDK, which the wallet file does not include.)
 - The proof tools (previous section).
 - A Solana RPC URL in a private file, `rpc.txt`. With `--tor`, use an RPC

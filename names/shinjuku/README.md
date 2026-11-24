@@ -9,8 +9,7 @@ keys never leave your machine.
 Linux:
 
 ```sh
-npm install -g shinjuku
-shinjuku setup
+npx -y shinjuku setup
 ```
 
 Windows (Command Prompt or PowerShell):

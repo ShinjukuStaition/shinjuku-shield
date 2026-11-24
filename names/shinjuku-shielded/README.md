@@ -12,8 +12,7 @@ New installs use the `shinjuku` command:
 Linux:
 
 ```sh
-npm install -g shinjuku
-shinjuku setup
+npx -y shinjuku setup
 ```
 
 Windows (Command Prompt or PowerShell):

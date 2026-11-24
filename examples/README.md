@@ -34,7 +34,7 @@ npm once, directly, so npm sees your IP address that one time; later starts ask 
 Each step shows what you do, or what you say to the agent and the tool that
 the agent calls. Tool arguments are in atomic USDC: 1000000 = 1 USDC. Flags you type (setup, mcp) are in USDC: 0.05 = 5 cents.
 
-### 1. Install Node.js 22.21 or later (or Node.js 24 or later)
+### 1. Install Node.js 24.22.1 or later (or Node.js 22.23.4 or later)
 
 ```sh
 node --version

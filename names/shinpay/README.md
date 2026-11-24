@@ -8,8 +8,7 @@ This package installs nothing. It prints how to install the wallet:
 Linux:
 
 ```sh
-npm install -g shinjuku
-shinjuku setup
+npx -y shinjuku setup
 ```
 
 Windows (Command Prompt or PowerShell):

@@ -20,7 +20,7 @@ Its README lists every step and what the plugin does on your computer:
 
 You need:
 
-- Node.js 22.21 or later, or Node.js 24 or later.
+- Node.js 24.22.1 or later, or Node.js 22.23.4 or later.
 - Linux, or Windows x64 (no WSL needed). macOS is not supported yet.
 - Git, for the plugin: Hermes installs every plugin with Git. On Windows, Git for Windows from
   https://git-scm.com/download/win (then open Hermes again); on Linux, Git from your system's packages.

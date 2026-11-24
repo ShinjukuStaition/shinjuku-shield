@@ -15,8 +15,7 @@ This is version {{VERSION}}. The command is `shinjuku`.
 Linux:
 
 ```sh
-npm install -g shinjuku
-shinjuku setup
+npx -y shinjuku setup
 ```
 
 Windows (Command Prompt or PowerShell):
@@ -100,7 +99,7 @@ type `shinjuku.cmd`, for example `shinjuku.cmd balance`.
 ## What you need
 
 - Windows (x64) or Linux. macOS is not offered yet.
-- Node.js 22.21 or later, or Node.js 24 or later (not Node.js 23).
+- Node.js 24.22.1 or later, or Node.js 22.23.4 or later (older versions have known security faults; npm and the wallet warn about them).
   `node --version` shows yours.
 
 ## If setup cannot add the wallet to your app
