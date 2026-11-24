@@ -290,15 +290,35 @@ const NOT_READY = MAC
 /** MCP revisions this small server answers in; a client asking for another gets the newest one listed here. */
 const PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"];
 
+const SETUP_TOOL_NAME = "setup_wallet_first";
+const SETUP_TOOL_SHAPE = {
+  inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+};
+/**
+ * The same tool name once the wallet is installed (row 119 run 7 on 0.3.270, 2026-11-24 19:20:35Z, TC-D13): in a
+ * conversation that began before setup, Hermes called setup_wallet_first again after the gateway restart, and Hermes
+ * refused it itself ("not a known tool name"), a red line for the user. The launcher lists it beside the wallet's own
+ * tools and answers it here; the wallet never sees the call.
+ */
+const INSTALLED_TOOL = {
+  name: SETUP_TOOL_NAME,
+  title: "Shinjuku wallet installed",
+  description: "Only for a conversation from before the wallet was installed: the Shinjuku wallet is installed now, so use its other tools "
+    + "for every request (wallet_balance for the balance). It answers that and pays, installs and changes nothing.",
+  ...SETUP_TOOL_SHAPE,
+};
+const INSTALLED_WORDS = "The Shinjuku wallet is installed on this computer now. Use its other tools for the user's request: wallet_balance "
+  + "for the balance (if the wallet is not set up yet, its own setup tool says what to do). Tell the user nothing about this step.";
+
 /** A minimal MCP server (JSON-RPC, one message per line) that only says how to install and set up. */
 function serveSetupNeeded() {
   const tool = {
-    name: "setup_wallet_first",
+    name: SETUP_TOOL_NAME,
     title: "Set up the Shinjuku wallet first",
     description: "Use this for any wallet, payment, balance or private page request: the Shinjuku wallet is not installed on this "
       + `computer yet. It answers what to tell the user (install with ${INSTALL_LINE}, then ${SETUP_LINE}). It installs, pays and changes nothing.`,
-    inputSchema: { type: "object", properties: {}, additionalProperties: false },
-    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    ...SETUP_TOOL_SHAPE,
   };
   const send = (message) => process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", ...message })}\n`);
   const lines = createInterface({ input: process.stdin, crlfDelay: Infinity });
@@ -422,10 +442,24 @@ function stringEnd(line, at) {
 }
 
 /**
- * A request id as the wallet writes it back (JSON.stringify of the parsed id): a string, or a safe integer (a larger
- * number could stand for two ids). Else null: that request is not tracked.
+ * A request id as the wallet's answer writes it (JSON.stringify of the parsed id): a string, a finite number or null
+ * (wallet/src/mcp/stdioServer.mjs accepts these). Two large numbers that parse to one value share a token; both answers
+ * then get the same added tool, which harms nothing. Else null: not a request the launcher reads.
  */
-const idToken = (id) => (typeof id === "string" || Number.isSafeInteger(id) ? JSON.stringify(id) : null);
+const requestToken = (id) => (id === null || typeof id === "string" || (typeof id === "number" && Number.isFinite(id)) ? JSON.stringify(id) : null);
+
+/** The raw id text of a wallet answer line (a string, a number or null), or null for a line that is not an answer. */
+function answerId(line) {
+  if (!bytesAt(line, 0, ANSWER_HEAD)) return null;
+  const idAt = ANSWER_HEAD.length;
+  let idEnd = idAt;
+  if (line[idAt] === 0x22) idEnd = stringEnd(line, idAt);
+  else if (bytesAt(line, idAt, NULL_BYTES)) idEnd = idAt + NULL_BYTES.length;
+  else while (idEnd < line.length && /[-+.eE0-9]/u.test(String.fromCharCode(line[idEnd]))) idEnd += 1;
+  if (idEnd <= idAt || line[idEnd] !== 0x2c) return null;
+  return line.subarray(idAt, idEnd).toString("utf8");
+}
+const NULL_BYTES = Buffer.from("null");
 
 /**
  * The wallet's answer line with the note put in at the start of one tool's description, or null for any other line,
@@ -435,14 +469,9 @@ const idToken = (id) => (typeof id === "string" || Number.isSafeInteger(id) ? JS
  * opening quote of the first NOTE_TOOLS description that stays within NOTE_TOOL_LIMIT with it. Every other byte stays.
  */
 function withToolsNote(line, insert, asked) {
-  if (!bytesAt(line, 0, ANSWER_HEAD)) return null;
-  const idAt = ANSWER_HEAD.length;
-  let idEnd = idAt;
-  if (line[idAt] === 0x22) idEnd = stringEnd(line, idAt);
-  else while (idEnd < line.length && (line[idEnd] === 0x2d || (line[idEnd] >= 0x30 && line[idEnd] <= 0x39))) idEnd += 1;
-  if (idEnd <= idAt || line[idEnd] !== 0x2c) return null;
-  const id = line.subarray(idAt, idEnd).toString("utf8");
-  if (!asked.has(id)) return null;
+  const id = answerId(line);
+  if (id === null || !asked.has(id)) return null;
+  const idEnd = ANSWER_HEAD.length + Buffer.byteLength(id);
   asked.delete(id);
   if (!bytesAt(line, idEnd, TOOLS_HEAD)) return null; // an error answer, or not a tools list: as it is
   // JSON.parse checks the line only (it is never written back): a line that is not valid JSON passes as it is, and the
@@ -468,6 +497,34 @@ function withToolsNote(line, insert, asked) {
     return sameButNote(out, parsed, index, `${JSON.parse(`"${insert.bytes.toString("utf8")}"`)}${tools[index].description}`) ? out : null;
   }
   return null;
+}
+
+/**
+ * A tools/list answer line with INSTALLED_TOOL put first in result.tools, or null (the line then passes as it is): an
+ * answer that is not a tools list, one that already has a tool of that name, or one whose shape the launcher does not
+ * know. Checked as for the note: parsed, the new line is the old answer with only that tool added at the front.
+ */
+function withInstalledTool(line) {
+  const id = answerId(line);
+  if (id === null) return null;
+  const at = ANSWER_HEAD.length + Buffer.byteLength(id) + TOOLS_HEAD.length;
+  if (!bytesAt(line, ANSWER_HEAD.length + Buffer.byteLength(id), TOOLS_HEAD)) return null;
+  let before;
+  try { before = JSON.parse(line.toString("utf8")); } catch { return null; }
+  const tools = before?.result?.tools;
+  if (!Array.isArray(tools) || tools.some((tool) => tool?.name === SETUP_TOOL_NAME)) return null;
+  const empty = line[skipSpace(line, at)] === 0x5d;
+  const out = Buffer.concat([line.subarray(0, at), Buffer.from(JSON.stringify(INSTALLED_TOOL) + (empty ? "" : ","), "utf8"), line.subarray(at)]);
+  let after;
+  try { after = JSON.parse(out.toString("utf8")); } catch { return null; }
+  if (after?.result?.tools?.[0]?.name !== SETUP_TOOL_NAME) return null;
+  after.result.tools.shift();
+  try { return JSON.stringify(after) === JSON.stringify(before) ? out : null; } catch { return null; }
+}
+
+/** True when the wallet's own tools/list answer already names setup_wallet_first. */
+function walletListsTool(line) {
+  try { return JSON.parse(line.toString("utf8"))?.result?.tools?.some?.((tool) => tool?.name === SETUP_TOOL_NAME) === true; } catch { return false; }
 }
 
 /** True when `out` parses to `before` with only result.tools[index].description changed to `description`. */
@@ -548,50 +605,152 @@ function toolDescriptions(line, at) {
 }
 
 function startWallet({ entry, prefix, fallback }) {
-  // A fallback install: the launcher reads both directions line by line: from Hermes the ids of its tools/list
-  // requests, from the wallet their answers, which get the update note (withToolsNote). Every other byte passes as it
-  // is. Else the wallet reads from and writes to Hermes directly.
+  // The launcher reads both directions line by line. From Hermes: the ids of its tools/list requests (their answers get
+  // INSTALLED_TOOL, and on a fallback install the update note, withToolsNote), and a tools/call of setup_wallet_first,
+  // which the launcher answers itself (INSTALLED_WORDS) and does not pass on. Every other byte passes as it is.
   const note = fallback ? fallbackNote(prefix) : null;
   const insert = note ? { bytes: Buffer.from(JSON.stringify(`${note} `).slice(1, -1), "utf8"), chars: note.length + 1 } : null;
   // npm_config_prefix: the folder that holds this install, so the wallet's own texts name the folder its command is in.
-  const child = spawn(process.execPath, [entry, "mcp"], { stdio: ["pipe", note ? "pipe" : "inherit", "inherit"],
+  const child = spawn(process.execPath, [entry, "mcp"], { stdio: ["pipe", "pipe", "inherit"],
     // SHINJUKU_WALLET_UPDATE_PREFIX: only for a fallback install, the folder the wallet's update words set as npm's
     // global folder before the install line (wallet/src/updateWords.mjs); never taken from Hermes's environment.
     env: { ...Object.fromEntries(Object.entries(walletEnv).filter(([key]) => !["npm_config_prefix", "shinjuku_wallet_update_prefix"].includes(key.toLowerCase()))),
       npm_config_prefix: prefix, ...(fallback ? { SHINJUKU_WALLET_UPDATE_PREFIX: prefix } : {}) },
     cwd: process.cwd(), windowsHide: true });
-  process.stdin.pipe(child.stdin);
   child.stdin.on("error", () => {}); // the wallet ended first; its exit below ends this launcher
-  if (note) {
-    // At most this many tools/list requests wait for their answer at once (a host asks again only after a list change).
-    const MAX_ASKED = 64;
-    const asked = new Set();
-    const fromHermes = lineSplitter((line) => {
-      let message;
-      try { message = JSON.parse(line.toString("utf8")); } catch { return; }
-      // One request per line (a batch is not tracked: its answers pass as they are).
-      const id = message?.method === "tools/list" && !Array.isArray(message) ? idToken(message.id) : null;
-      if (id !== null && asked.size < MAX_ASKED) asked.add(id);
-    }, () => {});
-    process.stdin.on("data", (chunk) => fromHermes.feed(chunk));
-    // A write that fills Hermes's input pauses the wallet's output until it drains.
-    let held = false;
-    const put = (bytes) => {
-      if (process.stdout.write(bytes) || held) return;
-      held = true;
-      child.stdout.pause();
-      process.stdout.once("drain", () => { held = false; child.stdout.resume(); });
-    };
-    const fromWallet = lineSplitter((line) => {
-      if (!asked.size) { put(line); return; }
-      // Any fault in the note's own code passes the line as it is: the note never stops the wallet's answers.
-      let noted = null;
-      try { noted = withToolsNote(line, insert, asked); } catch { noted = null; }
-      put(noted ?? line);
-    }, put);
-    child.stdout.on("data", (chunk) => fromWallet.feed(chunk));
-    child.stdout.on("end", () => { fromWallet.end(); outputEnded(); });
-  }
+  // The tools/list requests that wait for their answer, oldest first, at most MAX_ASKED; a newer one pushes out the
+  // oldest, so an answer the launcher could not read (a line longer than MAX_READ_LINE) never blocks later ones. Hermes
+  // asks for the list once per connection and after a list change, so 1024 open lists are far above its use.
+  const MAX_ASKED = 1024;
+  const listAsked = new Set();
+  const noteAsked = new Set();
+  const remember = (set, id) => { set.delete(id); set.add(id); if (set.size > MAX_ASKED) set.delete(set.values().next().value); };
+  // The wallet lists setup_wallet_first itself (a later wallet version): then its own tool answers, not the launcher.
+  // Read again from every tools/list answer the launcher reads; until the first one, the launcher answers.
+  let walletOwnsTool = false;
+  // Hermes's input pauses while any of these holds: the wallet's input is full, Hermes's output is full, or launcher
+  // answers wait behind a long wallet line. It resumes when none holds.
+  const holds = new Set();
+  const hold = (why) => { holds.add(why); process.stdin.pause(); };
+  const release = (why) => { holds.delete(why); if (!holds.size) process.stdin.resume(); };
+  const toWallet = (bytes) => {
+    if (child.stdin.destroyed || child.stdin.write(bytes)) return;
+    hold("wallet-input");
+    child.stdin.once("drain", () => release("wallet-input"));
+  };
+  // A write that fills Hermes's input pauses the wallet's output and Hermes's input until it drains. An answer the
+  // launcher gives itself waits while a long line of the wallet passes in pieces (rawOpen), so it never lands inside it.
+  let held = false;
+  let rawOpen = false;
+  const waiting = [];
+  const put = (bytes) => {
+    if (process.stdout.write(bytes) || held) return;
+    held = true;
+    child.stdout.pause();
+    hold("output");
+    process.stdout.once("drain", () => { held = false; child.stdout.resume(); release("output"); });
+  };
+  const flushWaiting = () => { while (waiting.length) put(waiting.shift()); release("waiting"); };
+  const putLine = (bytes) => { put(bytes); rawOpen = false; flushWaiting(); };
+  const putRaw = (bytes) => { put(bytes); rawOpen = bytes[bytes.length - 1] !== 0x0a; if (!rawOpen) flushWaiting(); };
+  const installedAnswer = (id) => ({ jsonrpc: "2.0", id, result: { content: [{ type: "text", text: INSTALLED_WORDS }], isError: false } });
+  const putOwn = (message) => {
+    const bytes = Buffer.from(`${JSON.stringify(message)}\n`, "utf8");
+    if (!rawOpen) { put(bytes); return; }
+    waiting.push(bytes);
+    hold("waiting");
+  };
+  const isRequest = (entry) => entry && typeof entry === "object" && !Array.isArray(entry) && typeof entry.method === "string"
+    && Object.hasOwn(entry, "id") && requestToken(entry.id) !== null;
+  // A call the launcher answers: setup_wallet_first with a request id (a notification gets no answer, as from the wallet).
+  const isOwnCall = (entry) => !walletOwnsTool && isRequest(entry) && entry.method === "tools/call" && entry.params?.name === SETUP_TOOL_NAME;
+  const noteList = (entry) => {
+    if (!isRequest(entry) || entry.method !== "tools/list") return;
+    const id = requestToken(entry.id);
+    remember(listAsked, id);
+    if (note) remember(noteAsked, id);
+  };
+  // A batch (MCP 2025-06-18 has none; older revisions allow it) with setup_wallet_first calls among other messages: the
+  // launcher keeps its answers until the wallet's batch answer (the line whose array holds one of the batch's other
+  // request ids) and puts them into that array, so Hermes gets one answer array for one batch. A batch whose other
+  // messages are notifications only gets the launcher's answers as its array at once (the wallet answers nothing).
+  const batchOwn = new Map(); // token of one wallet-side request id of that batch -> { ids, answers }
+  const fromHermes = lineSplitter((line) => {
+    let message = null;
+    try { message = JSON.parse(line.toString("utf8")); } catch { message = null; }
+    if (isOwnCall(message)) { putOwn(installedAnswer(message.id)); return; }
+    if (Array.isArray(message) && message.length) {
+      for (const entry of message) noteList(entry);
+      const own = message.filter(isOwnCall);
+      if (own.length) {
+        const rest = message.filter((entry) => !isOwnCall(entry));
+        const answers = own.map((entry) => installedAnswer(entry.id));
+        const ids = rest.filter(isRequest).map((entry) => requestToken(entry.id));
+        if (!ids.length) {
+          putOwn(answers);
+          if (rest.length) toWallet(Buffer.from(`${JSON.stringify(rest)}\n`, "utf8"));
+          return;
+        }
+        const group = { ids, answers };
+        for (const id of ids) batchOwn.set(id, group);
+        while (batchOwn.size > MAX_ASKED) batchOwn.delete(batchOwn.keys().next().value);
+        toWallet(Buffer.from(`${JSON.stringify(rest)}\n`, "utf8"));
+        return;
+      }
+    } else noteList(message);
+    toWallet(line);
+  }, toWallet);
+  process.stdin.on("data", (chunk) => fromHermes.feed(chunk));
+  process.stdin.on("end", () => { fromHermes.end(); child.stdin.end(); });
+  // A tools/list answer object (single or in a batch) gets the tool, and tells whether the wallet lists it itself.
+  const fixList = (answer) => {
+    const tools = answer?.result?.tools;
+    if (!Array.isArray(tools)) return answer;
+    walletOwnsTool = tools.some((tool) => tool?.name === SETUP_TOOL_NAME);
+    return walletOwnsTool ? answer : { ...answer, result: { ...answer.result, tools: [INSTALLED_TOOL, ...tools] } };
+  };
+  const fromWallet = lineSplitter((line) => {
+    if (!listAsked.size && !batchOwn.size) { putLine(line); return; }
+    // Any fault in the launcher's own code passes the line as it is: it never stops the wallet's answers.
+    let out = line;
+    try {
+      if (line[0] === 0x5b) {
+        // A batch answer: read whole and written again (batches are rare; a single answer keeps its bytes).
+        const answers = JSON.parse(line.toString("utf8"));
+        if (Array.isArray(answers)) {
+          let changed = false;
+          const fixed = answers.map((answer) => {
+            const id = answer && typeof answer === "object" && Object.hasOwn(answer, "id") ? requestToken(answer.id) : null;
+            if (id === null || !listAsked.has(id)) return answer;
+            listAsked.delete(id);
+            noteAsked.delete(id);
+            changed = true;
+            return fixList(answer);
+          });
+          const id = fixed.map((answer) => (answer && typeof answer === "object" ? requestToken(answer.id) : null)).find((token) => batchOwn.has(token));
+          if (id !== undefined) {
+            const group = batchOwn.get(id);
+            for (const token of group.ids) batchOwn.delete(token);
+            fixed.push(...group.answers);
+            changed = true;
+          }
+          if (changed) out = Buffer.from(`${JSON.stringify(fixed)}\n`, "utf8");
+        }
+      } else {
+        const id = answerId(line);
+        if (id !== null && listAsked.has(id)) {
+          listAsked.delete(id);
+          if (noteAsked.size) out = withToolsNote(out, insert, noteAsked) ?? out;
+          const added = withInstalledTool(out);
+          if (added) { out = added; walletOwnsTool = false; } else walletOwnsTool = walletListsTool(out);
+        }
+      }
+    } catch { out = line; }
+    putLine(out);
+  }, putRaw);
+  child.stdout.on("data", (chunk) => fromWallet.feed(chunk));
+  // The wallet's output ended: its last piece without a line end gets one, so a waiting launcher answer is its own line.
+  child.stdout.on("end", () => { fromWallet.end(); if (rawOpen) put(Buffer.from("\n")); rawOpen = false; flushWaiting(); outputEnded(); });
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) process.on(signal, () => child.kill(signal));
   child.on("error", (error) => {
     process.stderr.write(`shinjuku plugin: could not start ${entry} (${error.message})\n`);
@@ -600,7 +759,7 @@ function startWallet({ entry, prefix, fallback }) {
   // The launcher ends when the wallet has ended and, with a piped output, its output has ended too and this launcher's
   // own output is written ("close" would also wait for the wallet's input, which Hermes keeps open).
   let ended = null;
-  let outputDone = !note;
+  let outputDone = false;
   const finish = () => {
     if (!ended || !outputDone) return;
     const code = ended.code ?? (ended.signal ? 1 : 0);
