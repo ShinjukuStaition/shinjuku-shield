@@ -152,7 +152,7 @@ agent does the rest from plain requests.
 
 You need Node.js 24.22.1 or newer, or Node.js 22.23.4 or newer (`node --version` shows
 which one your `node` command runs; older versions have known security faults, and npm and the wallet warn about them). Tor is optional: setup asks whether to use
-it. On Windows the wallet runs its own Tor in the background: you start nothing.
+it. On Windows and on Linux x64 the wallet runs its own Tor in the background: you start nothing.
 
 1. **Set up the wallet.** In a terminal, type these two lines as they are.
 
@@ -392,8 +392,8 @@ of its own on 0.3.131: one question with `shinjuku infer`. On Windows, type
 - **Tor** (`setup --tor`, `--tor`, `--no-tor`). With Tor, every request goes
   through Tor and reaches the facilitator through its onion service, so no
   server sees your IP address. After a Tor setup, every command uses Tor by
-  itself. On Windows the wallet runs its own Tor in the background: you start nothing. On another system (Linux too),
-  run your own Tor with `HTTPTunnelPort 127.0.0.1:9080` in its `torrc`, then
+  itself. On Windows and on Linux x64 the wallet runs its own Tor in the background: you start nothing. On Linux on
+  another processor (arm64), run your own Tor with `HTTPTunnelPort 127.0.0.1:9080` in its `torrc`, then
   `setup --tor`.
 - **Self-custody** (`shinjuku setup`, `backup-export`). The keys are made and
   kept on your machine. Only your keys move your balance. The facilitator
@@ -541,7 +541,7 @@ to pay again.
 | Your IP | Payments go to `pay.shinjukustaition.com`, with no CDN in the path. Our server sees your IP. It keeps no access logs. | Hidden from everyone, us included. |
 | The seller | Sees your IP. | Does not see your IP. |
 | Speed | Faster. | About 1-2 s slower per request. |
-| Needs | Nothing extra. | Nothing extra on Windows: the wallet runs its own Tor. On another system (Linux too), your own Tor with `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr` in its `torrc`. |
+| Needs | Nothing extra. | Nothing extra on Windows and on Linux x64: the wallet runs its own Tor. On Linux on another processor (arm64), your own Tor with `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr` in its `torrc`. |
 | When a path is slow | - | The wallet races our onion addresses and keeps the first that answers. A facilitator onion that gives no answer in 15 s brings in two spare onions. A history request with no answer moves to the next history onion, and a history source that is silent for 60 s ends with a plain error instead of a long wait. A stalled Tor circuit is replaced. A facilitator request never falls back to our clearnet address. |
 
 ## Setup
@@ -993,7 +993,7 @@ these flags to the `mcp` command. A flag wins over `config.json`.
 | `--no-auto-pockets` | Accepted for older configs. It also stops the idle return of old pockets to the shielded balance. |
 | `--max-unshield <usdc>` | Optional. The most one unshield call may move, and the most this wallet may unshield in any 24 hours, in USDC. Without it, a send you confirm can move the whole shielded balance. |
 | `--no-tor` | Optional. This run does not use the Tor that setup recorded. |
-| `--tor` | Optional. Every request goes through Tor; our facilitator is reached over its onion service. On Windows the wallet runs its own Tor; on another system (Linux too) it needs your own Tor with `HTTPTunnelPort 127.0.0.1:9080` in its `torrc`. See Privacy modes. |
+| `--tor` | Optional. Every request goes through Tor; our facilitator is reached over its onion service. On Windows and on Linux x64 the wallet runs its own Tor; on Linux on another processor (arm64) it needs your own Tor with `HTTPTunnelPort 127.0.0.1:9080` in its `torrc`. See Privacy modes. |
 | `--rpc-file <file>` | Optional. Your own Solana RPC URL. Without it, reads go to our relay, which sees which addresses the wallet reads. |
 
 The passphrase comes from `--passphrase-file` or `SHIELDED_WALLET_PASSPHRASE`
@@ -1672,8 +1672,8 @@ Keep the same passphrase in `passphrase.txt` and your RPC URL in `rpc.txt`.
 
 #### Hide your IP
 
-Add `--tor` to any command. On Windows the wallet runs its own Tor in the background: you start nothing. On
-another system (Linux too), run your own Tor with one line in its `torrc`:
+Add `--tor` to any command. On Windows and on Linux x64 the wallet runs its own Tor in the background: you start
+nothing. On Linux on another processor (arm64), run your own Tor with one line in its `torrc`:
 `HTTPTunnelPort 127.0.0.1:9080 IsolateDestAddr`. The wallet checks that it
 reaches the network through Tor before it sends any other request, and it
 refuses any connection that does not go through the proxy.
