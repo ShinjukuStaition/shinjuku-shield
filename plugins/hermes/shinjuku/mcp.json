@@ -4,11 +4,9 @@
     "shinjuku": {
       "type": "stdio",
       "command": "node",
-      "args": ["${PLUGIN_ROOT}/launch.mjs", "0.3.266"],
+      "args": ["${PLUGIN_ROOT}/launch.mjs"],
       "cwd": "${PLUGIN_DATA}",
       "env": {
-        "npm_config_offline": "true",
-        "npm_config_cache": "${npm_config_cache}",
         "npm_config_prefix": "${npm_config_prefix}",
         "SHIELDED_WALLET_HOME": "${SHIELDED_WALLET_HOME}"
       }

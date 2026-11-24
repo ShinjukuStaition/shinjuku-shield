@@ -1,168 +1,302 @@
 #!/usr/bin/env node
-// Starts the Shinjuku wallet's MCP server for Hermes.
+// Starts the Shinjuku wallet's MCP server for Hermes: the user's installed `shinjuku` package (the one its `shinjuku`
+// command runs), as `shinjuku mcp`.
 //
-// mcp.json passes one argument, the exact wallet version (X.Y.Z): the launcher reads the version only from there. The
-// README and the skill name the same version (0.3.266) in their setup lines; a pin moves all three together.
+// No wallet version is named here, and the plugin never installs or updates the wallet. The user installs the wallet
+// once in a terminal (Linux `npm install -g shinjuku`, then `shinjuku setup`; Windows `npm.cmd install -g shinjuku`, then
+// `shinjuku.cmd setup`); the wallet's own update notice names its update step, the same install line.
 //
-// The wallet must already be on this computer, put there by its setup: `npm install -g shinjuku@0.3.266` then
-// `shinjuku setup` (the README form; on Windows `npm.cmd` and `shinjuku.cmd`, because Windows PowerShell refuses npm's
-// own command files by default), or `npx -y shinjuku@0.3.266 setup`. That npm download goes straight to npm's
-// registry, before setup asks whether to use Tor (docs/mcp/TOR.md, "What setup does with Tor"). This launcher never
-// downloads anything and never runs npm or npx: it finds that exact installed copy of the wallet package
-// (shinjuku-shield, also the dependency of the shinjuku package) and starts its own command file with this Node.
-// The wallet then does its own networking, over Tor when the user chose Tor in setup.
-//
-// Where it looks, in order: npm's global folder (npm install -g), then npx's cache (<cache>/_npx/*/node_modules).
-// The default folders come first; `npm root -g` and `npm config get cache` (local reads, no network) run only when
-// the defaults have no copy, for a user whose npm config moved them.
-//
-// When no copy of that version is found (setup was not run on this computer), the launcher answers as a small MCP
-// server with one tool and server instructions that give the user the setup lines. It pays and reads nothing.
-//
-// The wallet child gets stdin through a pipe from this process, never the launcher's own stdin handle: when Hermes
-// closes the connection or ends this launcher (even a hard kill on Windows), the pipe closes, the wallet's MCP
-// server sees the end of its input and stops. No cmd.exe or npm layer sits between them.
-//
-// The working folder is never the plugin folder. Hermes starts a plugin's server in its plugin folder when mcp.json
-// names no cwd (hermes_cli/agent_plugins.py _translate_stdio), and on Windows a folder that a running process uses as
-// its working folder cannot be moved or deleted: `hermes plugins update shinjuku` then failed with WinError 32 while the
-// wallet ran. mcp.json gives cwd ${PLUGIN_DATA}; this launcher also moves itself (and so the wallet it starts) to
-// PLUGIN_DATA, else the user's home folder, for a host or an older mcp.json that starts it in the plugin folder.
-
-import { spawn, spawnSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+// Where it looks: only npm's own global folders (prefixes). When the user set a prefix (npm_config_prefix, else the
+// `prefix=` line of the user's npm settings file: ~/.npmrc or the file npm_config_userconfig names), only that one.
+// Else, in this order: on Windows `%APPDATA%\npm` (the prefix of the Node.js installer's npm), then the prefix of the
+// Node that runs this launcher (its own folder); on Linux and macOS the prefix of that Node (the folder above its bin),
+// then `~/.local` (where the wallet's setup installs when npm's global folder is not writable), then /usr/local.
+// No PATH folder is searched: a shared folder on PATH never supplies the wallet. Each prefix, the
+// package folder and its entry file must be absolute real paths outside the plugin's own folders, and the entry must
+// lie inside the package folder. The first prefix that holds the shinjuku package wins. It starts that package's own
+// entry file with the Node that runs this launcher, with no shell and no npm command file, so no other `node` runs. It
+// only reads folders, the npm settings file and package.json files: no npm run, no download, no network. When no installed package
+// is found, it answers as a small MCP server with one read-only tool, setup_wallet_first, whose answer is the install
+// step for the user.
+import { spawn } from "node:child_process";
+import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
 
-const VERSION = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
-const version = process.argv[2] ?? "";
-if (!VERSION.test(version)) {
-  process.stderr.write(`shinjuku plugin: mcp.json must pass the wallet version as X.Y.Z (got "${version}")\n`);
-  process.exit(2);
-}
-const WALLET_PACKAGE = "shinjuku-shield";
-const COMMAND_PACKAGE = "shinjuku";
+const PLUGIN_VERSION = "0.2.0";
 const WINDOWS = process.platform === "win32";
-// The lines the user types, for this computer. On Windows they name the .cmd files (npm.cmd, npx.cmd, shinjuku.cmd):
-// Windows PowerShell refuses npm's other command files by default, and the .cmd forms work in PowerShell and in
-// Command Prompt alike.
+const MAC = process.platform === "darwin";
+// The words the user types, for this computer: on Windows the .cmd forms (Windows PowerShell refuses npm's other
+// command files by default, and the .cmd forms work in PowerShell and in Command Prompt alike).
+const COMMAND = WINDOWS ? "shinjuku.cmd" : "shinjuku";
 const NPM_WORD = WINDOWS ? "npm.cmd" : "npm";
-const NPX_WORD = WINDOWS ? "npx.cmd" : "npx";
-const SHINJUKU_WORD = WINDOWS ? "shinjuku.cmd" : "shinjuku";
-const WHERE_TO_TYPE = WINDOWS ? "in PowerShell or Command Prompt (Windows)" : "in a terminal (Linux)";
-const INSTALL_LINE = `${NPM_WORD} install -g --no-audit --no-fund ${COMMAND_PACKAGE}@${version}`;
-const SETUP_LINE = `${SHINJUKU_WORD} setup`;
-const NPX_SETUP_LINE = `${NPX_WORD} -y ${COMMAND_PACKAGE}@${version} setup`;
+const WHERE_TO_TYPE = WINDOWS ? "in PowerShell or Command Prompt" : "in a terminal";
+const INSTALL_LINE = `${NPM_WORD} install -g shinjuku`;
+const SETUP_LINE = `${COMMAND} setup`;
+const RELOAD = "Back in Hermes, type /reload-mcp (in the Hermes desktop app: press Ctrl+K, choose Restart gateway, then Restart all; "
+  + "your other Hermes bots reconnect too), then ask again.";
 
 // A variable that reached us as its own unexpanded placeholder (an optional variable the user did not set) is absent.
-// The wallet reads this exact value to word its update texts for a plugin install ("hermes plugins update shinjuku").
+// The wallet reads this exact value for its Hermes ways: the call wait Hermes keeps, and an update step that is the
+// user's own install line.
 const env = { ...process.env, SHINJUKU_WALLET_LAUNCHER: "hermes-plugin" };
 for (const [key, value] of Object.entries(env)) if (/^\$\{[A-Za-z_][A-Za-z0-9_]*\}$/.test(value ?? "")) delete env[key];
+// What the wallet gets: no Node or OpenSSL execution override from Hermes's environment
+// (NODE_OPTIONS can load code with --import or --require before the wallet runs; OPENSSL_CONF can load an engine;
+// NODE_EXTRA_CA_CERTS and NODE_TLS_REJECT_UNAUTHORIZED change whom TLS trusts), and no npm setting except the two npm
+// folders, which say where, never what (the wallet names its command folder from npm_config_prefix).
+const EXECUTION_OVERRIDE = /^(?:NODE_.*|OPENSSL_CONF|OPENSSL_ENGINES|OPENSSL_MODULES|SSL_CERT_FILE|SSL_CERT_DIR|UV_THREADPOOL_SIZE)$/iu;
+const NPM_FOLDERS = new Set(["npm_config_prefix", "npm_config_cache"]);
+const walletEnv = Object.fromEntries(Object.entries(env).filter(([key]) => !EXECUTION_OVERRIDE.test(key)
+  && (!/^npm_config_/iu.test(key) || NPM_FOLDERS.has(key.toLowerCase()))));
 
-// Out of the plugin folder (see above), before anything else runs. A failed move keeps the folder Hermes gave.
-for (const folder of [env.PLUGIN_DATA, homedir()]) {
+/**
+ * One environment value by name, as npm and Windows read it: case-insensitive on Windows (process.env is), and
+ * undefined for an unexpanded placeholder of its own (an optional variable the user did not set) or an empty value.
+ */
+const envGet = (name) => {
+  const value = process.env[name];
+  return typeof value === "string" && value !== "" && !/^\$\{[A-Za-z_][A-Za-z0-9_]*\}$/u.test(value) ? value : undefined;
+};
+
+// Out of the plugin folder before anything else runs (Hermes starts the server there). A failed move keeps the folder.
+for (const folder of [envGet("PLUGIN_DATA"), homedir()]) {
   try {
     if (folder && existsSync(folder)) { process.chdir(folder); break; }
   } catch { /* the next one */ }
 }
 
-/** The wallet's command file in a shinjuku-shield folder when its package.json is exactly this version, else undefined. */
-function walletAt(folder) {
+const isFile = (path) => { try { return statSync(path).isFile(); } catch { return false; } };
+/** The real path of an existing file or folder, or undefined. */
+const real = (path) => { try { return realpathSync(path); } catch { return undefined; } };
+/** True when `inner` is `outer` or lies inside it (the first part of the relative path is not exactly ".."). */
+const inside = (outer, inner) => {
+  const rel = relative(outer, inner);
+  return rel === "" || (rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel));
+};
+/**
+ * A full path: on Windows a drive letter and a slash (C:\x, C:/x) or a \\server\share path, never \x or /x (those
+ * depend on the current drive); elsewhere a path that starts at /.
+ */
+const fullPath = (path) => typeof path === "string" && (WINDOWS ? /^(?:[A-Za-z]:[\\/]|[\\/]{2}[^\\/])/u.test(path) : isAbsolute(path));
+/** The real paths of Hermes's folders of this plugin (PLUGIN_ROOT, PLUGIN_DATA). */
+const pluginFolders = [envGet("PLUGIN_ROOT"), envGet("PLUGIN_DATA")].filter((folder) => fullPath(folder)).map((folder) => real(folder) ?? resolve(folder));
+const inPluginFolder = (path) => pluginFolders.some((base) => inside(base, path));
+
+/**
+ * An ini value as the ini package's unsafe() reads it (npm reads .npmrc with it): a value in double or single quotes
+ * loses them and a double-quoted one is then read as JSON when it parses; an unquoted value ends at the first ; or #,
+ * a backslash keeps the next character when it is \, ; or # and stays itself before any other one, and the value is
+ * trimmed.
+ */
+function iniValue(text) {
+  let val = String(text ?? "").trim();
+  if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
+    if (val.startsWith("'")) val = val.slice(1, -1);
+    try { val = JSON.parse(val); } catch { /* kept as it is */ }
+    return val; // as decode keeps it: a JSON list, number or object stays one (the caller takes only a string)
+  }
+  let escaped = false;
+  let out = "";
+  for (const c of val) {
+    if (escaped) { out += "\\;#".includes(c) ? c : `\\${c}`; escaped = false; }
+    else if (";#".includes(c)) break;
+    else if (c === "\\") escaped = true;
+    else out += c;
+  }
+  if (escaped) out += "\\";
+  return out.trim();
+}
+
+/**
+ * The top-level `prefix` of an .npmrc text, or undefined. The rule is safe, not complete: it names a folder only when
+ * npm's ini decode() reads the same text as that folder, and gives none for any file shape that could make npm's
+ * prefix something else. So it gives none for a file with a [section] line whose name holds a dot, __proto__ or
+ * prefix (decode nests a dotted section and can change or stop on the top level), with a key that holds __proto__, or with
+ * a key that starts with prefix and goes on (prefix[], prefix.x, a dotted or list form), or with any value that decode
+ * keeps as null, a list or an object (decode then expands dotted keys and can stop on the file); and none when the
+ * last prefix value is not text or is true or false. Otherwise it reads the file as decode does: lines split on line breaks;
+ * empty, blank and comment lines (; or # after spaces) skipped; each line matched as it is against decode's own
+ * pattern; the last prefix line wins; a key or value decoded by iniValue. With none, the launcher tries the next npm
+ * folder or shows the setup notice. A file it gives none for returns null ("a prefix may be set, its folder is not
+ * known"), so the launcher tries no other npm folder; undefined means the file sets no prefix.
+ */
+function npmrcTopPrefix(text) {
+  const re = /^\[([^\]]*)\]\s*$|^([^=]+)(=(.*))?$/iu;
+  let value;
+  let inSection = false;
+  for (const line of String(text).split(/[\r\n]+/gu)) {
+    if (!line || /^\s*[;#]/u.test(line) || /^\s*$/u.test(line)) continue;
+    const match = re.exec(line);
+    if (!match) continue;
+    if (match[1] !== undefined) {
+      // A plain section ([other]) only holds its own keys: the top-level prefix stays, and the keys after it are the
+      // section's. A section name that is not text or holds a dot, __proto__ or prefix gives no folder.
+      const section = iniValue(match[1]);
+      if (typeof section !== "string" || section.includes(".") || section.includes("__proto__") || section.includes("prefix")) return null;
+      inSection = true;
+      continue;
+    }
+    if (inSection) continue;
+    const key = iniValue(match[2]);
+    // npm replaces ${NAME} in keys too (a key can become prefix): any such key gives no folder.
+    if (typeof key !== "string" || key.includes("__proto__") || key.includes("${")) return null;
+    if (key !== "prefix" && key.startsWith("prefix")) return null;
+    const raw = match[3] ? iniValue(match[4]) : undefined;
+    // Any key whose value decode keeps as null, a list or an object: decode then expands dotted keys and can stop on
+    // the file (a=null with a.b=null throws), so npm has no prefix from it.
+    if (raw === "null" || raw === null || typeof raw === "object") return null;
+    if (key !== "prefix") continue;
+    // A quoted JSON list or object makes decode keep a non-text prefix, and a list takes every later prefix line too.
+    if (raw !== undefined && typeof raw !== "string") return null;
+    value = typeof raw === "string" && raw !== "true" && raw !== "false" && raw !== "null" ? raw : null;
+  }
+  return typeof value === "string" ? value : value === null ? null : undefined;
+}
+
+/** The `prefix=` value of the user's ~/.npmrc, as a folder (npmPathValue), or undefined. */
+function npmrcPrefix() {
+  try {
+    // npm's home is HOME || homedir() (@npmcli/config loadHome), and its user file is <home>/.npmrc unless
+    // npm_config_userconfig names another one (the last non-empty one in any case, read as a path like the prefix).
+    let named;
+    for (const [key, value] of Object.entries(process.env)) {
+      if (key.toLowerCase() === "npm_config_userconfig" && value !== "" && !/^\$\{[A-Za-z_][A-Za-z0-9_]*\}$/u.test(value ?? "")) named = value;
+    }
+    const file = named !== undefined ? npmPathValue(named) : join(envGet("HOME") || homedir(), ".npmrc");
+    if (!file) return null;
+    const text = readFileSync(file, "utf8");
+    // A prefix line that is no usable folder (a relative path): null, so no other npm folder is tried.
+    const found = npmrcTopPrefix(text);
+    return typeof found === "string" ? (npmPathValue(found) ?? null) : found;
+  } catch { return undefined; }
+}
+
+/**
+ * ${NAME} in a config value as npm's @npmcli/config env-replace.js replaces it (copied): the variable's value, or for
+ * ${NAME?} an empty text when it is not set, or the text ${NAME} kept when it is not set; an odd number of backslashes
+ * before it keeps it as text and drops half of them, an even number drops half of them and replaces it.
+ */
+function npmEnvReplace(text) {
+  return text.replace(/(?<!\\)(\\*)\$\{([^${}?]+)(\?)?\}/gu, (orig, esc, name, modifier) => {
+    const fallback = modifier === "?" ? "" : `\${${name}}`;
+    const val = process.env[name] !== undefined ? process.env[name] : fallback;
+    if (esc.length % 2) return orig.slice((esc.length + 1) / 2);
+    return esc.slice(esc.length / 2) + val;
+  });
+}
+
+/**
+ * A prefix value as npm's parse-field reads a path: trimmed; ${NAME} replaced as npm does (npmEnvReplace); a leading
+ * ~/ (on Windows also ~\) is npm's home folder (HOME || homedir()); any other value is resolved against npm's current
+ * folder, which is not known here, so only a full path is a folder. Undefined for none.
+ */
+function npmPathValue(found) {
+  if (typeof found !== "string") return undefined;
+  const value = npmEnvReplace(found.trim());
+  if (!value) return undefined;
+  if (/^~\//u.test(value) || (WINDOWS && /^~\\/u.test(value))) return resolve(envGet("HOME") || homedir(), value.slice(2));
+  return fullPath(value) ? resolve(value) : undefined;
+}
+
+/**
+ * The prefix npm takes from the environment: the last variable, in the order npm reads them, whose name is
+ * npm_config_prefix in any case and whose value is not empty (@npmcli/config loadEnv), read as a path (npmPathValue);
+ * undefined when there is none. A value set but not a usable path gives null: no other user prefix then.
+ */
+function envPrefix() {
+  let raw;
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key.toLowerCase() === "npm_config_prefix" && value !== "" && !/^\$\{[A-Za-z_][A-Za-z0-9_]*\}$/u.test(value ?? "")) raw = value;
+  }
+  if (raw === undefined) return undefined;
+  return npmPathValue(raw) ?? null;
+}
+
+/**
+ * The entry file of the shinjuku package under an npm prefix (its package.json bin), or undefined: the prefix must be
+ * absolute, and the real paths of the prefix, the package folder and the entry file must lie outside the plugin's own
+ * folders, with the entry inside the package folder.
+ */
+function entryUnder(prefix) {
+  if (!fullPath(prefix)) return undefined;
+  const realPrefix = real(prefix);
+  if (!realPrefix || inPluginFolder(realPrefix)) return undefined;
+  const folder = real(WINDOWS ? join(realPrefix, "node_modules", "shinjuku") : join(realPrefix, "lib", "node_modules", "shinjuku"));
+  if (!folder || inPluginFolder(folder)) return undefined;
   try {
     const manifest = JSON.parse(readFileSync(join(folder, "package.json"), "utf8"));
-    if (manifest.name !== WALLET_PACKAGE || manifest.version !== version) return undefined;
-    const bin = typeof manifest.bin === "object" && manifest.bin ? manifest.bin["shinjuku-wallet"] : undefined;
-    const file = join(folder, typeof bin === "string" ? bin : "shinjuku-wallet.mjs");
-    return existsSync(file) ? file : undefined;
-  } catch {
-    return undefined;
-  }
+    if (manifest?.name !== "shinjuku") return undefined;
+    const bin = typeof manifest.bin === "string" ? manifest.bin : manifest.bin?.shinjuku;
+    if (typeof bin !== "string" || !bin) return undefined;
+    const file = real(join(folder, bin));
+    return file && isFile(file) && inside(folder, file) && !inPluginFolder(file) ? file : undefined;
+  } catch { return undefined; }
 }
 
-/** In npm's global node_modules: shinjuku (with shinjuku-shield inside it) or shinjuku-shield installed by itself. */
-function inGlobalRoot(root) {
-  if (!root) return undefined;
-  return walletAt(join(root, COMMAND_PACKAGE, "node_modules", WALLET_PACKAGE)) ?? walletAt(join(root, WALLET_PACKAGE));
-}
-
-/** In npx's cache: any <cache>/_npx/<hash>/node_modules/shinjuku-shield of this version (from shinjuku@ or shinjuku-shield@). */
-function inNpxCache(cache) {
-  if (!cache) return undefined;
-  let entries;
-  try { entries = readdirSync(join(cache, "_npx")); } catch { return undefined; }
-  for (const entry of entries) {
-    const found = walletAt(join(cache, "_npx", entry, "node_modules", WALLET_PACKAGE));
-    if (found) return found;
+/** The installed wallet: { entry, prefix } of the first npm prefix (order above) that holds the package, or undefined. */
+function findWallet() {
+  // The environment's prefix wins over the user file, as in npm; one that npm would set but is no full path gives no
+  // user prefix at all (npm would not read the user file's prefix then either).
+  const fromEnv = envPrefix();
+  const fromFile = fromEnv === undefined ? npmrcPrefix() : undefined;
+  const userSet = (fromEnv ?? fromFile) ?? undefined;
+  const home = envGet("HOME") || homedir();
+  // npm's default global prefix for this Node (@npmcli/config loadGlobalPrefix): PREFIX when it is set, else the Node's
+  // own folder on Windows and the folder above its bin elsewhere (under DESTDIR when that is set).
+  const nodeDir = dirname(process.execPath);
+  // PREFIX goes through npm's path rules (npmPathValue: trim, ~/ under npm's home, a full path); set, it replaces the
+  // Node folder even when it is no usable path (npm takes it then too).
+  const defaultPrefix = envGet("PREFIX") !== undefined ? npmPathValue(envGet("PREFIX"))
+    : (WINDOWS ? nodeDir : (envGet("DESTDIR") ? join(envGet("DESTDIR"), dirname(nodeDir)) : dirname(nodeDir)));
+  // A prefix the user set is the only folder npm installs to and updates, so an older install in another npm folder
+  // is never started then (an update would not reach it). A set but unusable prefix leaves no folder (the notice).
+  // The EACCES line (npm config set prefix ~/.local) makes ~/.local the user's prefix, so it is found this way too.
+  const userGiven = fromEnv !== undefined || fromFile !== undefined;
+  const prefixes = userGiven
+    ? [userSet]
+    : WINDOWS
+      ? [join(envGet("APPDATA") || join(homedir(), "AppData", "Roaming"), "npm"), defaultPrefix]
+      // npm's default prefix (this Node's) first: npm installs and updates there. ~/.local (the EACCES line) and
+      // /usr/local cover a Node that Hermes brings itself, whose folder holds no wallet.
+      : [defaultPrefix, join(home, ".local"), "/usr/local"];
+  // npm's own folder for a plain `npm install -g` in a terminal: the user's prefix, else on Windows %APPDATA%\npm (the
+  // Node.js installer's npm sets it), elsewhere the prefix of this Node. Any other folder is a fallback: a plain update
+  // may go elsewhere, so the wallet's update words then set npm's folder to this one first (fallback: true).
+  const npmOwn = prefixes[0];
+  for (const candidate of prefixes) {
+    const entry = entryUnder(candidate);
+    // Windows: never a fallback (see wallet/src/updateWords.mjs UPDATE_PREFIX_ENV): a plain install reaches the started wallet.
+    if (entry) return { entry, prefix: real(candidate), fallback: !WINDOWS && !userGiven && candidate !== npmOwn };
   }
   return undefined;
 }
 
-/** npm's global node_modules from the prefix npm would use with no config file (Windows: <prefix>\node_modules). */
-function defaultGlobalRoot() {
-  const prefix = env.npm_config_prefix || env.NPM_CONFIG_PREFIX;
-  if (WINDOWS) return join(prefix || join(env.APPDATA || join(homedir(), "AppData", "Roaming"), "npm"), "node_modules");
-  return join(prefix || "/usr/local", "lib", "node_modules");
-}
-
-function defaultNpmCache() {
-  const configured = env.npm_config_cache || env.NPM_CONFIG_CACHE;
-  if (configured) return configured;
-  if (WINDOWS) return join(env.LOCALAPPDATA || join(homedir(), "AppData", "Local"), "npm-cache");
-  return join(homedir(), ".npm");
-}
-
-/** One npm setting read from npm itself (local config files, no network); undefined when npm does not answer. */
-function npmSays(...words) {
-  const run = WINDOWS
-    ? spawnSync(env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "npm", ...words], { env, encoding: "utf8", windowsHide: true, timeout: 15_000 })
-    : spawnSync("npm", words, { env, encoding: "utf8", timeout: 15_000 });
-  const answer = run.status === 0 ? run.stdout.trim() : "";
-  // npm masks any part of its output that looks like a secret with *** (a path segment like a long id), which
-  // leaves no real folder: treat that answer as none.
-  return answer && !answer.includes("***") ? answer : undefined;
-}
-
-function findWallet() {
-  return inGlobalRoot(defaultGlobalRoot()) ?? inNpxCache(defaultNpmCache())
-    ?? inGlobalRoot(npmSays("root", "-g")) ?? inNpxCache(npmSays("config", "get", "cache"));
-}
-
-function startWallet(walletFile) {
-  const child = spawn(process.execPath, [walletFile, "mcp"], { stdio: ["pipe", "inherit", "inherit"], env, cwd: process.cwd(), windowsHide: true });
-  process.stdin.pipe(child.stdin);
-  child.stdin.on("error", () => {}); // the wallet ended first; its exit below ends this launcher
-  for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) process.on(signal, () => child.kill(signal));
-  child.on("error", (error) => {
-    process.stderr.write(`shinjuku plugin: could not start the wallet (${error.message})\n`);
-    process.exit(1);
-  });
-  child.on("exit", (code, signal) => process.exit(code ?? (signal ? 1 : 0)));
-}
-
-const MAC = process.platform === "darwin";
 const NOT_READY = MAC
   ? "The Shinjuku private wallet does not run on a Mac yet: its proof programs run on Windows and Linux only. Nothing was paid or read. "
     + "Tell the user: Shinjuku works in Hermes on Windows or Linux."
-  : "The Shinjuku private wallet is not set up on this computer yet, so it cannot pay or read anything yet. Nothing was paid. "
+  : "The Shinjuku private wallet is not installed on this computer yet, so it cannot pay or read anything yet. Nothing was paid. "
     + `Tell the user to do this once, ${WHERE_TO_TYPE}, and to type the lines exactly as they are here:\n`
     + `1. Install the wallet:\n   ${INSTALL_LINE}\n`
+    + (WINDOWS ? "" : "   If npm says EACCES (no permission to write its global folder), make your own folder npm's folder, then install again:\n"
+      + "   npm config set prefix ~/.local\n   npm install -g shinjuku\n   and in step 2 type ~/.local/bin/shinjuku setup\n") // typed-line-check: posix only (WINDOWS is false here)
     + `2. Set it up:\n   ${SETUP_LINE}\n`
     + "   Setup asks whether to use Tor (yes is the default: then the sites and services the wallet reaches do not see "
     + "your IP address), creates your private wallet and asks you to save its backup. The install in step 1 goes "
     + "directly to npm, before that question.\n"
-    + `   (One line instead of steps 1 and 2: ${NPX_SETUP_LINE})\n`
-    + "3. Back in Hermes, type /reload-mcp (in the Hermes desktop app: press Ctrl+K, choose Restart gateway, then Restart all; your other Hermes bots reconnect too), then ask again.";
+    + `3. ${RELOAD}`;
 
 /** MCP revisions this small server answers in; a client asking for another gets the newest one listed here. */
 const PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"];
 
-/** A minimal MCP server (JSON-RPC, one message per line) that only says how to set up. */
+/** A minimal MCP server (JSON-RPC, one message per line) that only says how to install and set up. */
 function serveSetupNeeded() {
   const tool = {
     name: "setup_wallet_first",
     title: "Set up the Shinjuku wallet first",
-    description: `Use this for any wallet, payment, balance or private page request: the Shinjuku wallet is not set up on this computer yet. It answers what to tell the user (install with ${INSTALL_LINE}, then ${SETUP_LINE}). It pays and reads nothing.`,
+    description: "Use this for any wallet, payment, balance or private page request: the Shinjuku wallet is not installed on this "
+      + `computer yet. It answers what to tell the user (install with ${INSTALL_LINE}, then ${SETUP_LINE}). It installs, pays and changes nothing.`,
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   };
@@ -175,18 +309,21 @@ function serveSetupNeeded() {
       send({ id: null, error: { code: -32700, message: "Parse error" } });
       return;
     }
-    if (!request || typeof request !== "object" || Array.isArray(request) || typeof request.method !== "string") {
-      send({ id: request?.id ?? null, error: { code: -32600, message: "Invalid Request" } });
+    const validId = (id) => typeof id === "string" || (typeof id === "number" && Number.isFinite(id));
+    if (!request || typeof request !== "object" || Array.isArray(request) || request.jsonrpc !== "2.0" || typeof request.method !== "string"
+      || (request.id !== undefined && !validId(request.id))
+      || (request.params !== undefined && (request.params === null || typeof request.params !== "object"))) {
+      send({ id: validId(request?.id) ? request.id : null, error: { code: -32600, message: "Invalid Request" } });
       return;
     }
-    if (request.id === undefined || request.id === null) return; // a notification
+    if (request.id === undefined) return; // a notification
     const { id, method, params } = request;
     if (method === "initialize") {
       const asked = params?.protocolVersion;
       send({ id, result: {
         protocolVersion: PROTOCOL_VERSIONS.includes(asked) ? asked : PROTOCOL_VERSIONS[0],
         capabilities: { tools: {} },
-        serverInfo: { name: "shinjuku", title: "Shinjuku private wallet (not set up yet)", version },
+        serverInfo: { name: "shinjuku", title: "Shinjuku private wallet (not installed yet)", version: PLUGIN_VERSION },
         instructions: NOT_READY,
       } });
     } else if (method === "tools/list") {
@@ -202,6 +339,279 @@ function serveSetupNeeded() {
   lines.on("close", () => process.exit(0));
 }
 
-const walletFile = MAC ? undefined : findWallet();
-if (walletFile) startWallet(walletFile);
+/**
+ * A folder name the launcher writes into words for the agent and into a typed line: a plain absolute path only (letters,
+ * digits and _ @ % + = : , . / -; no space, quote, newline or other control character), so a folder name cannot become
+ * prose or instructions for the model. The same test as wallet/src/updateWords.mjs PLAIN_FOLDER.
+ */
+const PLAIN_FOLDER = /^\/[A-Za-z0-9_@%+=:,./-]{0,255}$/u;
+
+/**
+ * The update lines for a fallback install (Linux and macOS: a wallet found outside npm's own folder for a plain
+ * install), given by the plugin itself, since the installed wallet may be older than its own words for this case
+ * (wallet/src/updateWords.mjs UPDATE_PREFIX_ENV) and a plain install line could update another folder. A folder with
+ * an unusual name is not written at all: the words then say what to do without it.
+ */
+const fallbackNote = (folder) => {
+  const head = "Shinjuku plugin: this wallet runs from a folder that is not npm's usual one for a plain install. When the wallet needs "
+    + "an update, ";
+  const reload = `then reload the wallet in Hermes (/reload-mcp; in the Hermes desktop app: Ctrl+K, "Restart gateway", then "Restart all").`;
+  if (PLAIN_FOLDER.test(folder)) {
+    return `${head}tell the user to type these lines in a terminal, in place of any other update line: \`npm config set prefix ${folder}\` ` // typed-line-check: posix only (no fallback on Windows)
+      + `(this makes the wallet's folder npm's global folder for the account), then \`${INSTALL_LINE}\`, ${reload}`;
+  }
+  return `${head}tell the user that the wallet's folder has an unusual name: in a terminal, set npm's global folder to the folder `
+    + `that holds this wallet (npm config set prefix, then that folder in quotes), then type \`${INSTALL_LINE}\`, ${reload}`;
+};
+
+/** The longest tool description with the note (a host's 4096-character cut less a 40-character margin). */
+const NOTE_TOOL_LIMIT = 4096 - 40;
+/** The longest line the launcher reads; a longer one passes as it is, unread. */
+const MAX_READ_LINE = 4 * 1024 * 1024;
+
+/**
+ * Splits a byte stream into lines (each with its line end) for onLine, with a bounded buffer: a line longer than `max`
+ * goes to onRaw in its pieces, unread, up to its end. Chunks are kept as they come and joined once per line.
+ */
+function lineSplitter(onLine, onRaw, max = MAX_READ_LINE) {
+  let parts = [];
+  let size = 0;
+  let skipping = false;
+  return {
+    feed(chunk) {
+      let at = 0;
+      let end;
+      while ((end = chunk.indexOf(0x0a, at)) >= 0) {
+        const piece = chunk.subarray(at, end + 1);
+        at = end + 1;
+        if (skipping) { onRaw(piece); skipping = false; continue; }
+        // A line that ends in this chunk but is longer than `max` in all goes out unread too.
+        if (size + piece.length > max) { for (const part of parts) onRaw(part); onRaw(piece); parts = []; size = 0; continue; }
+        parts.push(piece);
+        const line = parts.length === 1 ? parts[0] : Buffer.concat(parts);
+        parts = [];
+        size = 0;
+        onLine(line);
+      }
+      if (at >= chunk.length) return;
+      const rest = chunk.subarray(at);
+      if (skipping) { onRaw(rest); return; }
+      parts.push(rest);
+      size += rest.length;
+      if (size > max) { for (const part of parts) onRaw(part); parts = []; size = 0; skipping = true; }
+    },
+    end() { for (const part of parts) onRaw(part); parts = []; size = 0; },
+  };
+}
+
+/** The bytes the wallet's stdio server writes at the start of every answer, and after the id of a tools/list answer. */
+const ANSWER_HEAD = Buffer.from('{"jsonrpc":"2.0","id":');
+const TOOLS_HEAD = Buffer.from(',"result":{"tools":[');
+/** The tools that can carry the note, in this order: wallet_status (before setup), then short tools. */
+const NOTE_TOOLS = ["wallet_status", "wallet_cancel", "check_price", "find_paid_services"];
+const bytesAt = (line, at, bytes) => line.length >= at + bytes.length && line.subarray(at, at + bytes.length).equals(bytes);
+
+/** The end (after its closing quote) of the JSON string that starts at `at`, or -1. */
+function stringEnd(line, at) {
+  if (line[at] !== 0x22) return -1;
+  for (let i = at + 1; i < line.length; i += 1) {
+    if (line[i] === 0x5c) i += 1;
+    else if (line[i] === 0x22) return i + 1;
+  }
+  return -1;
+}
+
+/**
+ * A request id as the wallet writes it back (JSON.stringify of the parsed id): a string, or a safe integer (a larger
+ * number could stand for two ids). Else null: that request is not tracked.
+ */
+const idToken = (id) => (typeof id === "string" || Number.isSafeInteger(id) ? JSON.stringify(id) : null);
+
+/**
+ * The wallet's answer line with the note put in at the start of one tool's description, or null for any other line,
+ * which then passes as it is. Hermes reads tool descriptions, not a server's initialize instructions
+ * (hermes-agent tools/mcp_tool_registration.py). The launcher does not parse or rewrite the answer: it reads the answer's
+ * id as its raw text (the asked ids are kept in the same form), and inserts the note's escaped text (`insert`) after the
+ * opening quote of the first NOTE_TOOLS description that stays within NOTE_TOOL_LIMIT with it. Every other byte stays.
+ */
+function withToolsNote(line, insert, asked) {
+  if (!bytesAt(line, 0, ANSWER_HEAD)) return null;
+  const idAt = ANSWER_HEAD.length;
+  let idEnd = idAt;
+  if (line[idAt] === 0x22) idEnd = stringEnd(line, idAt);
+  else while (idEnd < line.length && (line[idEnd] === 0x2d || (line[idEnd] >= 0x30 && line[idEnd] <= 0x39))) idEnd += 1;
+  if (idEnd <= idAt || line[idEnd] !== 0x2c) return null;
+  const id = line.subarray(idAt, idEnd).toString("utf8");
+  if (!asked.has(id)) return null;
+  asked.delete(id);
+  if (!bytesAt(line, idEnd, TOOLS_HEAD)) return null; // an error answer, or not a tools list: as it is
+  // JSON.parse checks the line only (it is never written back): a line that is not valid JSON passes as it is, and the
+  // raw place below must hold the same description as the parsed answer, tool by tool.
+  let parsed;
+  try { parsed = JSON.parse(line.toString("utf8")); } catch { return null; }
+  const tools = parsed?.result?.tools;
+  if (!Array.isArray(tools)) return null;
+  const spots = toolDescriptions(line, idEnd + TOOLS_HEAD.length);
+  if (!spots || spots.length !== tools.length) return null; // not the shape the launcher knows: as it is
+  for (const name of NOTE_TOOLS) {
+    const index = tools.findIndex((tool) => tool?.name === name);
+    const spot = index < 0 ? null : spots[index];
+    if (!spot || spot.name !== name || typeof tools[index].description !== "string") continue;
+    let rawDescription;
+    try { rawDescription = JSON.parse(line.subarray(spot.open, spot.close).toString("utf8")); } catch { continue; }
+    if (rawDescription !== tools[index].description) continue;
+    // The raw length is at least the description's length in characters, so this keeps it under the cut.
+    if (spot.close - spot.open - 2 + insert.chars > NOTE_TOOL_LIMIT) continue;
+    const out = Buffer.concat([line.subarray(0, spot.open + 1), insert.bytes, line.subarray(spot.open + 1)]);
+    // The last check, whatever the line's shape (a duplicate "result" or "tools" key, for one): parsed, the new line is
+    // the old answer with only this tool's description changed, to the note plus the old description. Else as it is.
+    return sameButNote(out, parsed, index, `${JSON.parse(`"${insert.bytes.toString("utf8")}"`)}${tools[index].description}`) ? out : null;
+  }
+  return null;
+}
+
+/** True when `out` parses to `before` with only result.tools[index].description changed to `description`. */
+function sameButNote(out, before, index, description) {
+  let after;
+  try { after = JSON.parse(out.toString("utf8")); } catch { return false; }
+  if (after?.result?.tools?.[index]?.description !== description) return false;
+  after.result.tools[index].description = before.result.tools[index].description;
+  try { return JSON.stringify(after) === JSON.stringify(before); } catch { return false; } // a very deep answer: as it is
+}
+
+const isSpace = (byte) => byte === 0x20 || byte === 0x09 || byte === 0x0d || byte === 0x0a;
+const skipSpace = (line, at) => { while (at < line.length && isSpace(line[at])) at += 1; return at; };
+
+/** The end of the JSON value that starts at `at`, read as raw bytes (nested objects and arrays by depth, outside strings), or -1. */
+function valueEnd(line, at) {
+  if (line[at] === 0x22) return stringEnd(line, at);
+  if (line[at] === 0x7b || line[at] === 0x5b) {
+    let depth = 0;
+    for (let i = at; i < line.length; i += 1) {
+      const byte = line[i];
+      if (byte === 0x22) {
+        const end = stringEnd(line, i);
+        if (end < 0) return -1;
+        i = end - 1;
+      } else if (byte === 0x7b || byte === 0x5b) depth += 1;
+      else if (byte === 0x7d || byte === 0x5d) { depth -= 1; if (depth === 0) return i + 1; }
+    }
+    return -1;
+  }
+  let end = at;
+  while (end < line.length && !isSpace(line[end]) && line[end] !== 0x2c && line[end] !== 0x5d && line[end] !== 0x7d) end += 1;
+  return end > at ? end : -1;
+}
+
+/**
+ * One entry per direct member object of result.tools (the array that starts at `at`), in order: its decoded name and
+ * the { open, close } byte offsets of its description string's quotes, or null. Keys are decoded before they are
+ * compared, and a later duplicate key counts, as in JSON.parse. Null when the array is not a list of objects the
+ * launcher can read to its end; values inside a tool (its inputSchema too) are skipped whole, so a nested object never
+ * counts as a tool.
+ */
+function toolDescriptions(line, at) {
+  const spots = [];
+  const decode = (start, end) => { try { return JSON.parse(line.subarray(start, end).toString("utf8")); } catch { return undefined; } };
+  let i = skipSpace(line, at);
+  if (line[i] === 0x5d) return spots;
+  for (;;) {
+    if (line[i] !== 0x7b) return null;
+    let j = skipSpace(line, i + 1);
+    let name = null;
+    let description = null;
+    if (line[j] !== 0x7d) {
+      for (;;) {
+        const keyEnd = line[j] === 0x22 ? stringEnd(line, j) : -1;
+        if (keyEnd < 0) return null;
+        const key = decode(j, keyEnd);
+        j = skipSpace(line, keyEnd);
+        if (line[j] !== 0x3a) return null;
+        j = skipSpace(line, j + 1);
+        const end = valueEnd(line, j);
+        if (end < 0) return null;
+        const isString = line[j] === 0x22;
+        if (key === "name") name = isString ? (decode(j, end) ?? null) : null;
+        if (key === "description") description = isString ? { open: j, close: end } : null;
+        j = skipSpace(line, end);
+        if (line[j] === 0x2c) { j = skipSpace(line, j + 1); continue; }
+        if (line[j] === 0x7d) break;
+        return null;
+      }
+    }
+    spots.push(description ? { name, ...description } : null);
+    i = skipSpace(line, j + 1);
+    if (line[i] === 0x2c) { i = skipSpace(line, i + 1); continue; }
+    if (line[i] === 0x5d) return spots;
+    return null;
+  }
+}
+
+function startWallet({ entry, prefix, fallback }) {
+  // A fallback install: the launcher reads both directions line by line: from Hermes the ids of its tools/list
+  // requests, from the wallet their answers, which get the update note (withToolsNote). Every other byte passes as it
+  // is. Else the wallet reads from and writes to Hermes directly.
+  const note = fallback ? fallbackNote(prefix) : null;
+  const insert = note ? { bytes: Buffer.from(JSON.stringify(`${note} `).slice(1, -1), "utf8"), chars: note.length + 1 } : null;
+  // npm_config_prefix: the folder that holds this install, so the wallet's own texts name the folder its command is in.
+  const child = spawn(process.execPath, [entry, "mcp"], { stdio: ["pipe", note ? "pipe" : "inherit", "inherit"],
+    // SHINJUKU_WALLET_UPDATE_PREFIX: only for a fallback install, the folder the wallet's update words set as npm's
+    // global folder before the install line (wallet/src/updateWords.mjs); never taken from Hermes's environment.
+    env: { ...Object.fromEntries(Object.entries(walletEnv).filter(([key]) => !["npm_config_prefix", "shinjuku_wallet_update_prefix"].includes(key.toLowerCase()))),
+      npm_config_prefix: prefix, ...(fallback ? { SHINJUKU_WALLET_UPDATE_PREFIX: prefix } : {}) },
+    cwd: process.cwd(), windowsHide: true });
+  process.stdin.pipe(child.stdin);
+  child.stdin.on("error", () => {}); // the wallet ended first; its exit below ends this launcher
+  if (note) {
+    // At most this many tools/list requests wait for their answer at once (a host asks again only after a list change).
+    const MAX_ASKED = 64;
+    const asked = new Set();
+    const fromHermes = lineSplitter((line) => {
+      let message;
+      try { message = JSON.parse(line.toString("utf8")); } catch { return; }
+      // One request per line (a batch is not tracked: its answers pass as they are).
+      const id = message?.method === "tools/list" && !Array.isArray(message) ? idToken(message.id) : null;
+      if (id !== null && asked.size < MAX_ASKED) asked.add(id);
+    }, () => {});
+    process.stdin.on("data", (chunk) => fromHermes.feed(chunk));
+    // A write that fills Hermes's input pauses the wallet's output until it drains.
+    let held = false;
+    const put = (bytes) => {
+      if (process.stdout.write(bytes) || held) return;
+      held = true;
+      child.stdout.pause();
+      process.stdout.once("drain", () => { held = false; child.stdout.resume(); });
+    };
+    const fromWallet = lineSplitter((line) => {
+      if (!asked.size) { put(line); return; }
+      // Any fault in the note's own code passes the line as it is: the note never stops the wallet's answers.
+      let noted = null;
+      try { noted = withToolsNote(line, insert, asked); } catch { noted = null; }
+      put(noted ?? line);
+    }, put);
+    child.stdout.on("data", (chunk) => fromWallet.feed(chunk));
+    child.stdout.on("end", () => { fromWallet.end(); outputEnded(); });
+  }
+  for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) process.on(signal, () => child.kill(signal));
+  child.on("error", (error) => {
+    process.stderr.write(`shinjuku plugin: could not start ${entry} (${error.message})\n`);
+    process.exit(1);
+  });
+  // The launcher ends when the wallet has ended and, with a piped output, its output has ended too and this launcher's
+  // own output is written ("close" would also wait for the wallet's input, which Hermes keeps open).
+  let ended = null;
+  let outputDone = !note;
+  const finish = () => {
+    if (!ended || !outputDone) return;
+    const code = ended.code ?? (ended.signal ? 1 : 0);
+    // An empty write's callback runs after every earlier write is done (a "drain" comes only after a full buffer).
+    if (process.stdout.writableLength > 0) process.stdout.write("", () => process.exit(code));
+    else process.exit(code);
+  };
+  function outputEnded() { outputDone = true; finish(); }
+  child.on("exit", (code, signal) => { ended = { code, signal }; finish(); });
+}
+
+const wallet = findWallet();
+if (wallet) startWallet(wallet);
 else serveSetupNeeded();

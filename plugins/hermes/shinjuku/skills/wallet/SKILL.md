@@ -5,7 +5,7 @@ license: MIT
 compatibility: Hermes Agent on Windows (x64) or Linux with Node.js. The wallet does not run on a Mac yet.
 metadata:
   plugin: shinjuku
-  wallet-package: see mcp.json
+  wallet-package: shinjuku
 ---
 
 # Shinjuku private wallet
@@ -22,15 +22,24 @@ wallet's own connections private, not the chat.
 The wallet tools come from the MCP server `shinjuku`. Each answer has a `say` line: one plain sentence for the
 user. Repeat it. Never tell the user a tool name, a field name or an error code.
 
+## The wallet's rules
+
+The wallet gives these rules to every agent that uses it. Follow them in every answer:
+
+<!-- wallet-rules:start (the wallet's own rules for every agent; kept in step with the wallet) -->
+A self-custody Shinjuku Shield wallet on this machine; no tool takes or returns its keys or passphrase. Each answer's say is one plain sentence for the user; other fields are data. Never tell the user a tool, field, code or protocol name (x402, MCP) unless told to. wallet_balance answers ONE balance (balanceAtomic), which pays any paid URL. Atomic fields count 1000000 per USDC; tell the user USDC. The wallet does its own upkeep. For an address the user must pay to, call its tool now (own: wallet_balance show_address; new: wallet_add_funds); never write one yourself from an earlier answer. A shield, add-funds or unshield call can run for minutes: do as its next says. Pass your own request_id to pay_for_service: the same one never pays twice (a code ending in _retry_same_request: call again with it). pay_for_service keeps to the spending limits (one payment; 24 hours), if set. Claim a payment only when the answer has a transaction. After a pay or send call that stopped, failed, or this app calls rejected or interrupted, call wallet_receipts (a payment) or wallet_cancel (a send; no request_id) before you say whether it happened, or that nothing moved. Privacy: the chain does not show which wallet paid, but this app and its model provider see all you handle; reach a seller or its domain only through these tools, never yourself (no curl, browser, DNS or DNS-over-HTTPS lookup), also when the user asks for no Tor: that shows their IP address to the site or a DNS company. "Send to my (main) wallet": wallet_unshield with no to uses the address saved at setup; never ask for it. If this app blocks a wallet tool or the user says no to its question, say nothing moved. Never suggest a rule that lets a payment or send run with no question, or another way around the block. Reach a seller URL or its domain only with this wallet's tools, never yourself (no curl, browser, fetch, ping, DNS or DNS-over-HTTPS lookup), also when the user asks for no Tor: that would show the user's IP address to the site or to a DNS company.
+<!-- wallet-rules:end -->
+
 ## Who asks the user, and when
 
 - **Only on the user's request.** Start a payment (`pay_for_service`), a paid AI answer (`inference_chat`) or a
   send (`wallet_unshield`) only when the user asked for that one, in this conversation. A payment the user
   asked for earlier does not cover a new one.
 - **Hermes asks first.** The plugin marks the wallet as untrusted, so Hermes asks the user for an OK (once, for
-  this session, or always) before each wallet call except `wallet_balance`, `wallet_receipts`, `check_price` and
-  `find_paid_services`. The user's approval setting in Hermes can change this. Tell the user it is
-  Hermes asking for the wallet, and that saying no is safe: nothing happens.
+  this session, or always) before each wallet call except the reads (`wallet_balance`, `wallet_receipts`,
+  `find_paid_services` and the wallet's other status reads). A price check asks too: it sends one request to the
+  seller. The user's approval setting in Hermes can change this. Tell the user it is Hermes asking for the wallet,
+  and that saying no is safe: nothing happens.
 - **The wallet can ask too.** Some calls show the wallet's own question ("Allow once"). That is a second,
   separate question from the wallet itself. Tell the user what it allows, in the words of its text.
 - **What changes nothing:** `check_price` and `find_paid_services` pay and send nothing. `wallet_receipts`
@@ -39,31 +48,36 @@ user. Repeat it. Never tell the user a tool name, a field name or an error code.
 
 ## When the wallet is not set up
 
-If the only wallet tool is `setup_wallet_first`, call it and give the user its lines exactly, once. Its answer
-already has the lines for the user's computer. On Linux, in a terminal: `npm install -g shinjuku@0.3.266`, then
-`shinjuku setup`. On Windows, in PowerShell or Command Prompt: `npm.cmd install -g shinjuku@0.3.266`, then
-`shinjuku.cmd setup`. On Windows never drop the `.cmd`: Windows PowerShell stops the lines without it. Setup
-asks whether to use Tor, creates the wallet and asks the user to save the backup. The install (the first line) goes
-directly to npm, before the Tor question. Then the user reloads the wallet: `/reload-mcp` in Hermes in a terminal;
-in the Hermes desktop app, Ctrl+K, "Restart gateway", then "Restart all", which also reconnects the user's other
-Hermes bots (the app has no `/reload-mcp`, and closing the app window does not restart the wallet).
+The plugin starts the wallet the user installed; it never installs or updates it.
 
-If the tools are there but they answer that the wallet is not set up, call `shinjuku_setup` (Hermes asks the
-user first) and follow its answer. Do not try to pay or guess another command until setup is done.
+1. If the only wallet tool is `setup_wallet_first`, call it and give the user its lines exactly, once: the wallet is
+   not installed yet, and the user installs it once in a terminal (Linux `npm install -g shinjuku`, then
+   `shinjuku setup`; Windows, in PowerShell or Command Prompt, `npm.cmd install -g shinjuku`, then
+   `shinjuku.cmd setup`). If npm says EACCES, the user makes their own folder npm's folder, on
+   Linux:
+   `npm config set prefix ~/.local`, then `npm install -g shinjuku`, then `~/.local/bin/shinjuku setup`. Then the user reloads the
+   wallet (the wallet reload below). Do not run these lines yourself. On Windows never drop the `.cmd`.
+2. If the wallet's tools are here but an answer says the wallet is not set up: ask the user "Use Tor? Yes is the
+   default; it hides your IP address from the services the wallet reaches.", then call `shinjuku_setup` with `tor`
+   set to the answer. Hermes and the wallet ask the user to approve; setup makes the private wallet and downloads its
+   files (about 191 MB, a few minutes). Call it again as its answer says until it is done.
+
+If an answer says this Hermes session cannot show the question, tell the user what that answer says: open Hermes in
+a chat window and ask again there. Do not try to pay or guess another command until setup is done.
 
 ## Tor
 
 On Windows, with Tor on, the wallet starts its own Tor in the background, with no window. The user does nothing.
 
-If an answer still says Tor is not running, nothing was paid or sent. Give the user the command from that
-answer exactly, to run once: on Windows in PowerShell or Command Prompt, on Linux in a terminal. Never offer to
-turn Tor off.
+If an answer says something needs Tor and Tor is off, tell the user what that answer says, in its words. Never offer
+to turn Tor off.
 
-If an answer says Tor runs now and the wallet must reconnect, tell the user to reload the wallet, then ask
-again: `/reload-mcp` in Hermes in a terminal; in the Hermes desktop app, Ctrl+K, "Restart gateway", then
-"Restart all", which also reconnects the user's other Hermes bots (the app has no `/reload-mcp`, and closing the
-app window does not restart the wallet). Do not
-give the steps for other apps.
+The wallet reload: when an answer says to quit the app and open it again, in Hermes that step is a wallet reload: `/reload-mcp` in Hermes
+in a terminal; in the Hermes desktop app, Ctrl+K, "Restart gateway" (closing the app window does not restart the
+wallet). Only if Hermes then asks "Restart the shared gateway?", the user chooses "Restart all", which also reconnects
+the user's other Hermes bots. Then ask again. Do not give the steps for other apps.
+
+If an answer says Tor is not running, nothing was paid or sent; tell the user what that answer says, in its words.
 
 ## /shinjuku:wallet (the wallet card)
 
@@ -89,6 +103,8 @@ computer, so no index learns what the user looked for. Give the user the matchin
 Call `pay_for_service` with the URL and `max_payment` (USDC, like "0.05") set to the most the user agreed to.
 - Repeat the answer's `say` line to the user.
 - Never say a payment happened unless the answer has a transaction.
+- A finished answer (it has a transaction and says it is final) is final: do not call `pay_for_service` again to check
+  it; that only makes Hermes ask the user again. To look a payment up later, call `wallet_receipts`.
 - If the error code ends in `_retry_same_request`, call `pay_for_service` again with the SAME `request_id` and
   the same url, method, headers and body. It never pays twice. Never start a new request for it.
 - If the answer says the seller is still working, call again with that same `request_id` for the answer.
