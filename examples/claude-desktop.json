@@ -2,7 +2,7 @@
   "mcpServers": {
     "shinjuku": {
       "command": "npx",
-      "args": ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.269", "mcp"]
+      "args": ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.270", "mcp"]
     }
   }
 }

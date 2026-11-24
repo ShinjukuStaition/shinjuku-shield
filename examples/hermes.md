@@ -16,7 +16,7 @@ hermes plugins enable shinjuku
 Its README lists every step and what the plugin does on your computer:
 [plugins/hermes/shinjuku](../plugins/hermes/shinjuku/README.md). Step 2 below adds the wallet by hand instead.
 
-## The stable version (0.3.269)
+## The stable version (0.3.270)
 
 You need:
 
@@ -88,7 +88,7 @@ that line instead.
 mcp_servers:
   shinjuku:
     command: npx
-    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.269", "mcp"]
+    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.270", "mcp"]
     trust: untrusted
     timeout: 600
 ```
