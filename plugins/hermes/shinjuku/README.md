@@ -62,8 +62,9 @@ The wallet runs with Node.js on Windows (x64) and Linux. It does not run on a Ma
 
 2. Start Hermes and ask "set up my Shinjuku wallet". Hermes shows the two setup lines above for your
    computer. Run them. Then reload the wallet in Hermes: in a terminal, type `/reload-mcp`; in the Hermes
-   desktop app, press Ctrl+K, choose "Restart gateway", then "Restart all"; this also reconnects every other
-   Hermes bot on the computer. (Closing the app window does not restart the wallet.)
+   desktop app, press Ctrl+K and choose "Restart gateway"; if Hermes then asks to restart the shared gateway,
+   choose "Restart all" (this also reconnects the other bots that share that gateway). (Closing the app window does not restart
+   the wallet.)
 
 3. Type `/shinjuku:wallet` to see your wallet card. It says whether Tor is on.
 
@@ -92,8 +93,8 @@ and sends nothing, but when USDC you added is waiting, it makes that USDC privat
 
 The plugin never installs or updates the wallet. When the wallet tells you a new version is out, run the same
 install line again in a terminal (Linux `npm install -g shinjuku`; Windows `npm.cmd install -g shinjuku`). On Linux, if the wallet runs from a folder that is not npm's usual one, the plugin tells Hermes the update lines for
-that folder: `npm config set prefix` with that folder, then the install line. Run both, so the update reaches that wallet. Then reload the wallet in Hermes: `/reload-mcp` in a terminal; in the Hermes desktop app, Ctrl+K, "Restart gateway",
-then "Restart all".
+that folder: `npm config set prefix` with that folder, then the install line. Run both, so the update reaches that wallet. Then reload the wallet in Hermes: `/reload-mcp` in a terminal; in the Hermes desktop app, Ctrl+K, "Restart gateway"
+(if Hermes then asks to restart the shared gateway, choose "Restart all").
 
 A plugin update (`hermes plugins update shinjuku`) changes only the plugin's own files.
 
@@ -109,7 +110,8 @@ So you know before you install:
   starts its own Tor in the background on Windows, with no window, from the Tor files in its npm package (each
   checked by its pinned sha256). On Linux, setup says how Tor runs on your computer. If Tor cannot start, the
   wallet pays and sends nothing and says what to do; after it, reload the wallet: `/reload-mcp` in a terminal, or
-  Ctrl+K, "Restart gateway", "Restart all" in the Hermes desktop app (it also reconnects your other Hermes bots).
+  Ctrl+K, "Restart gateway" in the Hermes desktop app (if Hermes then asks to restart the shared gateway, choose
+  "Restart all"; this also reconnects the other bots that share that gateway).
 - **Files:** the wallet keeps its keys, its backup and its records in its own folder in your user account.
   To find the installed wallet, the plugin only reads your npm settings file (`.npmrc` in your home folder, or
   the file `npm_config_userconfig` names, for the folder you set there), npm's own global folders and the `package.json` of the shinjuku package there; it

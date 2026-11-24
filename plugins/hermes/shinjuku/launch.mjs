@@ -34,8 +34,8 @@ const NPM_WORD = WINDOWS ? "npm.cmd" : "npm";
 const WHERE_TO_TYPE = WINDOWS ? "in PowerShell or Command Prompt" : "in a terminal";
 const INSTALL_LINE = `${NPM_WORD} install -g shinjuku`;
 const SETUP_LINE = `${COMMAND} setup`;
-const RELOAD = "Back in Hermes, type /reload-mcp (in the Hermes desktop app: press Ctrl+K, choose Restart gateway, then Restart all; "
-  + "your other Hermes bots reconnect too), then ask again.";
+const RELOAD = "Back in Hermes, type /reload-mcp (in the Hermes desktop app: press Ctrl+K, choose Restart gateway; if Hermes then asks to restart the shared gateway, choose Restart all, which also "
+  + "reconnects the other bots that share that gateway), then ask again.";
 
 // A variable that reached us as its own unexpanded placeholder (an optional variable the user did not set) is absent.
 // The wallet reads this exact value for its Hermes ways: the call wait Hermes keeps, and an update step that is the
@@ -355,7 +355,7 @@ const PLAIN_FOLDER = /^\/[A-Za-z0-9_@%+=:,./-]{0,255}$/u;
 const fallbackNote = (folder) => {
   const head = "Shinjuku plugin: this wallet runs from a folder that is not npm's usual one for a plain install. When the wallet needs "
     + "an update, ";
-  const reload = `then reload the wallet in Hermes (/reload-mcp; in the Hermes desktop app: Ctrl+K, "Restart gateway", then "Restart all").`;
+  const reload = `then reload the wallet in Hermes (/reload-mcp; in the Hermes desktop app: Ctrl+K, "Restart gateway"; if Hermes then asks to restart the shared gateway, choose "Restart all").`;
   if (PLAIN_FOLDER.test(folder)) {
     return `${head}tell the user to type these lines in a terminal, in place of any other update line: \`npm config set prefix ${folder}\` ` // typed-line-check: posix only (no fallback on Windows)
       + `(this makes the wallet's folder npm's global folder for the account), then \`${INSTALL_LINE}\`, ${reload}`;
