@@ -16,7 +16,7 @@ hermes plugins enable shinjuku
 Its README lists every step and what the plugin does on your computer:
 [plugins/hermes/shinjuku](../plugins/hermes/shinjuku/README.md). Step 2 below adds the wallet by hand instead.
 
-## The stable version (0.3.266)
+## The stable version (0.3.269)
 
 You need:
 
@@ -30,27 +30,27 @@ You need:
 Linux, in a terminal:
 
 ```sh
-npm install -g shinjuku@0.3.266
+npm install -g shinjuku
 shinjuku setup
 ```
 
 Windows, in PowerShell or Command Prompt:
 
 ```bat
-npm.cmd install -g shinjuku@0.3.266
+npm.cmd install -g shinjuku
 shinjuku.cmd setup
 ```
 
 Or, without installing the `shinjuku` command. Linux:
 
 ```sh
-npx -y --no-audit --no-fund shinjuku-shield@0.3.266 setup
+npx -y shinjuku setup
 ```
 
 Windows:
 
 ```bat
-npx.cmd -y --no-audit --no-fund shinjuku-shield@0.3.266 setup
+npx.cmd -y shinjuku setup
 ```
 
 Setup asks two questions:
@@ -68,13 +68,13 @@ computer. It is the only way to restore the wallet.
 Setup can do this for you. Linux:
 
 ```sh
-npx -y shinjuku@0.3.266 setup --add-to hermes
+npx -y shinjuku setup --add-to hermes
 ```
 
 Windows:
 
 ```bat
-npx.cmd -y shinjuku@0.3.266 setup --add-to hermes
+npx.cmd -y shinjuku setup --add-to hermes
 ```
 
 It writes the `shinjuku` entry into Hermes' `config.yaml` (with `trust: untrusted` and `timeout: 600`), keeps
@@ -88,7 +88,7 @@ that line instead.
 mcp_servers:
   shinjuku:
     command: npx
-    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.266", "mcp"]
+    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.269", "mcp"]
     trust: untrusted
     timeout: 600
 ```
