@@ -4,6 +4,30 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-25: wallet release `f1f34fc3`, npm `shinjuku@0.3.274` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.270` (wallet release `c1161b8c`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It is `0.3.273` with
+these changes.
+
+### Fixed
+
+- When an agent app sends an AI question again that was already answered
+  from the AI credit, the answer says that nothing new was paid.
+- After setup saves the start copy, the check of each agent app starts the
+  wallet from that copy first, with no download, and setup no longer says it
+  downloads the wallet again.
+- When the check of an agent app finds no Node.js, setup no longer shows a
+  download line.
+- The last setup line for Hermes says that Hermes loads the wallet by itself.
+
+### Known issue
+
+- If an older and a newer wallet send a private AI question with the same
+  request id at the same moment, that one paid answer can be lost. You are
+  never charged twice.
+
 ## 2026-11-25: wallet release `e1e76821`, npm `shinjuku@0.3.273` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
