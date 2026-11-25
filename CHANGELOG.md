@@ -4,6 +4,45 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-25: wallet release `abf4c0b7`, npm `shinjuku@0.3.272` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.270` (wallet release `c1161b8c`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It is `0.3.270` with
+these changes.
+
+### Changed
+
+- Setup adds Shinjuku to your AI apps from a checklist: Up and Down move,
+  Space ticks or unticks an app, Enter adds the ticked apps, Esc adds none.
+- At its end, setup says for each app whether it was added, and whether the
+  Hermes private AI profile was made.
+- Tor's start shows each step and ends on 100%. Setup asks for the optional
+  spending limits again.
+- `shinjuku add-funds` in a terminal shows one framed screen with the one-time
+  address and its QR code.
+- While a deposit waits, the balance answer says when the wallet checks again.
+- Each payment in your receipts names its transaction.
+- Private AI: pick a model by its plain name or by its number.
+- The Hermes private AI profile hides the other AI companies' models and lists
+  every private model with true price words.
+- A Hermes answer starts with an answer limit of 2,048 tokens. When an answer
+  is cut off, Hermes asks again with a longer limit, up to 8,192 tokens.
+- Setup also puts the Shinjuku plugin files (no key and no setting) in the
+  main Hermes profile.
+- `npm install -g shinjuku` works on Node.js 22.21 or later and on 24.0 or
+  later.
+
+### Fixed
+
+- The Hermes app opens the private profile "shinjuku" with its private models
+  after each start. Before, it could show "Unknown provider 'shinjuku'" or an
+  empty model box.
+- In Hermes, an answer that says your private balance is 0 no longer blocks the
+  private profile for an hour. After you add money, the next question works.
+- Windows: when `shinjuku` is not recognized after the install, the README
+  says what to do.
+
 ## 2026-11-24: wallet release `c1161b8c`, npm `shinjuku@0.3.270` (stable, npm tag `latest`)
 
 The new stable version. It replaces `0.3.269` (wallet release `5ad25174`). It is
