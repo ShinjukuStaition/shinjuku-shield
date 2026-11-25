@@ -4,6 +4,41 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-25: wallet release `e1e76821`, npm `shinjuku@0.3.273` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.270` (wallet release `c1161b8c`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It is `0.3.272` with
+these changes.
+
+### Changed
+
+- Private AI answers are paid from a private AI credit: the wallet tops the
+  credit up with one private payment when it runs short, and each answer then
+  costs only what it used. This works with Tor on and with Tor off. The home
+  screen and your receipts name such a payment "AI credit top-up".
+- The terminal `shinjuku infer` pays from the same AI credit.
+- `shinjuku infer serve` runs behind Tor by itself when Tor is on.
+- The local AI address skips a request whose app has already left, before
+  anything is asked or paid.
+- The home screen shows each private AI payment in full beside its amount,
+  with the model by its name.
+- A search for paid services says how many results it shows.
+- The wallet starts its background reads after your first payment answers.
+- One privacy text everywhere for private AI: nothing is written to disk, and
+  an answer is kept in memory for about 10 minutes so a resend gets it again.
+
+### Fixed
+
+- A seller with no USDC account is marked in every copy of its listing.
+- A run that ends during a history read no longer prints a false refusal.
+
+### Known issue
+
+- If an older and a newer wallet send a private AI question with the same
+  request id at the same moment, that one paid answer can be lost. You are
+  never charged twice.
+
 ## 2026-11-25: wallet release `abf4c0b7`, npm `shinjuku@0.3.272` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
