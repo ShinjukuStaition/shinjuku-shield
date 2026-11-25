@@ -25,7 +25,7 @@ npm.cmd install -g shinjuku
 shinjuku.cmd setup
 ```
 
-Windows says `shinjuku` is not recognized? Open a new terminal window. If it is still not found (for example on a second Windows account), run `npx -y shinjuku setup` and follow its prompts: setup adds npm's command folder to your PATH and tells you when to open a new window.
+Windows says `shinjuku` is not recognized? Open a new terminal window. If it is still not found (for example on a second Windows account), run `npx.cmd -y shinjuku setup` and follow its prompts: setup adds npm's command folder to your PATH and tells you when to open a new window.
 
 Setup does every step for you:
 

@@ -164,7 +164,7 @@ it. On Windows and on Linux x64 the wallet runs its own Tor in the background: y
    shinjuku.cmd setup
    ```
 
-   Windows says `shinjuku` is not recognized? Open a new terminal window. If it is still not found (for example on a second Windows account), run `npx -y shinjuku setup` and follow its prompts: setup adds npm's command folder to your PATH and tells you when to open a new window.
+   Windows says `shinjuku` is not recognized? Open a new terminal window. If it is still not found (for example on a second Windows account), run `npx.cmd -y shinjuku setup` and follow its prompts: setup adds npm's command folder to your PATH and tells you when to open a new window.
 
    On Linux, setup asks to install the `shinjuku` command for your user (in `~/.local/bin`; no root and no sudo):
    press Enter. In the same window, type `~/.local/bin/shinjuku`; a new terminal window knows `shinjuku`. Do not use
