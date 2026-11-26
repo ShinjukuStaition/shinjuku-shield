@@ -98,7 +98,9 @@ mcp_servers:
 - `timeout: 600`: a payment or a send can take a few minutes. Hermes' own limit is 300 seconds per call.
 - A wallet in another folder: add `env: {SHIELDED_WALLET_HOME: "<that folder>"}` under `shinjuku:`.
 
-Then type `/reload-mcp` in Hermes (or start Hermes again).
+An open Hermes loads the wallet by itself within a minute. If it does not show: in a Hermes terminal chat, type
+`/reload-mcp`; in the Hermes desktop app, press Ctrl+K and choose "Restart gateway" (if Hermes then asks to restart
+the shared gateway, choose "Restart all"). Closing the app window does not reload it.
 
 ### 3. Use it
 
