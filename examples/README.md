@@ -16,8 +16,8 @@ x402 facilitator on Solana, inside your agent.
 | [Solana Agent Kit plugin](https://github.com/ShinjukuStaition/shinjuku-sak-plugin) | npm `solana-agent-kit-plugin-shinjuku`: the wallet as Solana Agent Kit v2 actions (`SHINJUKU_X402_PAY` and others). |
 | [prompts.md](prompts.md) | 13 plain requests, the tool that each one calls, and the shape of the answer. |
 
-All examples run `npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.270 mcp`: the stable version
-(pinned 2026-11-24, wallet release `c1161b8c`). The commands and flags come
+All examples run `npx -y --prefer-offline --no-audit --no-fund shinjuku-shield@0.3.281 mcp`: the stable version
+(pinned 2026-11-26, wallet release `8d5479bf`). The commands and flags come
 from `help mcp` and `help setup` of that release. `--prefer-offline` runs the copy of the wallet that npm saved. If npm has not saved it yet, that start asks
 npm once, directly, so npm sees your IP address that one time; later starts ask npm nothing.
 
@@ -178,5 +178,5 @@ More requests: [prompts.md](prompts.md).
   amount, and send address that the agent handles. A local model removes
   that observer.
 - Our facilitator processes your payments. It keeps no access logs.
-- On chain, a shielded payment does not show who paid. Privacy needs a
+- On chain, a shielded payment names no payer. Privacy needs a
   crowd: with few users, timing can still link payments.

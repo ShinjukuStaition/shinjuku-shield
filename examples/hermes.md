@@ -3,20 +3,19 @@
 Shinjuku works inside Hermes Agent. Hermes gets tools to pay for paid web services from your private balance,
 check a price first, read web pages over Tor, and add or send money. Only you hold the keys.
 
-## The Hermes plugin (new, one install)
+## Private AI in the Hermes desktop app (Windows)
 
-The Shinjuku plugin adds the wallet to Hermes and teaches Hermes how to use it, including the
-`/shinjuku:wallet` card. Set up the wallet first (step 1 below), then install the plugin from this repository:
+In the Hermes Agent desktop app on Windows, with Tor on (setup's default), ask a private AI model in plain
+words. Each answer is paid from your private balance.
 
-```sh
-hermes plugins install ShinjukuStaition/shinjuku-shield/plugins/hermes/shinjuku
-hermes plugins enable shinjuku
-```
+1. In the Hermes app, open Capabilities > Plugins > Install from Git, and type
+   `https://github.com/ShinjukuStaition/hermes-shinjuku`. Hermes installs the Shinjuku plugin. It needs Git (see "You need" below).
+2. Set up the wallet in a new Command Prompt (step 1 below): `npm.cmd install -g shinjuku`, then
+   `shinjuku.cmd setup`. Keep the default answers. Setup adds the wallet to Hermes, and an open Hermes shows it
+   by itself.
+3. In Hermes, ask in plain words which private AI models you can use, then ask one of them a question.
 
-Its README lists every step and what the plugin does on your computer:
-[plugins/hermes/shinjuku](../plugins/hermes/shinjuku/README.md). Step 2 below adds the wallet by hand instead.
-
-## The stable version (0.3.270)
+## The stable version (0.3.281)
 
 You need:
 
@@ -88,7 +87,7 @@ that line instead.
 mcp_servers:
   shinjuku:
     command: npx
-    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.270", "mcp"]
+    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.281", "mcp"]
     trust: untrusted
     timeout: 600
 ```
@@ -115,7 +114,7 @@ Ask in plain words:
 If you skipped the terminal setup, ask "What is my balance?" anyway: the wallet asks Hermes to confirm that it
 may set up a wallet on this computer, and Hermes shows an Approve button. Approve, and the setup runs.
 
-**What stays private and what does not.** The seller and the blockchain do not see which wallet paid. With Tor,
+**What stays private and what does not.** No transaction names your wallet as the payer, and the seller does not learn it. With Tor,
 the sites do not see your internet address. Hermes itself still sends your chat to its AI company, and that
 company sees what the wallet tools answer (links, prices, amounts, the address you send to). A local model
 removes that observer.

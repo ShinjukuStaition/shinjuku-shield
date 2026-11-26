@@ -66,7 +66,7 @@ lists the models with their prices.
 ## The wallet's tools for your agent
 
 The AI SDK reads MCP servers through `@ai-sdk/mcp`. It runs the same
-`shinjuku-shield@0.3.270 mcp` server as the other examples, so you do not need
+`shinjuku-shield@0.3.281 mcp` server as the other examples, so you do not need
 another package.
 
 ### 1. Set up the wallet in a terminal
@@ -103,7 +103,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 const shinjuku = await createMCPClient({
   transport: new Experimental_StdioMCPTransport({
     command: "npx",
-    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.270", "mcp", "--max-payment", "0.05"],
+    args: ["-y", "--prefer-offline", "--no-audit", "--no-fund", "shinjuku-shield@0.3.281", "mcp", "--max-payment", "0.05"],
   }),
 });
 
