@@ -4,6 +4,30 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-26: wallet release `8d5479bf`, npm `shinjuku@0.3.281` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.270` (wallet release `c1161b8c`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It is `0.3.280` with
+these changes.
+
+### Fixed
+
+- The AI credit is in development. After a payment into the AI credit, the
+  question gets its own time to be paid from that credit. When the question
+  is paid on its own instead, the answer names both payments.
+- A payment into the AI credit is never more than the largest single
+  payment your balance can make.
+- When the AI credit is paid back and the payback does not reach us, the
+  wallet sends it again by itself, and the balance never counts that USDC
+  twice.
+
+### Known issue
+
+- If an older and a newer wallet send a private AI question with the same
+  request id at the same moment, that one paid answer can be lost. You are
+  never charged twice.
+
 ## 2026-11-26: wallet release `976640e2`, npm `shinjuku@0.3.280` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
