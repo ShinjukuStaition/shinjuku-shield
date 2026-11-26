@@ -4,6 +4,21 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-26: wallet release `0aff7421`, npm `shinjuku@0.3.282` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`, and the tag `latest`
+does not move. To try the candidate, install its exact version. It is
+`0.3.281` with these changes.
+
+### Changed
+
+- The privacy words now say exactly what the chain shows: no transaction
+  names your wallet as the payer.
+- When your private balance cannot pay an AI question, the answer names
+  the price, your balance, and the models or shorter answers that fit.
+- When an AI answer fails while Tor builds a new route to Shinjuku, the
+  answer says so.
+
 ## 2026-11-26: wallet release `8d5479bf`, npm `shinjuku@0.3.281` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
