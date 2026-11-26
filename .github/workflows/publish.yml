@@ -3,7 +3,8 @@ name: Publish shinjuku-shield and shinjuku to npm
 # One wallet release goes out as shinjuku-shield (npm/package.json), the only package that holds the wallet. A small
 # pointer package at the same version depends on it at that exact version and runs it: the shinjuku command
 # (names/shinjuku). The older name shinjuku-shielded gets no new versions (owner, 2026-11-19): its published versions
-# stay on npm, marked deprecated, and a wallet setup moves an app line that names it to shinjuku-shield. Each name has
+# stay on npm (no npm deprecation message yet: that needs the owner's npm login), and a wallet setup moves an app
+# line that names it to shinjuku-shield. Each name has
 # its npm Trusted Publisher on this file.
 
 on:
@@ -107,10 +108,16 @@ jobs:
       - name: Read the tags back
         run: |
           set -euo pipefail
+          # npm's read can show the old tag for a short time after the move (the 0.3.281 promote read it 0.6 s after):
+          # read again every 10 s, for up to 3 minutes per package.
           for pkg in shinjuku-shield shinjuku; do
-            now=$(npm view "$pkg" dist-tags.latest --prefer-online)
-            echo "$pkg latest = $now"
-            [[ "$now" == "$VERSION" ]] || { echo "::error::$pkg latest reads $now, not $VERSION"; exit 1; }
+            for try in $(seq 1 18); do
+              now=$(npm view "$pkg" dist-tags.latest --prefer-online)
+              echo "$pkg latest = $now (read $try)"
+              [[ "$now" == "$VERSION" ]] && break
+              [[ "$try" -lt 18 ]] || { echo "::error::$pkg latest reads $now, not $VERSION, after 3 minutes"; exit 1; }
+              sleep 10
+            done
           done
 
   publish:
