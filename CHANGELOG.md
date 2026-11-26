@@ -4,6 +4,28 @@ The Shinjuku Shielded MCP server is the `mcp` command of the wallet file
 `shinjuku-wallet.mjs`. Each wallet release has its SHA-256 in the
 [Releases table](README.md#releases) of this repository. Dates are UTC.
 
+## 2026-11-26: wallet release `1c5f6806`, npm `shinjuku@0.3.277` (candidate, npm tag `next`)
+
+A candidate: npm publishes it under the tag `next`. The stable version stays
+`0.3.270` (wallet release `c1161b8c`, npm tag `latest`) until we name a new
+one. To try the candidate, install its exact version. It is `0.3.276` with
+these changes.
+
+### Fixed
+
+- When setup adds the wallet to Hermes, it says that an open Hermes loads the
+  wallet by itself within a minute. If the wallet does not show, it says how
+  to reload it: in the Hermes app, press Ctrl+K and choose "Restart gateway";
+  in a Hermes terminal chat, type /reload-mcp.
+- The wallet no longer gives a new request the request id of an earlier AI
+  question, also when you asked that question in the terminal.
+
+### Known issue
+
+- If an older and a newer wallet send a private AI question with the same
+  request id at the same moment, that one paid answer can be lost. You are
+  never charged twice.
+
 ## 2026-11-25: wallet release `e60d4b59`, npm `shinjuku@0.3.276` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
