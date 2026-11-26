@@ -55,8 +55,9 @@ The plugin starts the wallet the user installed; it never installs or updates it
    `shinjuku setup`; Windows, in PowerShell or Command Prompt, `npm.cmd install -g shinjuku`, then
    `shinjuku.cmd setup`). If npm says EACCES, the user makes their own folder npm's folder, on
    Linux:
-   `npm config set prefix ~/.local`, then `npm install -g shinjuku`, then `~/.local/bin/shinjuku setup`. Then the user reloads the
-   wallet (the wallet reload below). Do not run these lines yourself. On Windows never drop the `.cmd`.
+   `npm config set prefix ~/.local`, then `npm install -g shinjuku`, then `~/.local/bin/shinjuku setup`. Hermes then loads the
+   wallet by itself within a minute; only if its tools still do not show, the user reloads the wallet (the wallet reload
+   below). Do not run these lines yourself. On Windows never drop the `.cmd`.
 2. If the wallet's tools are here but an answer says the wallet is not set up: ask the user "Use Tor? Yes is the
    default; it hides your IP address from the services the wallet reaches.", then call `shinjuku_setup` with `tor`
    set to the answer. Hermes and the wallet ask the user to approve; setup makes the private wallet and downloads its

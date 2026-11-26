@@ -19,12 +19,11 @@
 // is found, it answers as a small MCP server with one read-only tool, setup_wallet_first, whose answer is the install
 // step for the user.
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
-import { createInterface } from "node:readline";
 
-const PLUGIN_VERSION = "0.2.0";
+const PLUGIN_VERSION = "0.2.1";
 const WINDOWS = process.platform === "win32";
 const MAC = process.platform === "darwin";
 // The words the user types, for this computer: on Windows the .cmd forms (Windows PowerShell refuses npm's other
@@ -273,6 +272,54 @@ function findWallet() {
   return undefined;
 }
 
+/** True when the folder holds config.json or a <pool>/wallet.json (the wallet's holdsWallet, setup/config.mjs). */
+function holdsWallet(dir) {
+  if (existsSync(join(dir, "config.json"))) return true;
+  try {
+    return readdirSync(dir, { withFileTypes: true }).some((entry) => entry.isDirectory() && existsSync(join(dir, entry.name, "wallet.json")));
+  } catch { return false; }
+}
+/**
+ * The wallet home, by the wallet's own rule (wallet/src/setup/config.mjs setupHome, the same steps): SHIELDED_WALLET_HOME
+ * resolved against the current folder, else ~/.shinjuku-shield in homedir(), else the older ~/.carbon-shielded-wallet
+ * when only that one holds a wallet. The launcher gives the wallet the same environment (walletEnv: an unexpanded
+ * placeholder is left out of both, as envGet does) and the same current folder, so the wallet it starts uses this home.
+ */
+function walletHome() {
+  const given = envGet("SHIELDED_WALLET_HOME");
+  if (given !== undefined) return resolve(given);
+  const current = join(homedir(), ".shinjuku-shield");
+  const older = join(homedir(), ".carbon-shielded-wallet");
+  return !holdsWallet(current) && holdsWallet(older) ? older : current;
+}
+/**
+ * True when the wallet in that home is set up: its config.json names its checked setup files (proofToolsRelease.dir).
+ * Setup writes that field in its last config write, after the wallet, its passphrase and its setup files
+ * (wallet/src/setup/setup.mjs, stage "config"); its first config write, at "Wallet created", has no such field.
+ */
+function walletSetUp() {
+  const home = walletHome();
+  try {
+    // A BOM (a config.json saved again by Notepad) is read as the wallet reads it (setup/config.mjs readSetupConfigRaw).
+    const config = JSON.parse(readFileSync(join(home, "config.json"), "utf8").replace(/^\uFEFF/u, ""));
+    return typeof config?.proofToolsRelease?.dir === "string" && config.proofToolsRelease.dir !== "";
+  } catch { return false; }
+}
+/**
+ * How often the not-installed server looks for the finished setup. When Hermes starts this plugin before the wallet
+ * is installed and the user then sets the wallet up with Hermes open, Hermes keeps this small server and its one tool:
+ * its 60 s reconcile and /reload-mcp skip a server name that is live, and a respawn keeps the registered tools (Hermes
+ * desktop 2026.7855, hermes-agent 8fc03744; seen on a Windows test computer, row 119, 2026-11-25). Hermes re-lists a
+ * server's tools on notifications/tools/list_changed, so this server switches to the installed wallet in place and
+ * sends that notice. The signal is the wallet's own "set up" mark (walletSetUp): setup's last config write. From then
+ * on setup only saves the start copy, checks each app (those checks start the wallet too) and asks its last questions,
+ * so the wallet may run beside it.
+ */
+const READY_CHECK_MS = 5_000;
+const SWITCH_INIT_ID = "shinjuku-plugin-switch";
+/** How long the switch waits for the wallet's initialize answer before it gives up (the launcher then ends). */
+const SWITCH_INIT_MS = 120_000;
+
 const NOT_READY = MAC
   ? "The Shinjuku private wallet does not run on a Mac yet: its proof programs run on Windows and Linux only. Nothing was paid or read. "
     + "Tell the user: Shinjuku works in Hermes on Windows or Linux."
@@ -285,7 +332,10 @@ const NOT_READY = MAC
     + "   Setup asks whether to use Tor (yes is the default: then the sites and services the wallet reaches do not see "
     + "your IP address), creates your private wallet and asks you to save its backup. The install in step 1 goes "
     + "directly to npm, before that question.\n"
-    + `3. ${RELOAD}`;
+    // Plugin 0.2.1: this server switches to the wallet by itself when setup ends (READY_CHECK_MS below), so the reload
+    // is only the step for a wallet that does not show.
+    + "3. Back in Hermes, ask again: Hermes loads the wallet by itself within a minute after setup. Only if the wallet still does "
+    + `not answer: ${RELOAD}`;
 
 /** MCP revisions this small server answers in; a client asking for another gets the newest one listed here. */
 const PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"];
@@ -321,8 +371,11 @@ function serveSetupNeeded() {
     ...SETUP_TOOL_SHAPE,
   };
   const send = (message) => process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", ...message })}\n`);
-  const lines = createInterface({ input: process.stdin, crlfDelay: Infinity });
-  lines.on("line", (line) => {
+  // Hermes's input, read as bytes and cut at each line end. At the switch, the bytes after the last line end (a request
+  // that has not ended yet) go to the wallet proxy first, so no request is cut in two.
+  let rest = Buffer.alloc(0);
+  let initParams = null;
+  const onLine = (line) => {
     if (!line.trim()) return;
     let request;
     try { request = JSON.parse(line); } catch {
@@ -340,9 +393,11 @@ function serveSetupNeeded() {
     const { id, method, params } = request;
     if (method === "initialize") {
       const asked = params?.protocolVersion;
+      initParams = { ...params, protocolVersion: PROTOCOL_VERSIONS.includes(asked) ? asked : PROTOCOL_VERSIONS[0] };
       send({ id, result: {
-        protocolVersion: PROTOCOL_VERSIONS.includes(asked) ? asked : PROTOCOL_VERSIONS[0],
-        capabilities: { tools: {} },
+        protocolVersion: initParams.protocolVersion,
+        // listChanged: this server tells Hermes when its tools change (the switch below).
+        capabilities: { tools: { listChanged: !MAC } },
         serverInfo: { name: "shinjuku", title: "Shinjuku private wallet (not installed yet)", version: PLUGIN_VERSION },
         instructions: NOT_READY,
       } });
@@ -355,8 +410,38 @@ function serveSetupNeeded() {
     } else {
       send({ id, error: { code: -32601, message: `Method not found: ${method}` } });
     }
-  });
-  lines.on("close", () => process.exit(0));
+  };
+  const onData = (chunk) => {
+    rest = rest.length ? Buffer.concat([rest, chunk]) : chunk;
+    let at;
+    while ((at = rest.indexOf(0x0a)) >= 0) {
+      const line = rest.subarray(0, at).toString("utf8").replace(/\r$/u, "");
+      rest = rest.subarray(at + 1);
+      onLine(line);
+    }
+  };
+  const ended = () => {
+    if (rest.length) { const line = rest.toString("utf8"); rest = Buffer.alloc(0); onLine(line); }
+    if (process.stdout.writableLength > 0) process.stdout.write("", () => process.exit(0));
+    else process.exit(0);
+  };
+  process.stdin.on("data", onData);
+  process.stdin.on("end", ended);
+  if (MAC) return;
+  // The switch: once the wallet is installed and set up (walletSetUp), this process starts
+  // the installed wallet, opens it with Hermes's own initialize, passes everything on from then, and tells Hermes that
+  // the tools changed. Every answer above is written in the same turn as its request, so none is left half-answered.
+  const timer = setInterval(() => {
+    if (!initParams || !walletSetUp()) return;
+    const wallet = findWallet();
+    if (!wallet) return;
+    clearInterval(timer);
+    process.stdin.pause();
+    process.stdin.removeListener("data", onData);
+    process.stdin.removeListener("end", ended);
+    startWallet(wallet, { params: initParams, pending: rest });
+  }, READY_CHECK_MS);
+  timer.unref();
 }
 
 /**
@@ -604,7 +689,7 @@ function toolDescriptions(line, at) {
   }
 }
 
-function startWallet({ entry, prefix, fallback }) {
+function startWallet({ entry, prefix, fallback }, handshake = null) {
   // The launcher reads both directions line by line. From Hermes: the ids of its tools/list requests (their answers get
   // INSTALLED_TOOL, and on a fallback install the update note, withToolsNote), and a tools/call of setup_wallet_first,
   // which the launcher answers itself (INSTALLED_WORDS) and does not pass on. Every other byte passes as it is.
@@ -700,8 +785,26 @@ function startWallet({ entry, prefix, fallback }) {
     } else noteList(message);
     toWallet(line);
   }, toWallet);
-  process.stdin.on("data", (chunk) => fromHermes.feed(chunk));
-  process.stdin.on("end", () => { fromHermes.end(); child.stdin.end(); });
+  const attach = () => {
+    process.stdin.on("data", (chunk) => fromHermes.feed(chunk));
+    process.stdin.on("end", () => { fromHermes.end(); child.stdin.end(); });
+  };
+  // A switch from the not-installed server (handshake: Hermes's initialize params and its unfinished input): the
+  // launcher opens the wallet with those params and holds Hermes's input until the wallet's initialize result is in;
+  // only then it passes Hermes's input on (the unfinished part first) and says that the tools changed. An error answer,
+  // or no answer in SWITCH_INIT_MS, ends the wallet and this launcher (Hermes starts the plugin again at its next call).
+  let switching = Boolean(handshake);
+  let switchTimer = null;
+  const switchFailed = (why) => {
+    process.stderr.write(`shinjuku plugin: the switch to the installed wallet failed (${why})\n`);
+    child.kill();
+    process.exit(1);
+  };
+  if (switching) {
+    hold("switch");
+    switchTimer = setTimeout(() => switchFailed("no initialize answer"), SWITCH_INIT_MS);
+    toWallet(Buffer.from(`${JSON.stringify({ jsonrpc: "2.0", id: SWITCH_INIT_ID, method: "initialize", params: handshake.params })}\n`, "utf8"));
+  } else attach();
   // A tools/list answer object (single or in a batch) gets the tool, and tells whether the wallet lists it itself.
   const fixList = (answer) => {
     const tools = answer?.result?.tools;
@@ -710,6 +813,21 @@ function startWallet({ entry, prefix, fallback }) {
     return walletOwnsTool ? answer : { ...answer, result: { ...answer.result, tools: [INSTALLED_TOOL, ...tools] } };
   };
   const fromWallet = lineSplitter((line) => {
+    if (switching) {
+      let message = null;
+      try { message = JSON.parse(line.toString("utf8")); } catch { message = null; }
+      if (message && !Array.isArray(message) && message.id === SWITCH_INIT_ID) {
+        if (!message.result || typeof message.result !== "object") { switchFailed("the wallet's initialize answer was an error"); return; }
+        switching = false;
+        clearTimeout(switchTimer);
+        toWallet(Buffer.from(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" })}\n`, "utf8"));
+        attach();
+        if (handshake.pending?.length) fromHermes.feed(handshake.pending);
+        putOwn({ jsonrpc: "2.0", method: "notifications/tools/list_changed" });
+        release("switch");
+        return;
+      }
+    }
     if (!listAsked.size && !batchOwn.size) { putLine(line); return; }
     // Any fault in the launcher's own code passes the line as it is: it never stops the wallet's answers.
     let out = line;

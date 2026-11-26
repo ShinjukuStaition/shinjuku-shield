@@ -61,10 +61,10 @@ The wallet runs with Node.js on Windows (x64) and Linux. It does not run on a Ma
    again by itself and the plugin connects (70 seconds on our test computer). You can close the note.
 
 2. Start Hermes and ask "set up my Shinjuku wallet". Hermes shows the two setup lines above for your
-   computer. Run them. Then reload the wallet in Hermes: in a terminal, type `/reload-mcp`; in the Hermes
-   desktop app, press Ctrl+K and choose "Restart gateway"; if Hermes then asks to restart the shared gateway,
-   choose "Restart all" (this also reconnects the other bots that share that gateway). (Closing the app window does not restart
-   the wallet.)
+   computer. Run them. Hermes then loads the wallet by itself within a minute. Only if it does not show, reload
+   the wallet in Hermes: in a terminal, type `/reload-mcp`; in the Hermes desktop app, press Ctrl+K and choose
+   "Restart gateway"; if Hermes then asks to restart the shared gateway, choose "Restart all" (this also reconnects
+   the other bots that share that gateway). (Closing the app window does not restart the wallet.)
 
 3. Type `/shinjuku:wallet` to see your wallet card. It says whether Tor is on.
 
@@ -124,6 +124,6 @@ So you know before you install:
   anything.
 - `mcp.json`: how Hermes starts the wallet: `node launch.mjs`, with no wallet version.
 - `launch.mjs`: finds your installed `shinjuku` command and starts `shinjuku mcp` (Windows `shinjuku.cmd mcp`),
-  or tells you the install lines when it is not installed yet.
+  or tells you the install lines when it is not installed yet, and switches to the wallet by itself when setup ends.
 - `skills/wallet/SKILL.md`: how Hermes uses the wallet, and the `/shinjuku:wallet` card.
 - `LICENSE`: MIT, for the files of this repository only. The wallet (the npm package `shinjuku`) has its own license.
