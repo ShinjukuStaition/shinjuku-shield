@@ -34,6 +34,14 @@ does not move. To try the candidate, install its exact version. It is
 - When an AI answer fails while Tor builds a new route to Shinjuku, the
   answer says so.
 
+## 2026-11-26: wallet release `8d5479bf`, npm `shinjuku@0.3.281` (stable, npm tag `latest`)
+
+The new stable version. It replaces `0.3.270` (wallet release `c1161b8c`). It is
+the same wallet file as the 0.3.281 candidate below, with the same SHA-256.
+Set it up with `npx -y shinjuku setup` (Windows: `npm.cmd install -g shinjuku`,
+then `shinjuku.cmd setup`). The candidate entries below, from the 0.3.281
+entry down to the entry after 0.3.270, list each change since 0.3.270.
+
 ## 2026-11-26: wallet release `8d5479bf`, npm `shinjuku@0.3.281` (candidate, npm tag `next`)
 
 A candidate: npm publishes it under the tag `next`. The stable version stays
@@ -43,9 +51,9 @@ these changes.
 
 ### Fixed
 
-- The AI credit is in development. After a payment into the AI credit, the
-  question gets its own time to be paid from that credit. When the question
-  is paid on its own instead, the answer names both payments.
+- After a payment into the AI credit, the question gets its own time to be
+  paid from that credit. When the question is paid on its own instead, the
+  answer names both payments.
 - A payment into the AI credit is never more than the largest single
   payment your balance can make.
 - When the AI credit is paid back and the payback does not reach us, the
@@ -67,12 +75,11 @@ these changes.
 
 ### Fixed
 
-- The AI credit is in development. Right after its credit is paid back into
-  your private balance, the balance answer counts the paid-back amount, or
-  says that it is still on its way.
+- Right after AI credit is paid back into your private balance, the balance
+  answer counts the paid-back amount, or says that it is still on its way.
 - When a payment into the AI credit stops before anything is sent, the
   wallet drops it and pays the question by itself, and the balance answer
-  says that the next question finishes or cancels such a payment.
+  says that the next AI question tries to finish or cancel such a payment.
 
 ### Known issue
 
@@ -89,11 +96,10 @@ these changes.
 
 ### Fixed
 
-- The AI credit is in development. When a private AI answer also moves USDC
-  from your private balance into that credit, the answer now says so first,
-  with the amount, and the balance answer names the credit beside your private
-  balance. Credit that is paid back shows by name in your history and
-  receipts.
+- When a private AI answer also moves USDC from your private balance into
+  the AI credit, the answer now says so first, with the amount, and the
+  balance answer names the credit beside your private balance. Credit that
+  is paid back shows by name in your history and receipts.
 
 ### Known issue
 
@@ -258,8 +264,7 @@ these changes.
 
 - Setup adds Shinjuku to your AI apps from a checklist: Up and Down move,
   Space ticks or unticks an app, Enter adds the ticked apps, Esc adds none.
-- At its end, setup says for each app whether it was added, and whether the
-  Hermes private AI profile was made.
+- At its end, setup says for each app whether it was added.
 - Tor's start shows each step and ends on 100%. Setup asks for the optional
   spending limits again.
 - `shinjuku add-funds` in a terminal shows one framed screen with the one-time
@@ -267,22 +272,11 @@ these changes.
 - While a deposit waits, the balance answer says when the wallet checks again.
 - Each payment in your receipts names its transaction.
 - Private AI: pick a model by its plain name or by its number.
-- The Hermes private AI profile hides the other AI companies' models and lists
-  every private model with true price words.
-- A Hermes answer starts with an answer limit of 2,048 tokens. When an answer
-  is cut off, Hermes asks again with a longer limit, up to 8,192 tokens.
-- Setup also puts the Shinjuku plugin files (no key and no setting) in the
-  main Hermes profile.
 - `npm install -g shinjuku` works on Node.js 22.21 or later and on 24.0 or
   later.
 
 ### Fixed
 
-- The Hermes app opens the private profile "shinjuku" with its private models
-  after each start. Before, it could show "Unknown provider 'shinjuku'" or an
-  empty model box.
-- In Hermes, an answer that says your private balance is 0 no longer blocks the
-  private profile for an hour. After you add money, the next question works.
 - Windows: when `shinjuku` is not recognized after the install, the README
   says what to do.
 
